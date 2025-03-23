@@ -10,7 +10,7 @@ tool that helps creating characters
 6. character AI style in order to match the aestetics
 
 ## Technical details
-1. React.js
+1. React.js (maybe vanilla)
 2. tailwind css
 3. website animation + transition + scrolling + hovering animation libraries
 4. json
