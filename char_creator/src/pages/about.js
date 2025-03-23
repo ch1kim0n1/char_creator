@@ -62,41 +62,56 @@ const AboutPage = () => {
             animate="visible"
             className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden"
           >
-            <div className="h-32 bg-gradient-to-r from-gray-500 to-gray-700"></div>
+            <div className="h-32 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 relative">
+              <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                <h1 className="text-3xl font-bold text-white drop-shadow-lg">About C.AI Character Creator</h1>
+              </div>
+            </div>
             
             <div className="px-8 py-6">
-              <motion.h1 
-                variants={itemVariants}
-                className="text-3xl font-bold text-gray-900 dark:text-white mb-6 animate-slide-in-left"
-              >
-                About C.AI Character Creator
-              </motion.h1>
-              
               <motion.div 
                 variants={itemVariants}
                 className="prose dark:prose-invert max-w-none mb-8"
               >
-                <p className="text-gray-700 dark:text-gray-300">
-                  C.AI Character Creator is a tool designed to help you create, manage, and export character profiles for 
-                  use with Character.AI and other AI storytelling platforms. It provides an intuitive interface for 
-                  building detailed character personas with customizable traits, backgrounds, and personalities.
+                <p className="text-white">
+                  C.AI Character Creator is an advanced tool designed to help you create, manage, and export character profiles for 
+                  use with Character.AI and other AI storytelling platforms. Our intuitive interface enables you to build 
+                  rich, detailed character personas with dynamic traits, compelling backgrounds, and unique personalities.
                 </p>
                 
-                <p className="text-gray-700 dark:text-gray-300 mt-4">
+                <p className="text-white mt-4">
                   <strong>Key features:</strong>
                 </p>
                 
-                <ul className="mt-2 space-y-1 text-gray-700 dark:text-gray-300">
-                  <li>Intuitive character creation workflow</li>
-                  <li>Local storage for all your characters</li>
-                  <li>Export in Character.AI compatible format</li>
-                  <li>Dark/Light mode support</li>
-                  <li>Responsive design that works on any device</li>
-                  <li>Image upload and customization</li>
+                <ul className="mt-2 space-y-2 text-white">
+                  <li className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-accent rounded-full"></span>
+                    Advanced character creation workflow with AI assistance
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-accent rounded-full"></span>
+                    Secure local storage with backup options
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-accent rounded-full"></span>
+                    One-click export in Character.AI compatible format
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-accent rounded-full"></span>
+                    Intelligent dark/light mode with system preference detection
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-accent rounded-full"></span>
+                    Responsive design optimized for all devices
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-accent rounded-full"></span>
+                    Advanced image processing and customization tools
+                  </li>
                 </ul>
                 
                 <div className="mt-6 p-4 bg-accent/10 dark:bg-accent/20 rounded-xl border border-accent/20">
-                  <p className="text-gray-700 dark:text-gray-300 italic">
+                  <p className="text-white italic">
                     <strong>Disclaimer:</strong> C.AI Character Creator is a fan-made tool and is not affiliated with, endorsed by, 
                     or connected to Character.AI in any way. This is an independent project created to help the community.
                   </p>
@@ -105,7 +120,7 @@ const AboutPage = () => {
               
               <motion.h2 
                 variants={itemVariants}
-                className="text-2xl font-bold text-gray-900 dark:text-white mb-4"
+                className="text-2xl font-bold text-white mb-4"
               >
                 About the Developer
               </motion.h2>
@@ -114,14 +129,14 @@ const AboutPage = () => {
                 variants={itemVariants}
                 className="flex flex-col sm:flex-row gap-6 mb-8 items-start"
               >
-                <div className="w-24 h-24 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
-                  {/* Replace with actual developer avatar if available */}
-                  <FiUser className="w-12 h-12 text-gray-400" />
+                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-accent to-accent-light 
+                  flex items-center justify-center overflow-hidden shadow-lg">
+                  <FiUser className="w-12 h-12 text-white" />
                 </div>
                 
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Vladislav Kondratyev</h3>
-                  <p className="text-gray-600 dark:text-gray-400 mt-2">
+                  <h3 className="text-xl font-semibold text-white">Vladislav Kondratyev</h3>
+                  <p className="text-gray-300 mt-2">
                     Web developer and AI enthusiast passionate about creating tools that help others 
                     express their creativity. I built C.AI Character Creator to make it easier for people 
                     to create rich, detailed characters for their AI interactions and storytelling.
