@@ -516,68 +516,52 @@ export default function Home() {
       </AnimatePresence>
 
       {/* Disclaimer Overlay */}
-      <AnimatePresence>
-        {showDisclaimer && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[1000]"
-          >
-            <motion.div 
-              initial={{ scale: 0.9, y: 20, opacity: 0 }}
-              animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.9, y: 20, opacity: 0 }}
-              transition={{ type: 'spring', damping: 25 }}
-              className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 transition-all duration-300"
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <FiAlertCircle className="text-accent text-2xl flex-shrink-0" />
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Important Disclaimer</h2>
+      {showDisclaimer && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[1000]">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 transition-all duration-300">
+            <div className="flex items-center gap-3 mb-4">
+              <FiAlertCircle className="text-accent text-2xl flex-shrink-0" />
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Important Disclaimer</h2>
+            </div>
+            
+            <p className="text-gray-700 dark:text-gray-300 mb-6">
+              C.AI Character Creator is a <span className="font-semibold">fan-made tool</span> and is not 
+              affiliated with, endorsed by, or connected to Character.AI in any way. This is an 
+              independent project created to help the community.
+            </p>
+            
+            <div className="flex items-center mb-6">
+              <input
+                type="checkbox"
+                id="agreement"
+                checked={disclaimerAgreed}
+                onChange={() => setDisclaimerAgreed(!disclaimerAgreed)}
+                className="w-5 h-5 accent-accent rounded mr-3"
+              />
+              <label 
+                htmlFor="agreement" 
+                className="text-gray-700 dark:text-gray-300 cursor-pointer select-none"
+              >
+                I understand that this tool is not affiliated with Character.AI
+              </label>
+            </div>
+            
+            <div className="flex justify-end">
+              <button
+                onClick={handleDisclaimerAgree}
+                disabled={!disclaimerAgreed}
+                className={`px-6 py-3 rounded-xl ${
+                  disclaimerAgreed 
+                    ? 'bg-gradient-to-r from-accent to-accent-light text-white hover:shadow-lg shadow-accent/20 hover:scale-[1.02] transition-all duration-300' 
+                    : 'bg-gray-300 text-gray-500 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed'
+                } transition-colors`}
+              >
+                Continue
+              </button>
+            </div>
+          </div>
         </div>
-              
-              <p className="text-gray-700 dark:text-gray-300 mb-6">
-                C.AI Character Creator is a <span className="font-semibold">fan-made tool</span> and is not 
-                affiliated with, endorsed by, or connected to Character.AI in any way. This is an 
-                independent project created to help the community.
-              </p>
-              
-              <div className="flex items-center mb-6">
-                <input
-                  type="checkbox"
-                  id="agreement"
-                  checked={disclaimerAgreed}
-                  onChange={() => setDisclaimerAgreed(!disclaimerAgreed)}
-                  className="w-5 h-5 accent-accent rounded mr-3"
-                />
-                <label 
-                  htmlFor="agreement" 
-                  className="text-gray-700 dark:text-gray-300 cursor-pointer select-none"
-                >
-                  I understand that this tool is not affiliated with Character.AI
-                </label>
-              </div>
-              
-              <div className="flex justify-end">
-                <motion.button
-                  variants={buttonVariants}
-                  whileHover={disclaimerAgreed ? "hover" : {}}
-                  whileTap={disclaimerAgreed ? "tap" : {}}
-                  onClick={handleDisclaimerAgree}
-                  disabled={!disclaimerAgreed}
-                  className={`px-6 py-3 rounded-xl ${
-                    disclaimerAgreed 
-                      ? 'bg-gradient-to-r from-accent to-accent-light text-white hover:shadow-lg shadow-accent/20 hover:scale-[1.02] transition-all duration-300' 
-                      : 'bg-gray-300 text-gray-500 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed'
-                  } transition-colors`}
-                >
-                  Continue
-                </motion.button>
-    </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      )}
     </>
   );
 }
