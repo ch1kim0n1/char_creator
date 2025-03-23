@@ -11,7 +11,8 @@ import {
   FiInfo,
   FiHeart,
   FiThumbsDown,
-  FiBookOpen
+  FiBookOpen,
+  FiX
 } from 'react-icons/fi';
 import { MdHeight, MdLanguage, MdWork, MdAutoAwesome } from 'react-icons/md';
 import { getCharacterById, deleteCharacter, exportCharacterAsText, downloadCharacterFile } from '../../utils/characterStorage';
@@ -22,7 +23,8 @@ export default function CharacterDetail() {
   const [character, setCharacter] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [exportFormat, setExportFormat] = useState('text');
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [selectedFormat, setSelectedFormat] = useState('text');
 
   useEffect(() => {
     if (id) {
@@ -54,11 +56,52 @@ export default function CharacterDetail() {
     }
   };
 
+  const getFormattedPreview = (format) => {
+    if (!character) return '';
+    
+    if (format === 'text') {
+      return `Name: ${character.name}
+Gender: ${character.gender}
+Age: ${character.age}
+Height: ${character.height}
+Language: ${character.language}
+Status: ${character.status}
+Occupation: ${character.occupation}
+Personality: ${character.personality}
+Skills: ${character.skills}
+Appearance: ${character.appearance}
+Figure: ${character.figure}
+Attributes: ${character.attributes}
+Species: ${character.species}
+Habits: ${character.habits}
+Likes: ${character.likes}
+Dislikes: ${character.dislikes}
+Background: ${character.background}`;
+    } else {
+      return `{Character("${character.name}")
+Gender("${character.gender}")
+Age("${character.age}")
+Heights("${character.height} cm")
+Language("${character.language}")
+Status("${character.status}") 
+Occupation("${character.occupation}") 
+Personality("${character.personality}")
+Skill("${character.skills}") 
+Appearance("${character.appearance}") 
+Figure("${character.figure}") 
+Attributes("${character.attributes}") 
+Speciest("${character.species}") 
+Habit("${character.habits}") 
+Likes("${character.likes}") 
+Dislike("${character.dislikes}")
+Backstory/Roleplay("${character.background}")}`;
+    }
+  };
+
   const handleExport = async () => {
     if (!character) return;
     
-    if (exportFormat === 'text') {
-      // Export as plain text
+    if (selectedFormat === 'text') {
       const textData = exportCharacterAsText(character);
       const blob = new Blob([textData], { type: 'text/plain' });
       const url = URL.createObjectURL(blob);
@@ -70,9 +113,9 @@ export default function CharacterDetail() {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     } else {
-      // Export as character.ai format
       await downloadCharacterFile(character);
     }
+    setShowExportModal(false);
   };
 
   const handleExportPfp = async () => {
@@ -157,6 +200,102 @@ export default function CharacterDetail() {
     );
   };
 
+  // Add the ExportModal component
+  const ExportModal = () => (
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+      onClick={() => setShowExportModal(false)}
+    >
+      <motion.div 
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-4xl w-full shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Export Character</h2>
+          <button
+            onClick={() => setShowExportModal(false)}
+            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          >
+            <FiX className="w-6 h-6" />
+          </button>
+        </div>
+
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Select Export Format</h3>
+          <div className="grid grid-cols-2 gap-4">
+            <button
+              onClick={() => setSelectedFormat('text')}
+              className={`p-4 rounded-xl border-2 transition-all ${
+                selectedFormat === 'text'
+                  ? 'border-primary bg-primary/5 dark:bg-primary/10'
+                  : 'border-gray-200 dark:border-gray-700 hover:border-primary/50'
+              }`}
+            >
+              <h4 className="font-medium text-gray-900 dark:text-white mb-2">General Text Format</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Clean, readable format without brackets
+              </p>
+            </button>
+            <button
+              onClick={() => setSelectedFormat('character.ai')}
+              className={`p-4 rounded-xl border-2 transition-all ${
+                selectedFormat === 'character.ai'
+                  ? 'border-primary bg-primary/5 dark:bg-primary/10'
+                  : 'border-gray-200 dark:border-gray-700 hover:border-primary/50'
+              }`}
+            >
+              <h4 className="font-medium text-gray-900 dark:text-white mb-2">Character.AI Format</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Official format with brackets for Character.AI
+              </p>
+            </button>
+          </div>
+        </div>
+
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Preview</h3>
+          <div className="bg-gray-100 dark:bg-gray-900 rounded-xl p-4">
+            <pre className="text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap font-mono">
+              {getFormattedPreview(selectedFormat)}
+            </pre>
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-3">
+          <motion.button
+            variants={buttonVariants}
+            whileHover="hover"
+            whileTap="tap"
+            onClick={() => setShowExportModal(false)}
+            className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white 
+            rounded-xl border border-gray-300 dark:border-gray-600 cursor-pointer 
+            transition-all duration-300 hover:bg-gray-300 dark:hover:bg-gray-600"
+          >
+            Cancel
+          </motion.button>
+          <motion.button
+            variants={buttonVariants}
+            whileHover="hover"
+            whileTap="tap"
+            onClick={handleExport}
+            className="px-4 py-2 bg-primary text-white rounded-xl border border-primary/20 
+            cursor-pointer transition-all duration-300 hover:bg-primary/90 
+            flex items-center gap-2"
+          >
+            <FiDownload />
+            Export
+          </motion.button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-200 dark:bg-gray-900 transition-colors duration-200 flex items-center justify-center">
@@ -217,7 +356,7 @@ export default function CharacterDetail() {
               variants={buttonVariants}
               whileHover="hover"
               whileTap="tap"
-              onClick={handleExport}
+              onClick={() => setShowExportModal(true)}
               className="flex items-center gap-2 px-4 py-2 bg-gray-800 dark:bg-gray-700 text-white 
               rounded-xl border border-white/20 cursor-pointer transition-all duration-300 
               hover:shadow-lg hover:shadow-white/20 dark:hover:shadow-white/10"
@@ -504,6 +643,11 @@ export default function CharacterDetail() {
               </motion.div>
             </motion.div>
           )}
+        </AnimatePresence>
+
+        {/* Add the ExportModal */}
+        <AnimatePresence>
+          {showExportModal && <ExportModal />}
         </AnimatePresence>
       </motion.div>
       <footer className="footer">
