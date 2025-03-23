@@ -120,12 +120,18 @@ const FeedbackPage = () => {
             transition={{ duration: 0.3 }}
             className="mb-8"
           >
-            <button 
+            <motion.button 
               onClick={() => router.push('/')}
-              className="flex items-center text-gray-600 dark:text-gray-400 hover:text-accent dark:hover:text-accent-light transition-colors"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center gap-2 px-4 py-2 text-gray-600 dark:text-gray-400 
+                hover:text-accent dark:hover:text-accent bg-white dark:bg-gray-800 
+                rounded-xl border border-gray-200 dark:border-gray-600
+                transition-all duration-300 hover:shadow-lg hover:shadow-white/20 
+                dark:hover:shadow-white/10 cursor-pointer"
             >
-              <FiArrowLeft className="mr-2" /> Back to Dashboard
-            </button>
+              <FiArrowLeft /> Back to Dashboard
+            </motion.button>
           </motion.div>
           
           <motion.div
@@ -158,7 +164,10 @@ const FeedbackPage = () => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => router.push('/')}
-                    className="px-5 py-2.5 bg-accent text-white rounded-xl hover:bg-accent-dark transition-colors"
+                    className="px-5 py-2.5 bg-accent text-white rounded-xl 
+                        hover:bg-accent-dark transition-all duration-300 
+                        border border-accent/20 shadow-lg shadow-white/20 
+                        hover:shadow-xl hover:shadow-white/30 cursor-pointer"
                   >
                     Return to Dashboard
                   </motion.button>
@@ -187,7 +196,7 @@ const FeedbackPage = () => {
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
-                        className={`form-input ${errors.name ? 'border-red-500 dark:border-red-500' : ''}`}
+                        className={`form-input bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white ${errors.name ? 'border-red-500 dark:border-red-500' : ''}`}
                         placeholder="Enter your name"
                       />
                       {errors.name && (
@@ -269,7 +278,12 @@ const FeedbackPage = () => {
                       whileTap={{ scale: 0.95 }}
                       type="submit"
                       disabled={isSubmitting}
-                      className="flex items-center gap-2 px-6 py-3 bg-accent text-white rounded-xl hover:bg-accent-dark transition-colors disabled:opacity-70"
+                      className="flex items-center gap-2 px-6 py-3 bg-accent text-white 
+                        rounded-xl hover:bg-accent-dark transition-all duration-300 
+                        border border-accent/20 shadow-lg shadow-white/20 
+                        hover:shadow-xl hover:shadow-white/30 
+                        disabled:opacity-70 disabled:cursor-not-allowed
+                        cursor-pointer"
                     >
                       {isSubmitting ? (
                         <>
@@ -298,4 +312,4 @@ const FeedbackPage = () => {
   );
 };
 
-export default FeedbackPage; 
+export default FeedbackPage;

@@ -64,6 +64,7 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
   };
 
   const handleChange = (e) => {
+    e.preventDefault(); // Prevent auto-submission
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     
@@ -155,13 +156,15 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
     }
   };
 
+  // Update button variants for consistent animations
   const buttonVariants = {
     hover: {
-      scale: 1.03,
+      scale: 1.02,
       transition: { duration: 0.2 }
     },
     tap: {
-      scale: 0.97,
+      scale: 0.98,
+      transition: { duration: 0.1 }
     }
   };
 
@@ -536,7 +539,7 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
             whileHover="hover"
             whileTap="tap"
             onClick={() => router.push('/')}
-            className="flex items-center gap-1 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+            className="flex items-center gap-1 px-4 py-2 text-white border border-white/20 rounded-xl bg-gray-800/40 hover:bg-gray-700/60 transition-all cursor-pointer"
           >
             <FiArrowLeft className="text-lg" /> 
             <span className="hidden sm:inline">Back</span>
@@ -596,7 +599,7 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
                 whileHover="hover"
                 whileTap="tap"
                 onClick={prevStep}
-                className="px-5 py-2.5 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                className="px-5 py-2.5 bg-gray-800/40 text-white border border-white/20 rounded-xl hover:bg-gray-700/60 transition-all cursor-pointer"
               >
                 Previous
               </motion.button>
@@ -610,7 +613,7 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
                   whileHover="hover"
                   whileTap="tap"
                   onClick={nextStep}
-                  className="px-5 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-dark transition-colors shadow-md shadow-primary/20"
+                  className="px-5 py-2.5 bg-gray-800/40 text-white border border-white/20 rounded-xl hover:bg-gray-700/60 transition-all cursor-pointer"
                 >
                   Next
                 </motion.button>
@@ -621,7 +624,7 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
                   whileHover="hover"
                   whileTap="tap"
                   disabled={isSubmitting}
-                  className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-dark transition-colors shadow-md shadow-primary/20 disabled:bg-primary/70 disabled:cursor-not-allowed"
+                  className="flex items-center gap-2 px-6 py-2.5 bg-gray-800/40 text-white border border-white/20 rounded-xl hover:bg-gray-700/60 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-gray-800/40"
                 >
                   {isSubmitting ? (
                     <>
@@ -659,4 +662,4 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
   );
 };
 
-export default CharacterForm; 
+export default CharacterForm;

@@ -42,12 +42,18 @@ const AboutPage = () => {
             transition={{ duration: 0.3 }}
             className="mb-8"
           >
-            <button 
+            <motion.button 
               onClick={() => router.push('/')}
-              className="flex items-center text-gray-600 dark:text-gray-400 hover:text-accent dark:hover:text-accent-light transition-colors"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center gap-2 px-4 py-2 text-gray-600 dark:text-gray-400 
+                hover:text-accent dark:hover:text-accent bg-white dark:bg-gray-800 
+                rounded-xl border border-gray-200 dark:border-gray-600
+                transition-all duration-300 hover:shadow-lg hover:shadow-white/20 
+                dark:hover:shadow-white/10 cursor-pointer"
             >
-              <FiArrowLeft className="mr-2" /> Back to Dashboard
-            </button>
+              <FiArrowLeft /> Back to Dashboard
+            </motion.button>
           </motion.div>
           
           <motion.div
@@ -56,7 +62,7 @@ const AboutPage = () => {
             animate="visible"
             className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden"
           >
-            <div className="h-32 bg-gradient-to-r from-accent to-accent-light"></div>
+            <div className="h-32 bg-gradient-to-r from-gray-500 to-gray-700"></div>
             
             <div className="px-8 py-6">
               <motion.h1 
@@ -127,36 +133,60 @@ const AboutPage = () => {
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Connect with me</h3>
                 
                 <div className="flex flex-wrap gap-3">
-                  <a 
+                  <motion.a 
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     href="https://github.com/yourgithub" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 rounded-full transition-colors text-gray-800 dark:text-gray-200"
+                    className="flex items-center gap-2 px-4 py-2 bg-gray-200 dark:bg-gray-700 
+                      border border-gray-300 dark:border-gray-600
+                      hover:bg-gray-300 dark:hover:bg-gray-600 rounded-xl
+                      transition-all duration-300 hover:shadow-lg hover:shadow-white/20 
+                      dark:hover:shadow-white/10 text-gray-800 dark:text-gray-200 cursor-pointer"
                   >
                     <FiGithub /> GitHub
-                  </a>
-                  <a 
+                  </motion.a>
+                  <motion.a 
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     href="https://linkedin.com/in/yourlinkedin" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-800/30 rounded-full transition-colors text-blue-800 dark:text-blue-300"
+                    className="flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 
+                      border border-blue-200 dark:border-blue-800/30
+                      hover:bg-blue-200 dark:hover:bg-blue-800/30 rounded-xl
+                      transition-all duration-300 hover:shadow-lg hover:shadow-white/20 
+                      dark:hover:shadow-white/10 text-blue-800 dark:text-blue-300 cursor-pointer"
                   >
                     <FiLinkedin /> LinkedIn
-                  </a>
-                  <a 
+                  </motion.a>
+                  <motion.a 
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     href="mailto:your.email@example.com" 
-                    className="flex items-center gap-2 px-4 py-2 bg-green-100 dark:bg-green-900/30 hover:bg-green-200 dark:hover:bg-green-800/30 rounded-full transition-colors text-green-800 dark:text-green-300"
+                    className="flex items-center gap-2 px-4 py-2 bg-green-100 dark:bg-green-900/30 
+                      border border-green-200 dark:border-green-800/30
+                      hover:bg-green-200 dark:hover:bg-green-800/30 rounded-xl
+                      transition-all duration-300 hover:shadow-lg hover:shadow-white/20 
+                      dark:hover:shadow-white/10 text-green-800 dark:text-green-300 cursor-pointer"
                   >
                     <FiMail /> Email
-                  </a>
-                  <a 
+                  </motion.a>
+                  <motion.a 
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     href="https://twitter.com/yourtwitter" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-800/30 rounded-full transition-colors text-blue-600 dark:text-blue-300"
+                    className="flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 
+                      border border-blue-200 dark:border-blue-800/30
+                      hover:bg-blue-200 dark:hover:bg-blue-800/30 rounded-xl
+                      transition-all duration-300 hover:shadow-lg hover:shadow-white/20 
+                      dark:hover:shadow-white/10 text-blue-600 dark:text-blue-300 cursor-pointer"
                   >
                     <FiTwitter /> Twitter
-                  </a>
+                  </motion.a>
                 </div>
               </motion.div>
             </div>
@@ -171,4 +201,4 @@ const AboutPage = () => {
   );
 };
 
-export default AboutPage; 
+export default AboutPage;

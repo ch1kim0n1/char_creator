@@ -261,7 +261,9 @@ export default function Home() {
               <div className="flex items-center gap-4">
                 <Link 
                   href="/about" 
-                  className="p-2 rounded-full text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors"
+                  className="p-2 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 
+    hover:text-accent dark:hover:text-accent border border-gray-200 dark:border-gray-600 
+    transition-all duration-300 hover:shadow-md hover:scale-105 cursor-pointer"
                   aria-label="About"
                 >
                   <FiInfo className="w-5 h-5" />
@@ -269,7 +271,9 @@ export default function Home() {
                 
                 <Link 
                   href="/feedback" 
-                  className="p-2 rounded-full text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors"
+                  className="p-2 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 
+    hover:text-accent dark:hover:text-accent border border-gray-200 dark:border-gray-600 
+    transition-all duration-300 hover:shadow-md hover:scale-105"
                   aria-label="Feedback"
                 >
                   <FiSend className="w-5 h-5" />
@@ -277,7 +281,9 @@ export default function Home() {
                 
                 <button 
                   onClick={toggleDarkMode}
-                  className="p-2 rounded-full text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors"
+                  className="p-2 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 
+    hover:text-accent dark:hover:text-accent border border-gray-200 dark:border-gray-600 
+    transition-all duration-300 hover:shadow-md hover:scale-105"
                   aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
                 >
                   {darkMode ? <FiSun className="w-5 h-5" /> : <FiMoon className="w-5 h-5" />}
@@ -326,7 +332,11 @@ export default function Home() {
                 whileHover="hover"
                 whileTap="tap"
                 onClick={handleCreateCharacter}
-                className="flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-accent to-accent-light text-white rounded-xl hover:bg-accent-dark transition-all duration-300 shadow-lg shadow-accent/20 hover-glow"
+                className="flex items-center justify-center gap-2 px-5 py-2.5 
+                  bg-gradient-to-r from-accent to-accent-light text-white rounded-xl 
+                  transition-all duration-300 shadow-lg shadow-white/20 
+                  hover:shadow-xl hover:shadow-white/30 cursor-pointer
+                  border border-accent/20 hover:border-white/30"
               >
                 <FiPlus className="text-lg" />
                 New Character
@@ -369,102 +379,110 @@ export default function Home() {
               variants={containerVariants}
               initial="hidden"
               animate="visible"
-              exit="hidden" // Added smooth transition
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-            >
-              {filteredCharacters.map((character) => (
-                <motion.div
-                  key={character.id}
-                  variants={itemVariants}
-                  whileHover={{ y: -8, transition: { duration: 0.3 } }}
-                  onClick={() => handleViewCharacter(character.id)}
-                  className="relative flex flex-col rounded-2xl overflow-hidden bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 transition-all duration-300 shadow-md cursor-pointer hover-glow"
-                >
-                  <div className="aspect-square relative bg-gray-200 dark:bg-gray-700 overflow-hidden">
-                    {character.imageUrl ? (
-                      <img 
-                        src={character.imageUrl} 
-                        alt={character.name} 
-                        className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <FiUser className="w-20 h-20 text-gray-400" />
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="p-4">
-                    <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-1 truncate">
-                      {character.name}
-                    </h2>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
-                      {character.description || 'No description provided.'}
-                    </p>
-                    
-                    <div className="flex justify-between">
-                      <div className="flex gap-1">
-                        <motion.button
-                          variants={buttonVariants}
-                          whileHover="hover"
-                          whileTap="tap"
-                          onClick={(e) => handleEditCharacter(e, character.id)}
-                          className="p-2 text-accent hover:bg-accent/20 rounded-full transition-all duration-300 shadow-sm hover:shadow-md"
-                          aria-label="Edit"
-                        >
-                          <FiEdit2 />
-                        </motion.button>
+               // Added smooth transition
+                      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+                    >
+                      {filteredCharacters.map((character) => (
+                      <motion.div
+                        key={character.id}
+                        variants={itemVariants}
+                        whileHover={{ y: -8, transition: { duration: 0.3 } }}
+                        onClick={() => handleViewCharacter(character.id)}
+                        className="relative flex flex-col rounded-2xl overflow-hidden bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 transition-all duration-300 shadow-md cursor-pointer hover-glow"
+                      >
+                        <div className="aspect-square relative bg-gray-200 dark:bg-gray-700 overflow-hidden">
+                        {character.imageUrl ? (
+                          <img 
+                          src={character.imageUrl} 
+                          alt={character.name} 
+                          className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                          <FiUser className="w-20 h-20 text-white" />
+                          </div>
+                        )}
+                        </div>
                         
-                        <motion.button
-                          variants={buttonVariants}
-                          whileHover="hover"
-                          whileTap="tap"
-                          onClick={(e) => confirmDelete(e, character.id)}
-                          className="p-2 text-gray-600 dark:text-gray-400 hover:bg-red-100 dark:hover:bg-red-900/20 hover:text-status-error rounded-full transition-all duration-300 shadow-sm hover:shadow-md"
-                          aria-label="Delete"
-                        >
-                          <FiTrash2 />
-                        </motion.button>
-                      </div>
-                      
-                      <div className="dropdown relative">
-                        <motion.button
-                          variants={buttonVariants}
-                          whileHover="hover"
-                          whileTap="tap"
-                          onClick={(e) => handleExportCharacter(e, character)}
-                          className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-colors"
-                          aria-label="Export"
-                        >
-                          <FiDownload />
-                        </motion.button>
+                        <div className="p-4">
+                        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-1 truncate">
+                          {character.name}
+                        </h2>
+                        <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
+                          {character.description || 'No description provided.'}
+                        </p>
                         
-                        <div className="dropdown-menu opacity-0 invisible absolute right-0 mt-2 py-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-10">
-                          <button 
+                        <div className="flex justify-between">
+                          <div className="flex gap-1">
+                          <motion.button
+                            variants={buttonVariants}
+                            whileHover="hover"
+                            whileTap="tap"
+                            onClick={(e) => handleEditCharacter(e, character.id)}
+                            className="p-2 text-accent bg-accent/5 hover:bg-white/20 dark:hover:bg-white/5 
+                rounded-xl border border-accent/20 
+                transition-all duration-300 hover:shadow-lg hover:shadow-white/20 dark:hover:shadow-white/10 
+                hover:scale-105 hover:border-white/30 dark:hover:border-white/20"
+                            aria-label="Edit"
+                          >
+                            <FiEdit2 />
+                          </motion.button>
+                          
+                          <motion.button
+                            variants={buttonVariants}
+                            whileHover="hover"
+                            whileTap="tap"
+                            onClick={(e) => confirmDelete(e, character.id)}
+                            className="p-2 text-white dark:text-white bg-red-300 dark:bg-red-500 
+                            hover:bg-red-200 dark:hover:bg-red-900/20 hover:text-white border border-gray-200 dark:border-gray-600 
+                            rounded-xl transition-all duration-300 hover:shadow-md hover:scale-105"
+                            aria-label="Delete"
+                          >
+                            <FiTrash2 />
+                          </motion.button>
+                          </div>
+                          
+                          <div className="dropdown relative">
+                          <motion.button
+                            variants={buttonVariants}
+                            whileHover="hover"
+                            whileTap="tap"
+                            onClick={(e) => handleExportCharacter(e, character)}
+                            className="p-2 text-accent bg-accent/5 hover:bg-white/20 dark:hover:bg-white/5 
+                rounded-xl border border-accent/20 
+                transition-all duration-300 hover:shadow-lg hover:shadow-white/20 dark:hover:shadow-white/10 
+                hover:scale-105 hover:border-white/30 dark:hover:border-white/20"
+                            aria-label="Export"
+                          >
+                            <FiDownload />
+                          </motion.button>
+                          
+                          <div className="dropdown-menu opacity-0 invisible absolute right-0 mt-2 py-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-10">
+                            <button 
                             onClick={(e) => handleExportCharacter(e, character, 'text')}
                             className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-                          >
+                            >
                             Export as Text
-                          </button>
-                          <button 
+                            </button>
+                            <button 
                             onClick={(e) => handleExportCharacter(e, character, 'character')}
                             className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-                          >
+                            >
                             Export as Character
-                          </button>
+                            </button>
+                          </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          )}
-        </main>
+                        </div>
+                      </motion.div>
+                      ))}
+                    </motion.div>
+                    )}
+                  </main>
 
-        {/* Footer with heart */}
+                  {/* Footer with heart */}
         <footer className="footer">
-          <p>Made with <span className="text-accent hover:scale-125 inline-block transition-transform duration-300 animate-heartbeat"><FiHeart /></span> for character creators</p>
+          <p>Made with <span className="heart"><FiHeart /></span> for character creators</p>
         </footer>
       </div>
 
@@ -550,7 +568,7 @@ export default function Home() {
                   id="agreement"
                   checked={disclaimerAgreed}
                   onChange={() => setDisclaimerAgreed(!disclaimerAgreed)}
-                  className="w-5 h-5 accent-accent rounded mr-3"
+                  className="w-5 h-5 accent-accent rounded mr-3 cursor-pointer"
                 />
                 <label 
                   htmlFor="agreement" 
@@ -585,11 +603,11 @@ export default function Home() {
                     ${disclaimerAgreed 
                       ? 'bg-gradient-to-r from-accent to-accent-light text-white ' +
                         'border-2 border-accent/20 ' +
-                        'shadow-lg shadow-accent/20 ' +
-                        'hover:shadow-xl hover:shadow-accent/30 ' +
-                        'hover:border-accent/30 ' +
+                        'shadow-lg shadow-white/20 ' +
+                        'hover:shadow-xl hover:shadow-white/30 ' +
+                        'hover:border-white/30 ' +
                         'active:shadow-inner ' +
-                        'transform perspective-1000'
+                        'transform perspective-1000 cursor-pointer'
                       : 'bg-gray-300 text-gray-500 dark:bg-gray-700 dark:text-gray-400 ' +
                         'border-2 border-gray-400/20 ' +
                         'cursor-not-allowed'
