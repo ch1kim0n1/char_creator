@@ -259,11 +259,19 @@ export default function Home() {
               </div>
               
               <div className="flex items-center gap-4">
-                <Link href="/about" className="text-gray-600 dark:text-gray-400 hover:text-accent dark:hover:text-accent-light transition-colors">
+                <Link 
+                  href="/about" 
+                  className="p-2 rounded-full text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors"
+                  aria-label="About"
+                >
                   <FiInfo className="w-5 h-5" />
                 </Link>
                 
-                <Link href="/feedback" className="text-gray-600 dark:text-gray-400 hover:text-accent dark:hover:text-accent-light transition-colors">
+                <Link 
+                  href="/feedback" 
+                  className="p-2 rounded-full text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors"
+                  aria-label="Feedback"
+                >
                   <FiSend className="w-5 h-5" />
                 </Link>
                 
@@ -274,14 +282,6 @@ export default function Home() {
                 >
                   {darkMode ? <FiSun className="w-5 h-5" /> : <FiMoon className="w-5 h-5" />}
                 </button>
-                
-                <Link 
-                  href="/settings" 
-                  className="p-2 rounded-full text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors"
-                  aria-label="Settings"
-                >
-                  <FiShield className="w-5 h-5" />
-                </Link>
               </div>
             </div>
           </div>
@@ -369,6 +369,7 @@ export default function Home() {
               variants={containerVariants}
               initial="hidden"
               animate="visible"
+              exit="hidden" // Added smooth transition
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
             >
               {filteredCharacters.map((character) => (
@@ -516,52 +517,107 @@ export default function Home() {
       </AnimatePresence>
 
       {/* Disclaimer Overlay */}
-      {showDisclaimer && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[1000]">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 transition-all duration-300">
-            <div className="flex items-center gap-3 mb-4">
-              <FiAlertCircle className="text-accent text-2xl flex-shrink-0" />
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Important Disclaimer</h2>
-            </div>
-            
-            <p className="text-gray-700 dark:text-gray-300 mb-6">
-              C.AI Character Creator is a <span className="font-semibold">fan-made tool</span> and is not 
-              affiliated with, endorsed by, or connected to Character.AI in any way. This is an 
-              independent project created to help the community.
-            </p>
-            
-            <div className="flex items-center mb-6">
-              <input
-                type="checkbox"
-                id="agreement"
-                checked={disclaimerAgreed}
-                onChange={() => setDisclaimerAgreed(!disclaimerAgreed)}
-                className="w-5 h-5 accent-accent rounded mr-3"
-              />
-              <label 
-                htmlFor="agreement" 
-                className="text-gray-700 dark:text-gray-300 cursor-pointer select-none"
-              >
-                I understand that this tool is not affiliated with Character.AI
-              </label>
-            </div>
-            
-            <div className="flex justify-end">
-              <button
-                onClick={handleDisclaimerAgree}
-                disabled={!disclaimerAgreed}
-                className={`px-6 py-3 rounded-xl ${
-                  disclaimerAgreed 
-                    ? 'bg-gradient-to-r from-accent to-accent-light text-white hover:shadow-lg shadow-accent/20 hover:scale-[1.02] transition-all duration-300' 
-                    : 'bg-gray-300 text-gray-500 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed'
-                } transition-colors`}
-              >
-                Continue
-              </button>
-            </div>
-          </div>
+      <AnimatePresence>
+        {showDisclaimer && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[1000] p-4"
+          >
+            <div className="absolute inset-0 bg-black/50" />
+            <motion.div 
+              initial={{ scale: 0.9, y: 20, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.9, y: 20, opacity: 0 }}
+              transition={{ type: 'spring', damping: 25 }}
+              className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 transition-all duration-300 relative z-10"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <FiAlertCircle className="text-accent text-2xl flex-shrink-0" />
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Important Disclaimer</h2>
         </div>
-      )}
+              
+              <p className="text-gray-700 dark:text-gray-300 mb-6">
+                C.AI Character Creator is a <span className="font-semibold">fan-made tool</span> and is not 
+                affiliated with, endorsed by, or connected to Character.AI in any way. This is an 
+                independent project created to help the community.
+              </p>
+              
+              <div className="flex items-center mb-6">
+                <input
+                  type="checkbox"
+                  id="agreement"
+                  checked={disclaimerAgreed}
+                  onChange={() => setDisclaimerAgreed(!disclaimerAgreed)}
+                  className="w-5 h-5 accent-accent rounded mr-3"
+                />
+                <label 
+                  htmlFor="agreement" 
+                  className="text-gray-700 dark:text-gray-300 cursor-pointer select-none"
+                >
+                  I understand that this tool is not affiliated with Character.AI
+                </label>
+              </div>
+              
+              <div className="flex justify-end">
+                <motion.button
+                  variants={buttonVariants}
+                  whileHover={disclaimerAgreed ? { 
+                    scale: 1.02,
+                    boxShadow: "0 5px 15px rgba(0,0,0,0.1)"
+                  } : {}}
+                  whileTap={disclaimerAgreed ? { scale: 0.98 } : {}}
+                  animate={disclaimerAgreed ? {
+                    y: [0, -2, 0],
+                    transition: {
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }
+                  } : {}}
+                  onClick={handleDisclaimerAgree}
+                  disabled={!disclaimerAgreed}
+                  className={`
+                    px-6 py-3 rounded-xl
+                    relative overflow-hidden
+                    transition-all duration-300
+                    ${disclaimerAgreed 
+                      ? 'bg-gradient-to-r from-accent to-accent-light text-white ' +
+                        'border-2 border-accent/20 ' +
+                        'shadow-lg shadow-accent/20 ' +
+                        'hover:shadow-xl hover:shadow-accent/30 ' +
+                        'hover:border-accent/30 ' +
+                        'active:shadow-inner ' +
+                        'transform perspective-1000'
+                      : 'bg-gray-300 text-gray-500 dark:bg-gray-700 dark:text-gray-400 ' +
+                        'border-2 border-gray-400/20 ' +
+                        'cursor-not-allowed'
+                    }
+                  `}
+                >
+                  <motion.span
+                    animate={disclaimerAgreed ? {
+                      background: [
+                        "linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 100%)",
+                        "linear-gradient(90deg, rgba(255,255,255,0) 100%, rgba(255,255,255,0.1) 150%, rgba(255,255,255,0) 200%)"
+                      ],
+                      x: [-200, 200]
+                    } : {}}
+                    transition={disclaimerAgreed ? {
+                      duration: 1.5,
+                      repeat: Infinity,
+                      ease: "linear"
+                    } : {}}
+                    className="absolute inset-0 z-0"
+                  />
+                  <span className="relative z-10">Continue</span>
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

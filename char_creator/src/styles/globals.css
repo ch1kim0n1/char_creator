@@ -15,9 +15,9 @@
   --primary-200: rgba(107, 114, 128, 0.2);
   
   /* Character.ai purple as accent */
-  --accent: #6441a5; 
-  --accent-light: #7e57c2;
-  --accent-dark: #4e348f;
+  --accent: #a4a4a4; 
+  --accent-light: #c2c2c3;
+  --accent-dark: #7f7f7f;
   
   --success: #2ecc71;
   --warning: #f39c12;
@@ -115,6 +115,9 @@
     transition: all 0.3s;
     outline: none;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: var(--primary);
+    color: var(--white);
+    border: 1px solid var(--primary-dark);
   }
 
   .btn:focus {
