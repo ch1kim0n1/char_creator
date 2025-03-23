@@ -518,23 +518,12 @@ export default function Home() {
       {/* Disclaimer Overlay */}
       <AnimatePresence>
         {showDisclaimer && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[1000]"
-          >
-            <motion.div 
-              initial={{ scale: 0.9, y: 20, opacity: 0 }}
-              animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.9, y: 20, opacity: 0 }}
-              transition={{ type: 'spring', damping: 25 }}
-              className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 transition-all duration-300"
-            >
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[1000]">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 transition-all duration-300">
               <div className="flex items-center gap-3 mb-4">
                 <FiAlertCircle className="text-accent text-2xl flex-shrink-0" />
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">Important Disclaimer</h2>
-        </div>
+              </div>
               
               <p className="text-gray-700 dark:text-gray-300 mb-6">
                 C.AI Character Creator is a <span className="font-semibold">fan-made tool</span> and is not 
@@ -559,10 +548,7 @@ export default function Home() {
               </div>
               
               <div className="flex justify-end">
-                <motion.button
-                  variants={buttonVariants}
-                  whileHover={disclaimerAgreed ? "hover" : {}}
-                  whileTap={disclaimerAgreed ? "tap" : {}}
+                <button
                   onClick={handleDisclaimerAgree}
                   disabled={!disclaimerAgreed}
                   className={`px-6 py-3 rounded-xl ${
@@ -572,10 +558,10 @@ export default function Home() {
                   } transition-colors`}
                 >
                   Continue
-                </motion.button>
-    </div>
-            </motion.div>
-          </motion.div>
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </AnimatePresence>
     </>

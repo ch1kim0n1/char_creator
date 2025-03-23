@@ -115,6 +115,9 @@
     transition: all 0.3s;
     outline: none;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: var(--primary);
+    color: var(--white);
+    border: 1px solid var(--primary-dark);
   }
 
   .btn:focus {
@@ -224,7 +227,7 @@
   .form-input.dark, .form-textarea.dark {
     background-color: var(--gray-700);
     color: var(--white);
-    border-color: var(--gray-600);
+    border-color: var (--gray-600);
   }
 
   .form-input.dark:focus, .form-textarea.dark:focus {
@@ -412,7 +415,7 @@
 
   @keyframes slide-in-left {
     0% { transform: translateX(-20px); opacity: 0; }
-    100% { transform: translateX(0); opacity: 1; }
+    100% { transform: translateX(0); opacity: 1); }
   }
 
   .animate-slide-in-left {
@@ -451,7 +454,7 @@
   }
   
   .text-accent-dark {
-    color: var(--accent-dark);
+    color: var (--accent-dark);
   }
   
   .bg-accent {

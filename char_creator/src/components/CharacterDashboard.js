@@ -295,4 +295,4 @@ const CharacterDashboard = () => {
   );
 };
 
-export default CharacterDashboard; 
+export default CharacterDashboard;

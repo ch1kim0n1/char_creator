@@ -25,7 +25,15 @@ const Layout = ({ children, title = 'Fiction Character Creator' }) => {
 
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
-    // In a real app, you would save this preference and override system preference
+    // Save preference to local storage
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('darkMode', !isDarkMode);
+      if (!isDarkMode) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
   };
 
   return (

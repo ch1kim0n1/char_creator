@@ -298,4 +298,4 @@ const FeedbackPage = () => {
   );
 };
 
-export default FeedbackPage; 
+export default FeedbackPage;

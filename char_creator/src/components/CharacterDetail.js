@@ -199,4 +199,4 @@ const CharacterDetail = ({ characterId }) => {
   );
 };
 
-export default CharacterDetail; 
+export default CharacterDetail;
