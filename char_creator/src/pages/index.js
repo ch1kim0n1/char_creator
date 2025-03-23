@@ -33,7 +33,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
   const [emptyState, setEmptyState] = useState(false);
   const [showDisclaimer, setShowDisclaimer] = useState(true);
   const [disclaimerAgreed, setDisclaimerAgreed] = useState(false);
@@ -42,12 +42,10 @@ export default function Home() {
     // For testing, remove this line in production
     localStorage.removeItem('disclaimerAcknowledged');
     
-    // Check if user has already acknowledged the disclaimer
-    const hasAcknowledgedDisclaimer = localStorage.getItem('disclaimerAcknowledged');
-    if (hasAcknowledgedDisclaimer === 'true') {
+    // Check if the disclaimer has been acknowledged in this session
+    const hasAcknowledged = sessionStorage.getItem('disclaimerAcknowledged');
+    if (hasAcknowledged === 'true') {
       setShowDisclaimer(false);
-    } else {
-      setShowDisclaimer(true); // Explicitly set to true if not acknowledged
     }
     
     // Check for dark mode preference
@@ -111,6 +109,12 @@ export default function Home() {
   const handleCancelDelete = () => {
     setShowDeleteConfirm(null);
   };
+
+  const handleDisclaimerAgree = () => {
+    // Store in sessionStorage instead of localStorage to persist across tabs but reset on browser close
+    sessionStorage.setItem('disclaimerAcknowledged', 'true');
+    setShowDisclaimer(false);
+  };
   
   const handleExportCharacter = async (e, character, format = 'text') => {
     e.stopPropagation();
@@ -133,26 +137,6 @@ export default function Home() {
     }
   };
   
-  const toggleDarkMode = () => {
-    const newDarkMode = !darkMode;
-    setDarkMode(newDarkMode);
-    
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('darkMode', newDarkMode);
-      
-      if (newDarkMode) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-    }
-  };
-
-  const handleDisclaimerAgree = () => {
-    localStorage.setItem('disclaimerAcknowledged', 'true');
-    setShowDisclaimer(false);
-  };
-
   // Filter characters based on search term
   const filteredCharacters = searchTerm
     ? characters.filter(char => 
@@ -278,16 +262,6 @@ export default function Home() {
                 >
                   <FiSend className="w-5 h-5" />
                 </Link>
-                
-                <button 
-                  onClick={toggleDarkMode}
-                  className="p-2 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 
-    hover:text-accent dark:hover:text-accent border border-gray-200 dark:border-gray-600 
-    transition-all duration-300 hover:shadow-md hover:scale-105"
-                  aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
-                >
-                  {darkMode ? <FiSun className="w-5 h-5" /> : <FiMoon className="w-5 h-5" />}
-                </button>
               </div>
             </div>
           </div>

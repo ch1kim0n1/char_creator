@@ -21,16 +21,48 @@ export const getCharacters = () => {
 export const getAllCharacters = getCharacters;
 
 /**
- * Save a new character to local storage
+ * Save or update a character in local storage
  * @param {Object} characterData - Character data object
+ * @param {string} [existingId] - Optional existing character ID for updates
  * @returns {Object} Saved character with ID
  */
-export const saveCharacter = (characterData) => {
+export const saveCharacter = (characterData, existingId = null) => {
   const characters = getCharacters();
+  
+  // If updating an existing character
+  if (existingId) {
+    const existingIndex = characters.findIndex(char => char.id === existingId);
+    if (existingIndex === -1) {
+      throw new Error('Character not found');
+    }
+
+    const updatedCharacter = {
+      ...characters[existingIndex],
+      ...characterData,
+      updatedAt: new Date().toISOString()
+    };
+
+    characters[existingIndex] = updatedCharacter;
+    localStorage.setItem(CHARACTERS_KEY, JSON.stringify(characters));
+    return updatedCharacter;
+  }
+  
+  // For new characters, check for duplicates (excluding the current character if editing)
+  const isDuplicate = characters.some(char => 
+    char.id !== existingId && // Exclude current character when editing
+    char.name.toLowerCase() === characterData.name.toLowerCase() &&
+    char.gender === characterData.gender &&
+    char.age === characterData.age
+  );
+
+  if (isDuplicate) {
+    throw new Error('A character with these details already exists');
+  }
   
   const newCharacter = {
     id: uuidv4(),
     createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
     ...characterData
   };
   
@@ -46,8 +78,19 @@ export const saveCharacter = (characterData) => {
  * @returns {Object|null} Character object or null if not found
  */
 export const getCharacterById = (id) => {
+  if (!id) return null;
+  
   const characters = getCharacters();
-  return characters.find(char => char.id === id) || null;
+  const character = characters.find(char => char.id === id);
+  
+  if (!character) {
+    // If character not found, clean up any references to it
+    const updatedCharacters = characters.filter(char => char.id !== id);
+    localStorage.setItem(CHARACTERS_KEY, JSON.stringify(updatedCharacters));
+    return null;
+  }
+  
+  return character;
 };
 
 /**
@@ -56,13 +99,16 @@ export const getCharacterById = (id) => {
  * @returns {boolean} Success status
  */
 export const deleteCharacter = (id) => {
-  const characters = getCharacters();
-  const updatedCharacters = characters.filter(char => char.id !== id);
+  if (!id) return false;
   
-  if (updatedCharacters.length === characters.length) {
-    return false; // Character not found
+  const characters = getCharacters();
+  const characterExists = characters.some(char => char.id === id);
+  
+  if (!characterExists) {
+    return false;
   }
   
+  const updatedCharacters = characters.filter(char => char.id !== id);
   localStorage.setItem(CHARACTERS_KEY, JSON.stringify(updatedCharacters));
   return true;
 };

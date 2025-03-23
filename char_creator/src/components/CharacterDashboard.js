@@ -162,7 +162,7 @@ const CharacterDashboard = () => {
           variants={container}
           initial="hidden"
           animate="show"
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
         >
           {characters.map(character => (
             <motion.div
@@ -170,13 +170,13 @@ const CharacterDashboard = () => {
               key={character.id}
               variants={item}
               whileHover={{ y: -5 }}
-              className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-character hover:shadow-character-hover character-card transition-all duration-300"
+              className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-character hover:shadow-character-hover character-card transition-all duration-300 w-[250px] h-[180px] mx-auto"
             >
               <div 
                 onClick={() => router.push(`/character/${character.id}`)}
                 className="cursor-pointer"
               >
-                <div className="h-48 bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden relative">
+                <div className="h-[100px] bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden relative">
                   {character.imageUrl ? (
                     <img 
                       src={character.imageUrl} 
@@ -185,48 +185,48 @@ const CharacterDashboard = () => {
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800">
-                      <FiUser className="w-16 h-16 text-gray-400" />
+                      <FiUser className="w-12 h-12 text-gray-400" />
                     </div>
                   )}
                 </div>
-                <div className="p-5">
-                  <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2">{character.name}</h3>
+                <div className="p-3">
+                  <h3 className="text-sm font-bold text-gray-800 dark:text-white mb-1">{character.name}</h3>
                   {character.description && (
-                    <p className="text-gray-600 dark:text-gray-300 line-clamp-2 mb-3 text-sm">{character.description}</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-300 line-clamp-2 mb-2">{character.description}</p>
                   )}
-                  <div className="flex flex-wrap gap-2 mt-2 mb-3">
+                  <div className="flex flex-wrap gap-1">
                     {character.gender && (
-                      <span className="px-2 py-1 bg-primary bg-opacity-10 dark:bg-primary dark:bg-opacity-20 text-primary-dark dark:text-primary-light text-xs rounded-full">
+                      <span className="px-2 py-0.5 bg-primary bg-opacity-10 dark:bg-primary dark:bg-opacity-20 text-primary-dark dark:text-primary-light text-xs rounded-full">
                         {character.gender}
                       </span>
                     )}
                     {character.age && (
-                      <span className="px-2 py-1 bg-secondary bg-opacity-10 dark:bg-secondary dark:bg-opacity-20 text-secondary-dark dark:text-secondary-light text-xs rounded-full">
+                      <span className="px-2 py-0.5 bg-secondary bg-opacity-10 dark:bg-secondary dark:bg-opacity-20 text-secondary-dark dark:text-secondary-light text-xs rounded-full">
                         Age: {character.age}
                       </span>
                     )}
                   </div>
                 </div>
               </div>
-              <div className="flex justify-between items-center px-5 py-3 border-t border-gray-100 dark:border-gray-700 bg-gray-200 dark:bg-gray-800/90">
+              <div className="flex justify-between items-center px-3 py-2 border-t border-gray-100 dark:border-gray-700 bg-gray-200 dark:bg-gray-800/90">
                 <div className="flex gap-1">
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={(e) => handleExport(character.id, e, 'text')}
-                    className="text-gray-600 hover:text-primary dark:text-gray-400 dark:hover:text-primary-light p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                    className="text-gray-600 hover:text-primary dark:text-gray-400 dark:hover:text-primary-light p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                     title="Download as text format"
                   >
-                    <FiFileText size={18} />
+                    <FiFileText size={16} />
                   </motion.button>
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={(e) => handleExport(character.id, e, 'json')}
-                    className="text-gray-600 hover:text-primary dark:text-gray-400 dark:hover:text-primary-light p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                    className="text-gray-600 hover:text-primary dark:text-gray-400 dark:hover:text-primary-light p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                     title="Export for Character AI"
                   >
-                    <FiDownload size={18} />
+                    <FiDownload size={16} />
                   </motion.button>
                 </div>
                 <div className="flex gap-1">
@@ -237,19 +237,19 @@ const CharacterDashboard = () => {
                       e.stopPropagation();
                       router.push(`/edit/${character.id}`);
                     }}
-                    className="text-gray-600 hover:text-secondary dark:text-gray-400 dark:hover:text-secondary-light p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                    className="text-gray-600 hover:text-secondary dark:text-gray-400 dark:hover:text-secondary-light p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                     title="Edit character"
                   >
-                    <FiEdit size={18} />
+                    <FiEdit size={16} />
                   </motion.button>
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={(e) => handleDelete(character.id, e)}
-                    className="text-gray-600 hover:text-status-error dark:text-gray-400 dark:hover:text-status-error p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                    className="text-gray-600 hover:text-status-error dark:text-gray-400 dark:hover:text-status-error p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                     title="Delete character"
                   >
-                    <FiTrash2 size={18} />
+                    <FiTrash2 size={16} />
                   </motion.button>
                 </div>
               </div>
