@@ -40,3 +40,5 @@ tool that helps creating characters
 16. there is no picture download button in the format that was saved
 17. when choosing to export in character ai format, it gives nonsense information, it should directly follow the format that was provided while text format removes all the brackets and such
 18. disclaimer should be a one time thing appearing for the user, and as user explore the website, it should not appear anymore, unless website was closed and opened again, then disclaimer should appear again
+19. gray accent color needs to be implemented instead of purple
+20. never use @apply when doing css, apply css directly in js files, since we use tailwind OR do css in old fashioned way
