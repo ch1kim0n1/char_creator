@@ -192,7 +192,7 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
             name={name}
             value={formData[name]}
             onChange={handleChange}
-            className={`w-full px-4 py-2.5 border rounded-xl form-input bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+            className={`w-full px-4 py-2.5 border rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
               errors[name] ? 'border-status-error' : 'border-gray-300 dark:border-gray-600'
             }`}
           >
@@ -211,7 +211,7 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
             onChange={handleChange}
             placeholder={placeholder}
             rows={4}
-            className={`w-full px-4 py-2.5 border rounded-xl form-input bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+            className={`w-full px-4 py-2.5 border rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
               errors[name] ? 'border-status-error' : 'border-gray-300 dark:border-gray-600'
             }`}
           />
@@ -223,7 +223,7 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
             value={formData[name]}
             onChange={handleChange}
             placeholder={placeholder}
-            className={`w-full px-4 py-2.5 border rounded-xl form-input bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+            className={`w-full px-4 py-2.5 border rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
               errors[name] ? 'border-status-error' : 'border-gray-300 dark:border-gray-600'
             }`}
           />
@@ -525,7 +525,7 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-character overflow-hidden border border-gray-100 dark:border-gray-700">
+    <div className="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
       <div className="p-6 sm:p-8">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">

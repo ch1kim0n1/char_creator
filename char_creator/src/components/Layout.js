@@ -106,4 +106,4 @@ const Layout = ({ children, title = 'Fiction Character Creator' }) => {
   );
 };
 
-export default Layout; 
+export default Layout;
