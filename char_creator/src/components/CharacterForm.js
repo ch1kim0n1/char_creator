@@ -10,15 +10,27 @@ import {
   FiInfo, 
   FiHeart, 
   FiThumbsDown, 
-  FiBookOpen
+  FiBookOpen,
+  FiUserPlus,
+  FiStar,
+  FiBook
 } from 'react-icons/fi';
 import { MdHeight, MdLanguage, MdWork, MdAutoAwesome } from 'react-icons/md';
 import ReactCrop from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
+import ErrorPopup from './ErrorPopup';
+import useCharacters from '../hooks/useCharacters';
 
 const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
   const router = useRouter();
   const fileInputRef = useRef();
+  const { 
+    createCharacter, 
+    updateCharacter, 
+    getCharacter, 
+    error,
+    setError 
+  } = useCharacters();
   const [formData, setFormData] = useState({
     name: initialData.name || '',
     gender: initialData.gender || '',
@@ -56,6 +68,7 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
   const imageRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [cropOperation, setCropOperation] = useState(null);
+  const [isUserSubmitted, setIsUserSubmitted] = useState(false);
 
   // Field descriptors to show tooltips
   const fieldDescriptions = {
@@ -73,6 +86,8 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
   };
 
   const handleChange = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     
@@ -82,6 +97,8 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
   };
 
   const handleImageChange = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     const file = e.target.files[0];
     if (!file) return;
 
@@ -103,7 +120,7 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
           height: size
         };
         setCrop(newCrop);
-        setCompletedCrop(newCrop); // Set initial completed crop
+        setCompletedCrop(newCrop);
         setShowCropModal(true);
       };
     };
@@ -192,23 +209,63 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
     setCurrentStep(prev => prev - 1);
   };
 
+  const handleCropDragStart = () => {
+    setCropOperation('dragging');
+  };
+
+  const handleCropDragEnd = () => {
+    setCropOperation(null);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    e.stopPropagation();
     
     if (!validateStep(currentStep)) return;
     
     setIsSubmitting(true);
     
     try {
-      await onSubmit(formData, imageFile);
+      const characterData = {
+        name: formData.name,
+        gender: formData.gender,
+        age: formData.age,
+        description: formData.description,
+        personality: formData.personality,
+        scenario: formData.scenario,
+        greeting: formData.greeting,
+        interests: formData.interests,
+        background: formData.background,
+        height: formData.height,
+        language: formData.language,
+        status: formData.status,
+        occupation: formData.occupation,
+        skills: formData.skills,
+        appearance: formData.appearance,
+        figure: formData.figure,
+        attributes: formData.attributes,
+        species: formData.species,
+        habits: formData.habits,
+        likes: formData.likes,
+        dislikes: formData.dislikes,
+        imageUrl: imagePreview // Include the image URL if it exists
+      };
+
+      if (isEdit) {
+        await updateCharacter(initialData.id, characterData, imageFile);
+      } else {
+        await createCharacter(characterData, imageFile);
+      }
+
       setShowSuccessMessage(true);
       
-      // Redirect after showing success message
       setTimeout(() => {
         router.push('/');
       }, 1500);
     } catch (error) {
-      console.error('Error submitting form:', error);
+      // Error is already handled by useCharacters hook
+      console.error('Form submission error:', error);
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -245,10 +302,69 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
     }
   };
 
+  // Add these new animation variants after the existing ones
+  const stepIndicatorVariants = {
+    initial: { scale: 0.8, opacity: 0 },
+    animate: { 
+      scale: 1, 
+      opacity: 1,
+      transition: { 
+        type: "spring",
+        stiffness: 300,
+        damping: 20
+      }
+    },
+    hover: { 
+      scale: 1.1,
+      transition: { 
+        type: "spring",
+        stiffness: 400,
+        damping: 10
+      }
+    },
+    tap: { 
+      scale: 0.95,
+      transition: { 
+        type: "spring",
+        stiffness: 400,
+        damping: 10
+      }
+    }
+  };
+
+  const stepLineVariants = {
+    initial: { scaleX: 0 },
+    animate: { 
+      scaleX: 1,
+      transition: { 
+        duration: 0.5,
+        ease: "easeInOut"
+      }
+    }
+  };
+
+  const stepLabelVariants = {
+    initial: { y: 10, opacity: 0 },
+    animate: { 
+      y: 0, 
+      opacity: 1,
+      transition: { 
+        duration: 0.3,
+        delay: 0.2
+      }
+    }
+  };
+
   // Create a custom FormField component for consistency
   const FormField = ({ label, name, type = 'text', placeholder, description, required = false, as = 'input', options = [] }) => {
     const InputComponent = as;
     const id = `field-${name}`;
+    
+    const handleInputChange = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      handleChange(e);
+    };
     
     return (
       <div className="mb-5 relative">
@@ -259,7 +375,7 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
           {description && (
             <div className="group relative">
               <FiInfo className="text-gray-400 hover:text-primary cursor-help" />
-              <div className="absolute right-0 -top-1 transform translate-y-full w-64 bg-white dark:bg-gray-800 p-2 rounded-lg shadow-lg text-xs invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-opacity z-10 border border-gray-200 dark:border-gray-700">
+              <div className="absolute right-0 -top-1 transform translate-y-full w-64 bg-gray-900 dark:bg-gray-800 p-2 rounded-lg shadow-lg text-xs text-white invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-opacity z-10 border border-gray-700">
                 {description}
               </div>
             </div>
@@ -271,7 +387,7 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
             id={id}
             name={name}
             value={formData[name]}
-            onChange={handleChange}
+            onChange={handleInputChange}
             className={`w-full px-4 py-2.5 border rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
               errors[name] ? 'border-status-error' : 'border-gray-300 dark:border-gray-600'
             }`}
@@ -288,7 +404,7 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
             id={id}
             name={name}
             value={formData[name]}
-            onChange={handleChange}
+            onChange={handleInputChange}
             placeholder={placeholder}
             rows={4}
             className={`w-full px-4 py-2.5 border rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
@@ -301,7 +417,7 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
             id={id}
             name={name}
             value={formData[name]}
-            onChange={handleChange}
+            onChange={handleInputChange}
             placeholder={placeholder}
             className={`w-full px-4 py-2.5 border rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
               errors[name] ? 'border-status-error' : 'border-gray-300 dark:border-gray-600'
@@ -759,75 +875,166 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
     }
   };
 
-  const handleCropDragStart = () => {
-    setCropOperation('dragging');
-  };
-
-  const handleCropDragEnd = () => {
-    setCropOperation(null);
-  };
-
   return (
     <div className="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
       {showCropModal && <CropModal />}
+      
+      {/* New header section */}
+      <div className="h-24 bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 relative">
+        <div className="absolute inset-0 flex items-center justify-center bg-black/10">
+          <motion.h1 
+            className="text-3xl font-bold text-white drop-shadow-lg"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            {isEdit ? 'Edit Character' : 'Create New Character'}
+          </motion.h1>
+        </div>
+      </div>
+
       <div className="p-6 sm:p-8">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            {isEdit ? 'Edit Character' : 'Create New Character'}
-          </h1>
           <motion.button
             variants={buttonVariants}
             whileHover="hover"
             whileTap="tap"
             onClick={() => router.push('/')}
-            className="flex items-center gap-1 px-4 py-2 text-white border border-white/20 rounded-xl bg-gray-800/40 hover:bg-gray-700/60 transition-all cursor-pointer"
+            className="flex items-center gap-2 px-4 py-2 text-white 
+              hover:text-accent dark:hover:text-accent bg-white dark:bg-gray-800 
+              rounded-xl border border-gray-200 dark:border-gray-600
+              transition-all duration-300 hover:shadow-lg hover:shadow-white/20 
+              dark:hover:shadow-white/10 cursor-pointer"
           >
-            <FiArrowLeft className="text-lg" /> 
-            <span className="hidden sm:inline">Back</span>
+            <FiArrowLeft /> Back to Dashboard
           </motion.button>
         </div>
         
-        {/* Step indicator */}
-        <div className="mb-8 px-4">
-          <div className="flex items-center justify-between">
-            {[1, 2, 3].map((step) => (
-              <div key={step} className="flex flex-col items-center relative">
+        {/* Enhanced Step indicator with icons */}
+        <div className="mb-12 px-4">
+          <div className="flex items-center justify-between relative">
+            {[
+              { number: 1, label: 'Basic Info', icon: FiUserPlus },
+              { number: 2, label: 'Attributes', icon: FiStar },
+              { number: 3, label: 'Background', icon: FiBook }
+            ].map((step) => {
+              const Icon = step.icon;
+              return (
                 <motion.div 
-                  className={`w-10 h-10 rounded-full flex items-center justify-center font-medium transition-colors 
-                    ${currentStep === step 
-                      ? 'bg-primary text-white shadow-lg shadow-primary/20' 
-                      : currentStep > step 
-                        ? 'bg-success text-white' 
+                  key={step.number} 
+                  className="flex flex-col items-center relative z-10"
+                  variants={stepIndicatorVariants}
+                  initial="initial"
+                  animate="animate"
+                  whileHover={step.number < currentStep ? "hover" : ""}
+                  whileTap={step.number < currentStep ? "tap" : ""}
+                  onClick={step.number < currentStep ? () => setCurrentStep(step.number) : undefined}
+                  style={{ cursor: step.number < currentStep ? 'pointer' : 'default' }}
+                >
+                  <div className={`relative w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-300
+                    ${currentStep === step.number 
+                      ? 'bg-primary text-white shadow-lg shadow-primary/30 scale-110' 
+                      : currentStep > step.number 
+                        ? 'bg-success text-white shadow-lg shadow-success/30' 
                         : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
                     }`}
-                  whileHover={step < currentStep ? { scale: 1.1 } : {}}
-                  whileTap={step < currentStep ? { scale: 0.95 } : {}}
-                  onClick={step < currentStep ? () => setCurrentStep(step) : undefined}
-                  style={{ cursor: step < currentStep ? 'pointer' : 'default' }}
-                >
-                  {currentStep > step ? <FiCheck className="w-5 h-5" /> : step}
-                </motion.div>
-                <span className="mt-2 text-xs font-medium text-gray-600 dark:text-gray-400">
-                  {step === 1 ? 'Basic Info' : step === 2 ? 'Attributes' : 'Background'}
-                </span>
-                {step < 3 && (
-                  <div className="absolute top-5 left-10 w-full h-0.5 -z-10 bg-gray-200 dark:bg-gray-700">
-                    <motion.div 
-                      className="h-full bg-success" 
-                      initial={{ width: "0%" }}
-                      animate={{ 
-                        width: currentStep > step ? "100%" : "0%",
-                        transition: { duration: 0.5 }
-                      }}
-                    />
+                  >
+                    {currentStep > step.number ? (
+                      <motion.div
+                        initial={{ scale: 0, rotate: -180 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                        className="w-8 h-8"
+                      >
+                        <FiCheck className="w-full h-full" />
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        initial={{ scale: 0.8, rotate: -180 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                        className="w-8 h-8"
+                      >
+                        <Icon className="w-full h-full" />
+                      </motion.div>
+                    )}
+                    {currentStep === step.number && (
+                      <motion.div
+                        className="absolute -inset-1 bg-primary/20 rounded-2xl"
+                        animate={{
+                          scale: [1, 1.2, 1],
+                          opacity: [0.5, 0.8, 0.5]
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                      />
+                    )}
                   </div>
-                )}
-              </div>
-            ))}
+                  <motion.div 
+                    className="mt-3 text-center"
+                    variants={stepLabelVariants}
+                  >
+                    <motion.span 
+                      className="block text-sm font-medium text-gray-600 dark:text-gray-400"
+                    >
+                      {step.label}
+                    </motion.span>
+                    <motion.span 
+                      className="block text-xs text-gray-500 dark:text-gray-500 mt-1"
+                    >
+                      Step {step.number}
+                    </motion.span>
+                  </motion.div>
+                  {step.number < 3 && (
+                    <>
+                      <div className="absolute top-8 left-25 w-[10rem] h-1 -z-10 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                        {currentStep > step.number && (
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: "100%" }}
+                            transition={{ duration: 0.5 }}
+                            className="h-full bg-green-500"
+                          />
+                        )}
+                      </div>
+                      <div className="absolute top-4 left-58 -z-10">
+                        <motion.div
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ 
+                            opacity: currentStep > step.number ? 1 : 0.5,
+                            y: 0,
+                            color: currentStep > step.number ? "#22c55e" : "#9ca3af"
+                          }}
+                          className="flex items-center"
+                        >
+                          <svg 
+                            width="24" 
+                            height="24" 
+                            viewBox="0 0 24 24" 
+                            fill="none"
+                          >
+                            <path 
+                              d="M5 12H19L12 5M12 19" 
+                              stroke="currentColor" 
+                              strokeWidth="2" 
+                              strokeLinecap="round" 
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </motion.div>
+                      </div>
+                    </>
+                  )}
+                </motion.div>
+              );
+            })}
           </div>
         </div>
         
-        <form onSubmit={handleSubmit}>
+        <div className="space-y-6">
           <AnimatePresence mode="wait">
             {renderStep()}
           </AnimatePresence>
@@ -860,10 +1067,11 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
                 </motion.button>
               ) : (
                 <motion.button
-                  type="submit"
+                  type="button"
                   variants={buttonVariants}
                   whileHover="hover"
                   whileTap="tap"
+                  onClick={handleSubmit}
                   disabled={isSubmitting}
                   className="flex items-center gap-2 px-6 py-2.5 bg-gray-800/40 text-white border border-white/20 rounded-xl hover:bg-gray-700/60 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-gray-800/40"
                 >
@@ -882,7 +1090,7 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
               )}
             </div>
           </div>
-        </form>
+        </div>
         
         {/* Success notification */}
         <AnimatePresence>
@@ -899,6 +1107,7 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
           )}
         </AnimatePresence>
       </div>
+      {error && <ErrorPopup message={error} onDismiss={() => setError(null)} />}
     </div>
   );
 };

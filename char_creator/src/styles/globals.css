@@ -104,6 +104,69 @@
     border-color: var(--gray-600);
   }
   
+  /* Dashboard specific character card styles */
+  .dashboard .character-card {
+    width: 250px;
+    height: 180px;
+    flex: 0 0 250px;
+    margin: 0;
+    max-width: 250px;
+    min-width: 250px;
+  }
+
+  .dashboard .character-card .character-image {
+    height: 100px;
+    width: 100%;
+    object-fit: cover;
+  }
+
+  .dashboard .character-card .character-info {
+    padding: 0.5rem;
+    height: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .dashboard .character-card .character-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .dashboard .character-card .character-description {
+    font-size: 0.75rem;
+    color: var(--gray-600);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+
+  .dashboard .character-card .character-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+  }
+
+  .dashboard .character-card .character-actions button {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+  }
+  
+  /* Grid container for dashboard cards */
+  .dashboard .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 250px);
+    gap: 1rem;
+    padding: 1rem;
+    justify-content: center;
+  }
+  
   /* Button styles */
   .btn {
     display: inline-flex;
@@ -424,15 +487,41 @@
   
   /* Hover effects */
   .hover-lift {
-    transition: transform 0.3s;
+    transition: transform 0.15s ease-out;
   }
 
   .hover-lift:hover {
     transform: translateY(-4px);
   }
 
-  .hover-glow:hover {
-    box-shadow: 0 0 15px 2px rgba(100, 65, 165, 0.4);
+  .hover-glow {
+    position: relative;
+    transition: all 0.3s ease;
+  }
+
+  .hover-glow::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    border-radius: inherit;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .hover-glow:hover::before {
+    opacity: 1;
+    animation: glow 2s linear infinite;
+  }
+
+  @keyframes glow {
+    0% {
+      background-position: 0% 50%;
+    }
+    100% {
+      background-position: 200% 50%;
+    }
   }
   
   /* Gradient backgrounds */
@@ -471,6 +560,116 @@
   
   .border-accent {
     border-color: var(--accent);
+  }
+
+  /* Make other hover animations faster */
+  .btn, 
+  .form-input, 
+  .form-textarea,
+  .disclaimer-card,
+  .dark-mode-toggle,
+  .footer .heart {
+    transition: all 0.15s ease-out;
+  }
+
+  /* Make button hover effects more dynamic */
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .btn:active {
+    transform: translateY(0);
+  }
+
+  /* Make form inputs more responsive */
+  .form-input:focus, 
+  .form-textarea:focus {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Make dark mode toggle more responsive */
+  .dark-mode-toggle::after {
+    transition: transform 0.15s ease-out;
+  }
+
+  /* Make footer heart animation faster */
+  @keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    25% { transform: scale(1.1); }
+    50% { transform: scale(1); }
+    75% { transform: scale(1.1); }
+  }
+
+  .footer .heart {
+    animation: heartbeat 1s ease-in-out infinite;
+  }
+
+  /* Make other animations more dynamic */
+  @keyframes pulse-gentle {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.9; }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  @keyframes sparkle {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.9; }
+  }
+
+  @keyframes bounce-subtle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+  }
+
+  @keyframes pop {
+    0% { transform: scale(0.98); }
+    40% { transform: scale(1.03); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes slide-in-right {
+    0% { transform: translateX(15px); opacity: 0; }
+    100% { transform: translateX(0); opacity: 1; }
+  }
+
+  @keyframes slide-in-left {
+    0% { transform: translateX(-15px); opacity: 0; }
+    100% { transform: translateX(0); opacity: 1; }
+  }
+
+  /* Make animation classes faster */
+  .animate-pulse-gentle {
+    animation: pulse-gentle 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .animate-float {
+    animation: float 2s ease-in-out infinite;
+  }
+
+  .animate-sparkle {
+    animation: sparkle 1.5s ease-in-out infinite;
+  }
+
+  .animate-bounce-subtle {
+    animation: bounce-subtle 1.5s ease-in-out infinite;
+  }
+
+  .animate-pop {
+    animation: pop 0.2s ease-out forwards;
+  }
+
+  .animate-slide-in-right {
+    animation: slide-in-right 0.3s ease-out forwards;
+  }
+
+  .animate-slide-in-left {
+    animation: slide-in-left 0.3s ease-out forwards;
   }
 }
 

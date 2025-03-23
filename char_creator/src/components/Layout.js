@@ -1,32 +1,15 @@
 import { motion } from 'framer-motion';
 import Head from 'next/head';
 import Link from 'next/link';
-import { MdAutoAwesome, MdMenuBook, MdNightlightRound, MdLightMode } from 'react-icons/md';
+import { MdAutoAwesome, MdMenuBook } from 'react-icons/md';
 import { useState, useEffect } from 'react';
 
 const Layout = ({ children, title = 'Fiction Character Creator' }) => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
 
   useEffect(() => {
-    // Check for system preference
-    if (typeof window !== 'undefined') {
-      const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      setIsDarkMode(darkModeMediaQuery.matches);
-
-      // Add listener for changes
-      const handleChange = (e) => setIsDarkMode(e.matches);
-      darkModeMediaQuery.addEventListener('change', handleChange);
-
-      return () => {
-        darkModeMediaQuery.removeEventListener('change', handleChange);
-      };
-    }
+    setIsDarkMode(true);
   }, []);
-
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-    // In a real app, you would save this preference and override system preference
-  };
 
   return (
     <div className={`min-h-screen font-poppins ${isDarkMode ? 'dark' : ''}`}>
@@ -58,16 +41,6 @@ const Layout = ({ children, title = 'Fiction Character Creator' }) => {
           </Link>
 
           <div className="flex items-center gap-4">
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={toggleDarkMode}
-              className="p-2 rounded-full bg-gray-200 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 transition-colors duration-200"
-              aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
-            >
-              {isDarkMode ? <MdLightMode size={22} /> : <MdNightlightRound size={22} />}
-            </motion.button>
-
             <Link href="/">
               <motion.button
                 whileHover={{ scale: 1.05 }}
