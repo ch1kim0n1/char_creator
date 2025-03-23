@@ -75,6 +75,25 @@ export default function CharacterDetail() {
     }
   };
 
+  const handleExportPfp = async () => {
+    if (!character?.imageUrl) return;
+    
+    try {
+      const response = await fetch(character.imageUrl);
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${character.name.replace(/\s+/g, '_')}_pfp.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading profile picture:', error);
+    }
+  };
+
   // Animation variants
   const pageTransition = {
     hidden: { opacity: 0 },
@@ -206,6 +225,21 @@ export default function CharacterDetail() {
               <FiDownload />
               Export
             </motion.button>
+
+            {character?.imageUrl && (
+              <motion.button
+                variants={buttonVariants}
+                whileHover="hover"
+                whileTap="tap"
+                onClick={handleExportPfp}
+                className="flex items-center gap-2 px-4 py-2 bg-gray-800 dark:bg-gray-700 text-white 
+                rounded-xl border border-white/20 cursor-pointer transition-all duration-300 
+                hover:shadow-lg hover:shadow-white/20 dark:hover:shadow-white/10"
+              >
+                <FiDownload />
+                Export PFP
+              </motion.button>
+            )}
             
             <motion.button
               variants={buttonVariants}
@@ -240,7 +274,7 @@ export default function CharacterDetail() {
           {/* Left Column - Image and Basic Info */}
           <motion.div variants={itemVariants} className="md:col-span-1">
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-character border border-gray-100 dark:border-gray-700 overflow-hidden">
-              <div className="aspect-square relative bg-gray-200 dark:bg-gray-700">
+              <div className="aspect-[1/1] relative bg-gray-200 dark:bg-gray-700">
                 {character.imageUrl ? (
                   <img 
                     src={character.imageUrl} 
