@@ -75,6 +75,25 @@ export default function CharacterDetail() {
     }
   };
 
+  const handleExportPfp = async () => {
+    if (!character?.imageUrl) return;
+    
+    try {
+      const response = await fetch(character.imageUrl);
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${character.name.replace(/\s+/g, '_')}_pfp.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading profile picture:', error);
+    }
+  };
+
   // Animation variants
   const pageTransition = {
     hidden: { opacity: 0 },
@@ -99,8 +118,13 @@ export default function CharacterDetail() {
   };
 
   const buttonVariants = {
-    hover: { scale: 1.05, transition: { duration: 0.2 } },
-    tap: { scale: 0.95 }
+    hover: { 
+      scale: 1.05,
+      transition: { duration: 0.2 }
+    },
+    tap: { 
+      scale: 0.95 
+    }
   };
 
   // Create a detail section component for consistency
@@ -135,7 +159,7 @@ export default function CharacterDetail() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="min-h-screen bg-gray-200 dark:bg-gray-900 transition-colors duration-200 flex items-center justify-center">
         <div className="w-12 h-12 border-4 border-t-primary border-gray-200 dark:border-gray-700 rounded-full animate-spin"></div>
       </div>
     );
@@ -143,15 +167,17 @@ export default function CharacterDetail() {
 
   if (!character) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen p-4">
-        <h1 className="text-2xl font-bold mb-4">Character Not Found</h1>
-        <p className="mb-6">The character you're looking for doesn't exist or has been deleted.</p>
+      <div className="min-h-screen bg-gray-200 dark:bg-gray-900 transition-colors duration-200 flex flex-col items-center justify-center p-4">
+        <h1 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Character Not Found</h1>
+        <p className="mb-6 text-gray-700 dark:text-gray-300">The character you're looking for doesn't exist or has been deleted.</p>
         <motion.button
           variants={buttonVariants}
           whileHover="hover"
           whileTap="tap"
           onClick={() => router.push('/')}
-          className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-dark transition-colors shadow-md shadow-primary/20"
+          className="flex items-center gap-2 px-5 py-2.5 bg-gray-800 dark:bg-gray-700 text-white rounded-xl 
+          border border-white/20 cursor-pointer transition-all duration-300 
+          hover:shadow-lg hover:shadow-white/20 dark:hover:shadow-white/10"
         >
           <FiArrowLeft />
           Back to Dashboard
@@ -161,324 +187,328 @@ export default function CharacterDetail() {
   }
 
   return (
-    <motion.div 
-      className="max-w-4xl mx-auto p-6 py-12"
-      variants={pageTransition}
-      initial="hidden"
-      animate="visible"
-      exit="exit"
-    >
+    <div className="min-h-screen bg-gray-200 dark:bg-gray-900 transition-colors duration-200">
       <motion.div 
-        variants={itemVariants}
-        className="flex items-center justify-between mb-8"
+        className="max-w-4xl mx-auto p-6 py-12"
+        variants={pageTransition}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
       >
-        <motion.button
-          variants={buttonVariants}
-          whileHover="hover"
-          whileTap="tap"
-          onClick={() => router.push('/')}
-          className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+        <motion.div 
+          variants={itemVariants}
+          className="flex items-center justify-between mb-8"
         >
-          <FiArrowLeft className="text-lg" />
-          <span>Back to Dashboard</span>
-        </motion.button>
-        
-        <div className="flex gap-2">
-          <div className="relative">
+          <motion.button
+            variants={buttonVariants}
+            whileHover="hover"
+            whileTap="tap"
+            onClick={() => router.push('/')}
+            className="flex items-center gap-2 px-4 py-2 bg-gray-800 dark:bg-gray-700 text-white 
+            rounded-xl border border-white/20 cursor-pointer transition-all duration-300 
+            hover:shadow-lg hover:shadow-white/20 dark:hover:shadow-white/10"
+          >
+            <FiArrowLeft className="text-lg" />
+            <span>Back to Dashboard</span>
+          </motion.button>
+          
+          <div className="flex gap-2">
             <motion.button
               variants={buttonVariants}
               whileHover="hover"
               whileTap="tap"
               onClick={handleExport}
-              className="flex items-center gap-2 px-4 py-2 border border-primary text-primary hover:bg-primary hover:text-white rounded-xl transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-gray-800 dark:bg-gray-700 text-white 
+              rounded-xl border border-white/20 cursor-pointer transition-all duration-300 
+              hover:shadow-lg hover:shadow-white/20 dark:hover:shadow-white/10"
             >
               <FiDownload />
               Export
             </motion.button>
-            
-            <div className="absolute top-full right-0 mt-2 p-3 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 z-10">
-              <div className="flex flex-col gap-2">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="exportFormat"
-                    value="text"
-                    checked={exportFormat === 'text'}
-                    onChange={() => setExportFormat('text')}
-                    className="accent-primary"
-                  />
-                  <span className="text-sm text-gray-800 dark:text-gray-200">Text Format</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="exportFormat"
-                    value="character"
-                    checked={exportFormat === 'character'}
-                    onChange={() => setExportFormat('character')}
-                    className="accent-primary"
-                  />
-                  <span className="text-sm text-gray-800 dark:text-gray-200">Character.AI Format</span>
-                </label>
-              </div>
-            </div>
-          </div>
-          
-          <motion.button
-            variants={buttonVariants}
-            whileHover="hover"
-            whileTap="tap"
-            onClick={handleEdit}
-            className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary-dark transition-colors shadow-md shadow-primary/20"
-          >
-            <FiEdit2 />
-            Edit
-          </motion.button>
-          
-          <motion.button
-            variants={buttonVariants}
-            whileHover="hover"
-            whileTap="tap"
-            onClick={() => setShowDeleteConfirm(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-status-error hover:text-white rounded-xl transition-colors"
-          >
-            <FiTrash2 />
-            Delete
-          </motion.button>
-        </div>
-      </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* Left Column - Image and Basic Info */}
-        <motion.div variants={itemVariants} className="md:col-span-1">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-character border border-gray-100 dark:border-gray-700 overflow-hidden">
-            <div className="aspect-square relative bg-gray-200 dark:bg-gray-700">
-              {character.imageUrl ? (
-                <img 
-                  src={character.imageUrl} 
-                  alt={character.name} 
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <FiUser className="w-24 h-24 text-gray-400" />
-                </div>
-              )}
-            </div>
-            <div className="p-6">
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{character.name}</h1>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">{character.description}</p>
-              
-              <div className="grid grid-cols-2 gap-3">
-                <InfoChip 
-                  label="Age" 
-                  value={character.age} 
-                  icon={<FiInfo className="text-primary" />} 
-                />
-                <InfoChip 
-                  label="Gender" 
-                  value={character.gender} 
-                  icon={<FiUser className="text-primary" />} 
-                />
-                <InfoChip 
-                  label="Height" 
-                  value={character.height} 
-                  icon={<MdHeight className="text-primary" />} 
-                />
-                <InfoChip 
-                  label="Language" 
-                  value={character.language} 
-                  icon={<MdLanguage className="text-primary" />} 
-                />
-                <InfoChip 
-                  label="Occupation" 
-                  value={character.occupation} 
-                  icon={<MdWork className="text-primary" />} 
-                />
-                <InfoChip 
-                  label="Status" 
-                  value={character.status} 
-                  icon={<FiInfo className="text-primary" />} 
-                />
-                <InfoChip 
-                  label="Species" 
-                  value={character.species} 
-                  icon={<FiInfo className="text-primary" />} 
-                />
-              </div>
-            </div>
-          </div>
-        </motion.div>
-        
-        {/* Right Column - Character Details */}
-        <motion.div variants={itemVariants} className="md:col-span-2">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-character border border-gray-100 dark:border-gray-700 p-6">
-            <motion.div variants={itemVariants} className="border-b border-gray-200 dark:border-gray-700 pb-6 mb-6">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                <MdAutoAwesome className="text-primary" />
-                Character Details
-              </h2>
-              
-              <DetailSection 
-                title="Personality" 
-                content={character.personality}
-                icon={<FiUser className="text-primary" />}
-              />
-              
-              <DetailSection 
-                title="Appearance" 
-                content={character.appearance}
-                icon={<FiUser className="text-primary" />}
-              />
-
-              {character.figure && (
-                <div className="mb-5">
-                  <h3 className="font-medium text-gray-800 dark:text-white mb-1">Physical Attributes</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
-                    {character.figure && (
-                      <div className="bg-gray-200 dark:bg-gray-700/50 px-3 py-2 rounded-lg">
-                        <span className="text-sm text-gray-500 dark:text-gray-400">Figure/Build</span>
-                        <p className="text-gray-800 dark:text-white">{character.figure}</p>
-                      </div>
-                    )}
-                    {character.attributes && (
-                      <div className="bg-gray-200 dark:bg-gray-700/50 px-3 py-2 rounded-lg">
-                        <span className="text-sm text-gray-500 dark:text-gray-400">Notable Attributes</span>
-                        <p className="text-gray-800 dark:text-white">{character.attributes}</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-              
-              <DetailSection 
-                title="Skills & Abilities" 
-                content={character.skills}
-                icon={<FiBookOpen className="text-primary" />}
-              />
-
-              {(character.likes || character.dislikes) && (
-                <div className="mb-5">
-                  <h3 className="font-medium text-gray-800 dark:text-white mb-1">Preferences</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
-                    {character.likes && (
-                      <div className="bg-gray-200 dark:bg-gray-700/50 px-3 py-2 rounded-lg">
-                        <span className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                          <FiHeart className="text-success" /> Likes
-                        </span>
-                        <p className="text-gray-800 dark:text-white">{character.likes}</p>
-                      </div>
-                    )}
-                    {character.dislikes && (
-                      <div className="bg-gray-200 dark:bg-gray-700/50 px-3 py-2 rounded-lg">
-                        <span className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                          <FiThumbsDown className="text-status-error" /> Dislikes
-                        </span>
-                        <p className="text-gray-800 dark:text-white">{character.dislikes}</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-              
-              <DetailSection 
-                title="Habits" 
-                content={character.habits}
-                icon={<FiInfo className="text-primary" />}
-              />
-            </motion.div>
+            {character?.imageUrl && (
+              <motion.button
+                variants={buttonVariants}
+                whileHover="hover"
+                whileTap="tap"
+                onClick={handleExportPfp}
+                className="flex items-center gap-2 px-4 py-2 bg-gray-800 dark:bg-gray-700 text-white 
+                rounded-xl border border-white/20 cursor-pointer transition-all duration-300 
+                hover:shadow-lg hover:shadow-white/20 dark:hover:shadow-white/10"
+              >
+                <FiDownload />
+                Export PFP
+              </motion.button>
+            )}
             
-            <motion.div variants={itemVariants}>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                <FiBookOpen className="text-primary" />
-                Background & Story
-              </h2>
-              
-              <DetailSection 
-                title="Background Story" 
-                content={character.background}
-                icon={<FiBookOpen className="text-primary" />}
-              />
-              
-              <DetailSection 
-                title="Interests & Hobbies" 
-                content={character.interests}
-                icon={<FiHeart className="text-primary" />}
-              />
-            </motion.div>
-            
-            <motion.div variants={itemVariants} className="mt-8 border-t border-gray-200 dark:border-gray-700 pt-6">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                <FiMessageSquare className="text-primary" />
-                AI Settings
-              </h2>
-              
-              <div className="p-5 bg-primary/5 dark:bg-primary/10 rounded-xl border border-primary/10">
-                <DetailSection 
-                  title="Scenario" 
-                  content={character.scenario}
-                  icon={<FiMessageSquare className="text-primary" />}
-                />
-                
-                <DetailSection 
-                  title="First Message / Greeting" 
-                  content={character.greeting}
-                  icon={<FiMessageSquare className="text-primary" />}
-                />
-              </div>
-            </motion.div>
-          </div>
-        </motion.div>
-      </div>
-      
-      {/* Delete confirmation overlay */}
-      <AnimatePresence>
-        {showDeleteConfirm && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
-            onClick={() => setShowDeleteConfirm(false)}
-          >
-            <motion.div 
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-md w-full shadow-xl"
-              onClick={(e) => e.stopPropagation()}
+            <motion.button
+              variants={buttonVariants}
+              whileHover="hover"
+              whileTap="tap"
+              onClick={handleEdit}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-800 dark:bg-gray-700 text-white 
+              rounded-xl border border-white/20 cursor-pointer transition-all duration-300 
+              hover:shadow-lg hover:shadow-white/20 dark:hover:shadow-white/10"
             >
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Delete Character</h2>
-              <p className="text-gray-700 dark:text-gray-300 mb-6">
-                Are you sure you want to delete <span className="font-semibold">{character.name}</span>? This action cannot be undone.
-              </p>
-              
-              <div className="flex justify-end gap-3">
-                <motion.button
-                  variants={buttonVariants}
-                  whileHover="hover"
-                  whileTap="tap"
-                  onClick={() => setShowDeleteConfirm(false)}
-                  className="px-4 py-2 text-gray-700 dark:text-gray-300"
-                >
-                  Cancel
-                </motion.button>
-                
-                <motion.button
-                  variants={buttonVariants}
-                  whileHover="hover"
-                  whileTap="tap"
-                  onClick={handleDelete}
-                  className="px-4 py-2 bg-status-error text-white rounded-xl hover:bg-red-700 transition-colors"
-                >
-                  <FiTrash2 className="inline-block mr-2" />
-                  Delete
-                </motion.button>
+              <FiEdit2 />
+              Edit
+            </motion.button>
+            
+            <motion.button
+              variants={buttonVariants}
+              whileHover="hover"
+              whileTap="tap"
+              onClick={() => setShowDeleteConfirm(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-800 dark:bg-gray-700 text-white 
+              rounded-xl border border-white/20 cursor-pointer transition-all duration-300 
+              hover:shadow-lg hover:shadow-white/20 dark:hover:shadow-white/10 
+              hover:bg-status-error hover:border-status-error"
+            >
+              <FiTrash2 />
+              Delete
+            </motion.button>
+          </div>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Left Column - Image and Basic Info */}
+          <motion.div variants={itemVariants} className="md:col-span-1">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-character border border-gray-100 dark:border-gray-700 overflow-hidden">
+              <div className="aspect-[1/1] relative bg-gray-200 dark:bg-gray-700">
+                {character.imageUrl ? (
+                  <img 
+                    src={character.imageUrl} 
+                    alt={character.name} 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <FiUser className="w-24 h-24 text-gray-400" />
+                  </div>
+                )}
               </div>
-            </motion.div>
+              <div className="p-6">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{character.name}</h1>
+                <p className="text-gray-600 dark:text-gray-400 mb-6">{character.description}</p>
+                
+                <div className="grid grid-cols-2 gap-3">
+                  <InfoChip 
+                    label="Age" 
+                    value={character.age} 
+                    icon={<FiInfo className="text-primary" />} 
+                  />
+                  <InfoChip 
+                    label="Gender" 
+                    value={character.gender} 
+                    icon={<FiUser className="text-primary" />} 
+                  />
+                  <InfoChip 
+                    label="Height" 
+                    value={character.height} 
+                    icon={<MdHeight className="text-primary" />} 
+                  />
+                  <InfoChip 
+                    label="Language" 
+                    value={character.language} 
+                    icon={<MdLanguage className="text-primary" />} 
+                  />
+                  <InfoChip 
+                    label="Occupation" 
+                    value={character.occupation} 
+                    icon={<MdWork className="text-primary" />} 
+                  />
+                  <InfoChip 
+                    label="Status" 
+                    value={character.status} 
+                    icon={<FiInfo className="text-primary" />} 
+                  />
+                  <InfoChip 
+                    label="Species" 
+                    value={character.species} 
+                    icon={<FiInfo className="text-primary" />} 
+                  />
+                </div>
+              </div>
+            </div>
           </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
+          
+          {/* Right Column - Character Details */}
+          <motion.div variants={itemVariants} className="md:col-span-2">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-character border border-gray-100 dark:border-gray-700 p-6">
+              <motion.div variants={itemVariants} className="border-b border-gray-200 dark:border-gray-700 pb-6 mb-6">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+                  <MdAutoAwesome className="text-primary" />
+                  Character Details
+                </h2>
+                
+                <DetailSection 
+                  title="Personality" 
+                  content={character.personality}
+                  icon={<FiUser className="text-primary" />}
+                />
+                
+                <DetailSection 
+                  title="Appearance" 
+                  content={character.appearance}
+                  icon={<FiUser className="text-primary" />}
+                />
+
+                {character.figure && (
+                  <div className="mb-5">
+                    <h3 className="font-medium text-gray-800 dark:text-white mb-1">Physical Attributes</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+                      {character.figure && (
+                        <div className="bg-gray-200 dark:bg-gray-700/50 px-3 py-2 rounded-lg">
+                          <span className="text-sm text-gray-500 dark:text-gray-400">Figure/Build</span>
+                          <p className="text-gray-800 dark:text-white">{character.figure}</p>
+                        </div>
+                      )}
+                      {character.attributes && (
+                        <div className="bg-gray-200 dark:bg-gray-700/50 px-3 py-2 rounded-lg">
+                          <span className="text-sm text-gray-500 dark:text-gray-400">Notable Attributes</span>
+                          <p className="text-gray-800 dark:text-white">{character.attributes}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+                
+                <DetailSection 
+                  title="Skills & Abilities" 
+                  content={character.skills}
+                  icon={<FiBookOpen className="text-primary" />}
+                />
+
+                {(character.likes || character.dislikes) && (
+                  <div className="mb-5">
+                    <h3 className="font-medium text-gray-800 dark:text-white mb-1">Preferences</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+                      {character.likes && (
+                        <div className="bg-gray-200 dark:bg-gray-700/50 px-3 py-2 rounded-lg">
+                          <span className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                            <FiHeart className="text-success" /> Likes
+                          </span>
+                          <p className="text-gray-800 dark:text-white">{character.likes}</p>
+                        </div>
+                      )}
+                      {character.dislikes && (
+                        <div className="bg-gray-200 dark:bg-gray-700/50 px-3 py-2 rounded-lg">
+                          <span className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                            <FiThumbsDown className="text-status-error" /> Dislikes
+                          </span>
+                          <p className="text-gray-800 dark:text-white">{character.dislikes}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+                
+                <DetailSection 
+                  title="Habits" 
+                  content={character.habits}
+                  icon={<FiInfo className="text-primary" />}
+                />
+              </motion.div>
+              
+              <motion.div variants={itemVariants}>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+                  <FiBookOpen className="text-primary" />
+                  Background & Story
+                </h2>
+                
+                <DetailSection 
+                  title="Background Story" 
+                  content={character.background}
+                  icon={<FiBookOpen className="text-primary" />}
+                />
+                
+                <DetailSection 
+                  title="Interests & Hobbies" 
+                  content={character.interests}
+                  icon={<FiHeart className="text-primary" />}
+                />
+              </motion.div>
+              
+              <motion.div variants={itemVariants} className="mt-8 border-t border-gray-200 dark:border-gray-700 pt-6">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+                  <FiMessageSquare className="text-primary" />
+                  AI Settings
+                </h2>
+                
+                <div className="p-5 bg-primary/5 dark:bg-primary/10 rounded-xl border border-primary/10">
+                  <DetailSection 
+                    title="Scenario" 
+                    content={character.scenario}
+                    icon={<FiMessageSquare className="text-primary" />}
+                  />
+                  
+                  <DetailSection 
+                    title="First Message / Greeting" 
+                    content={character.greeting}
+                    icon={<FiMessageSquare className="text-primary" />}
+                  />
+                </div>
+              </motion.div>
+            </div>
+          </motion.div>
+        </div>
+        
+        {/* Delete confirmation overlay */}
+        <AnimatePresence>
+          {showDeleteConfirm && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+              onClick={() => setShowDeleteConfirm(false)}
+            >
+              <motion.div 
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-md w-full shadow-xl"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Delete Character</h2>
+                <p className="text-gray-700 dark:text-gray-300 mb-6">
+                  Are you sure you want to delete <span className="font-semibold">{character.name}</span>? This action cannot be undone.
+                </p>
+                
+                <div className="flex justify-end gap-3">
+                  <motion.button
+                    variants={buttonVariants}
+                    whileHover="hover"
+                    whileTap="tap"
+                    onClick={() => setShowDeleteConfirm(false)}
+                    className="px-4 py-2 bg-gray-800 dark:bg-gray-700 text-white 
+                    rounded-xl border border-white/20 cursor-pointer transition-all duration-300 
+                    hover:shadow-lg hover:shadow-white/20 dark:hover:shadow-white/10"
+                  >
+                    Cancel
+                  </motion.button>
+                  
+                  <motion.button
+                    variants={buttonVariants}
+                    whileHover="hover"
+                    whileTap="tap"
+                    onClick={handleDelete}
+                    className="px-4 py-2 bg-status-error text-white rounded-xl border border-white/20 
+                    cursor-pointer transition-all duration-300 hover:shadow-lg 
+                    hover:shadow-white/20 dark:hover:shadow-white/10"
+                  >
+                    <FiTrash2 className="inline-block mr-2" />
+                    Delete
+                  </motion.button>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+      <footer className="footer">
+          <p>Made with <span className="heart"><FiHeart /></span> for character creators</p>
+        </footer>
+    </div>
   );
-} 
+}

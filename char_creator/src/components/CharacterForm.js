@@ -13,6 +13,8 @@ import {
   FiBookOpen
 } from 'react-icons/fi';
 import { MdHeight, MdLanguage, MdWork, MdAutoAwesome } from 'react-icons/md';
+import ReactCrop from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css';
 
 const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
   const router = useRouter();
@@ -47,6 +49,13 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [errors, setErrors] = useState({});
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [crop, setCrop] = useState();
+  const [completedCrop, setCompletedCrop] = useState(null);
+  const [originalImage, setOriginalImage] = useState(null);
+  const [showCropModal, setShowCropModal] = useState(false);
+  const imageRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [cropOperation, setCropOperation] = useState(null);
 
   // Field descriptors to show tooltips
   const fieldDescriptions = {
@@ -67,7 +76,6 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     
-    // Clear error when field is modified
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: null }));
     }
@@ -79,12 +87,82 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
 
     setImageFile(file);
     
-    // Create preview
     const reader = new FileReader();
     reader.onload = () => {
-      setImagePreview(reader.result);
+      setOriginalImage(reader.result);
+      const img = new Image();
+      img.src = reader.result;
+      img.onload = () => {
+        const minSize = Math.min(img.width, img.height);
+        const size = minSize * 0.8;
+        const newCrop = {
+          unit: 'px',
+          x: (img.width - size) / 2,
+          y: (img.height - size) / 2,
+          width: size,
+          height: size
+        };
+        setCrop(newCrop);
+        setCompletedCrop(newCrop); // Set initial completed crop
+        setShowCropModal(true);
+      };
     };
     reader.readAsDataURL(file);
+  };
+
+  const getCroppedImg = (image, crop) => {
+    // Add validation
+    if (!image || !crop || !crop.width || !crop.height) {
+      return Promise.reject('Invalid crop parameters');
+    }
+
+    const canvas = document.createElement('canvas');
+    const scaleX = image.naturalWidth / image.width;
+    const scaleY = image.naturalHeight / image.height;
+    canvas.width = 500;
+    canvas.height = 500;
+    const ctx = canvas.getContext('2d');
+
+    ctx.drawImage(
+      image,
+      crop.x * scaleX,
+      crop.y * scaleY,
+      crop.width * scaleX,
+      crop.height * scaleY,
+      0,
+      0,
+      500,
+      500
+    );
+
+    return new Promise((resolve) => {
+      canvas.toBlob(blob => {
+        if (blob) {
+          blob.name = 'cropped-image.jpg';
+          resolve(blob);
+        }
+      }, 'image/jpeg', 1);
+    });
+  };
+
+  const handleCropComplete = async (crop) => {
+    // Add null check and dimension validation
+    if (!imageRef.current || !crop || !crop.width || !crop.height) {
+      console.warn('Invalid crop parameters');
+      return;
+    }
+
+    try {
+      const croppedImageBlob = await getCroppedImg(imageRef.current, crop);
+      if (croppedImageBlob) {
+        const croppedImageUrl = URL.createObjectURL(croppedImageBlob);
+        setImagePreview(croppedImageUrl);
+        setImageFile(new File([croppedImageBlob], 'cropped-image.jpg', { type: 'image/jpeg' }));
+        setShowCropModal(false);
+      }
+    } catch (error) {
+      console.error('Error cropping image:', error);
+    }
   };
 
   const triggerFileInput = () => {
@@ -155,13 +233,15 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
     }
   };
 
+  // Update button variants for consistent animations
   const buttonVariants = {
     hover: {
-      scale: 1.03,
+      scale: 1.02,
       transition: { duration: 0.2 }
     },
     tap: {
-      scale: 0.97,
+      scale: 0.98,
+      transition: { duration: 0.1 }
     }
   };
 
@@ -524,8 +604,172 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
     }
   };
 
+  const CropModal = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-4xl w-full">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white">Crop Image</h3>
+          <span className="text-sm text-gray-500 dark:text-gray-400">
+            Drag corners to resize. Keep 1:1 ratio.
+          </span>
+        </div>
+        <div className="max-h-[70vh] overflow-auto bg-gray-100 dark:bg-gray-900 rounded-xl p-4">
+          <ReactCrop
+            crop={crop}
+            onChange={handleCropChange}
+            onComplete={setCompletedCrop}
+            onDragStart={handleCropDragStart}
+            onDragEnd={handleCropDragEnd}
+            aspect={1}
+            className="flex justify-center"
+            ruleOfThirds={true}
+            keepSelection={true}
+          >
+            <img
+              ref={imageRef}
+              src={originalImage}
+              alt="Crop me"
+              className="max-w-full max-h-[60vh] object-contain select-none"
+              draggable={false}
+              style={{ cursor: cropOperation === 'dragging' ? 'grabbing' : 'grab' }}
+            />
+          </ReactCrop>
+        </div>
+        <div className="flex justify-end gap-3 mt-6">
+          <button
+            type="button"
+            onClick={() => setShowCropModal(false)}
+            className="px-5 py-2.5 border border-gray-200 dark:border-gray-600 
+                      text-gray-700 dark:text-gray-300 rounded-xl 
+                      hover:bg-gray-100 dark:hover:bg-gray-700
+                      active:scale-95 transition-all duration-200
+                      cursor-pointer"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={() => handleCropComplete(completedCrop)}
+            className="px-5 py-2.5 bg-primary border border-primary/20
+                      text-white rounded-xl 
+                      hover:bg-primary/90 hover:border-primary/40
+                      active:scale-95 transition-all duration-200
+                      cursor-pointer shadow-md shadow-primary/20"
+          >
+            Apply Crop
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Update the CSS for ReactCrop (add this after your imports)
+  const cropStyles = `
+    .ReactCrop__crop-selection {
+      border: 3px solid white;
+      box-shadow: 0 0 0 9999em rgba(0, 0, 0, 0.5);
+      touch-action: none;
+      pointer-events: auto;
+    }
+
+    .ReactCrop {
+      position: relative;
+      cursor: grab;
+      max-height: 100%;
+      touch-action: none;
+    }
+
+    .ReactCrop:active {
+      cursor: grabbing;
+    }
+
+    .ReactCrop__drag-handle {
+      width: 20px;
+      height: 20px;
+      background-color: white;
+      border: 3px solid #3B82F6;
+      border-radius: 50%;
+      opacity: 0.8;
+      pointer-events: auto;
+      touch-action: none;
+      transition: background-color 0.2s, transform 0.1s;
+    }
+
+    .ReactCrop__drag-handle:hover {
+      opacity: 1;
+      transform: scale(1.1);
+      background-color: #3B82F6;
+    }
+
+    .ReactCrop__drag-handle:active {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+
+    .ReactCrop__drag-handle::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: #3B82F6;
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .ReactCrop__drag-handle.ord-n,
+    .ReactCrop__drag-handle.ord-s {
+      cursor: ns-resize !important;
+    }
+
+    .ReactCrop__drag-handle.ord-e,
+    .ReactCrop__drag-handle.ord-w {
+      cursor: ew-resize !important;
+    }
+
+    .ReactCrop__drag-handle.ord-nw,
+    .ReactCrop__drag-handle.ord-se {
+      cursor: nwse-resize !important;
+    }
+
+    .ReactCrop__drag-handle.ord-ne,
+    .ReactCrop__drag-handle.ord-sw {
+      cursor: nesw-resize !important;
+    }
+  `;
+
+  // Remove previous drag-related effects and handlers since we're using new ones
+  // Keep the style injection effect
+  useEffect(() => {
+    const styleElement = document.createElement('style');
+    styleElement.textContent = cropStyles;
+    document.head.appendChild(styleElement);
+
+    return () => {
+      document.head.removeChild(styleElement);
+      document.body.style.cursor = 'default';
+    };
+  }, []);
+
+  const handleCropChange = (newCrop, percentCrop) => {
+    // Ensure minimum size (100x100 pixels)
+    if (newCrop.width >= 100 && newCrop.height >= 100) {
+      setCrop(newCrop);
+    }
+  };
+
+  const handleCropDragStart = () => {
+    setCropOperation('dragging');
+  };
+
+  const handleCropDragEnd = () => {
+    setCropOperation(null);
+  };
+
   return (
     <div className="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
+      {showCropModal && <CropModal />}
       <div className="p-6 sm:p-8">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
@@ -536,7 +780,7 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
             whileHover="hover"
             whileTap="tap"
             onClick={() => router.push('/')}
-            className="flex items-center gap-1 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+            className="flex items-center gap-1 px-4 py-2 text-white border border-white/20 rounded-xl bg-gray-800/40 hover:bg-gray-700/60 transition-all cursor-pointer"
           >
             <FiArrowLeft className="text-lg" /> 
             <span className="hidden sm:inline">Back</span>
@@ -596,7 +840,7 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
                 whileHover="hover"
                 whileTap="tap"
                 onClick={prevStep}
-                className="px-5 py-2.5 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                className="px-5 py-2.5 bg-gray-800/40 text-white border border-white/20 rounded-xl hover:bg-gray-700/60 transition-all cursor-pointer"
               >
                 Previous
               </motion.button>
@@ -610,7 +854,7 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
                   whileHover="hover"
                   whileTap="tap"
                   onClick={nextStep}
-                  className="px-5 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-dark transition-colors shadow-md shadow-primary/20"
+                  className="px-5 py-2.5 bg-gray-800/40 text-white border border-white/20 rounded-xl hover:bg-gray-700/60 transition-all cursor-pointer"
                 >
                   Next
                 </motion.button>
@@ -621,7 +865,7 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
                   whileHover="hover"
                   whileTap="tap"
                   disabled={isSubmitting}
-                  className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-dark transition-colors shadow-md shadow-primary/20 disabled:bg-primary/70 disabled:cursor-not-allowed"
+                  className="flex items-center gap-2 px-6 py-2.5 bg-gray-800/40 text-white border border-white/20 rounded-xl hover:bg-gray-700/60 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-gray-800/40"
                 >
                   {isSubmitting ? (
                     <>
@@ -659,4 +903,4 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
   );
 };
 
-export default CharacterForm; 
+export default CharacterForm;

@@ -75,16 +75,28 @@ export const deleteCharacter = (id) => {
 export const exportCharacterAI = (id) => {
   const character = getCharacterById(id);
   if (!character) return null;
-  
-  // Format according to Character AI requirements
+
+  // Updated to match the provided format
   return {
     name: character.name,
-    description: character.description || '',
+    gender: character.gender || '',
+    age: character.age || '',
+    height: `${character.height || ''} cm`,
+    language: character.language || '',
+    status: character.status || '',
+    occupation: character.occupation || '',
     personality: character.personality || '',
+    skills: character.skills || '',
+    appearance: character.appearance || '',
+    figure: character.figure || '',
+    attributes: character.attributes || '',
+    species: character.species || '',
+    habits: character.habits || '',
+    likes: character.likes || '',
+    dislikes: character.dislikes || '',
+    background: character.background || '',
     scenario: character.scenario || '',
-    first_message: character.greeting || '',
-    avatar_uri: character.imageUrl || '',
-    // Add other Character AI specific fields as needed
+    greeting: character.greeting || '',
   };
 };
 
@@ -243,4 +255,4 @@ export const saveCharacterImage = async (id, imageFile) => {
     reader.onerror = reject;
     reader.readAsDataURL(imageFile);
   });
-}; 
+};

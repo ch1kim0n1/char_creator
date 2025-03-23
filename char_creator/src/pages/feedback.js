@@ -120,12 +120,18 @@ const FeedbackPage = () => {
             transition={{ duration: 0.3 }}
             className="mb-8"
           >
-            <button 
+            <motion.button 
               onClick={() => router.push('/')}
-              className="flex items-center text-gray-600 dark:text-gray-400 hover:text-accent dark:hover:text-accent-light transition-colors"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center gap-2 px-4 py-2 text-white 
+                hover:text-accent dark:hover:text-accent bg-white dark:bg-gray-800 
+                rounded-xl border border-gray-200 dark:border-gray-600
+                transition-all duration-300 hover:shadow-lg hover:shadow-white/20 
+                dark:hover:shadow-white/10 cursor-pointer"
             >
-              <FiArrowLeft className="mr-2" /> Back to Dashboard
-            </button>
+              <FiArrowLeft /> Back to Dashboard
+            </motion.button>
           </motion.div>
           
           <motion.div
@@ -134,9 +140,9 @@ const FeedbackPage = () => {
             animate="visible"
             className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden"
           >
-            <div className="h-24 bg-gradient-to-r from-accent to-accent-light relative">
-              <div className="absolute inset-0 flex items-center justify-center">
-                <h1 className="text-3xl font-bold text-white">Share Your Feedback</h1>
+            <div className="h-24 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 relative">
+              <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                <h1 className="text-3xl font-bold text-white drop-shadow-lg">Share Your Feedback</h1>
               </div>
             </div>
             
@@ -145,20 +151,30 @@ const FeedbackPage = () => {
                 <motion.div 
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
+                  transition={{ type: "spring", stiffness: 200, damping: 20 }}
                   className="text-center py-10"
                 >
-                  <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <FiThumbsUp className="w-10 h-10 text-green-600 dark:text-green-400" />
-                  </div>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Thank You for Your Feedback!</h2>
-                  <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
+                  <motion.div 
+                    initial={{ rotate: 0 }}
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 0.6 }}
+                    className="w-20 h-20 bg-gradient-to-br from-green-400 to-green-600 dark:from-green-500 dark:to-green-700 
+                      rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg"
+                  >
+                    <FiThumbsUp className="w-10 h-10 text-white" />
+                  </motion.div>
+                  <h2 className="text-2xl font-bold text-white mb-3">Thank You for Your Feedback!</h2>
+                  <p className="text-white mb-6 max-w-md mx-auto">
                     Your feedback has been submitted successfully. It helps make the C.AI Character Creator better for everyone.
                   </p>
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => router.push('/')}
-                    className="px-5 py-2.5 bg-accent text-white rounded-xl hover:bg-accent-dark transition-colors"
+                    className="px-5 py-2.5 bg-accent text-white rounded-xl 
+                        hover:bg-accent-dark transition-all duration-300 
+                        border border-accent/20 shadow-lg shadow-white/20 
+                        hover:shadow-xl hover:shadow-white/30 cursor-pointer"
                   >
                     Return to Dashboard
                   </motion.button>
@@ -170,15 +186,15 @@ const FeedbackPage = () => {
                   className="space-y-6"
                 >
                   <motion.div variants={itemVariants}>
-                    <p className="text-gray-700 dark:text-gray-300 mb-6">
-                      Your feedback helps improve the C.AI Character Creator. Please share your thoughts, 
-                      suggestions, bug reports, or feature requests.
+                    <p className="text-white mb-6 text-lg">
+                      Help us improve C.AI Character Creator by sharing your experience. 
+                      Your feedback shapes the future of character creation.
                     </p>
                   </motion.div>
                   
                   <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      <label htmlFor="name" className="block text-sm font-medium text-white mb-1">
                         Your Name
                       </label>
                       <input
@@ -187,16 +203,16 @@ const FeedbackPage = () => {
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
-                        className={`form-input ${errors.name ? 'border-red-500 dark:border-red-500' : ''}`}
+                        className={`form-input bg-gray-100 dark:bg-gray-700 text-white ${errors.name ? 'border-red-500 dark:border-red-500' : ''}`}
                         placeholder="Enter your name"
                       />
                       {errors.name && (
-                        <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.name}</p>
+                        <p className="mt-1 text-sm text-red-400">{errors.name}</p>
                       )}
                     </div>
                     
                     <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      <label htmlFor="email" className="block text-sm font-medium text-white mb-1">
                         Email Address
                       </label>
                       <input
@@ -205,17 +221,17 @@ const FeedbackPage = () => {
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
-                        className={`form-input ${errors.email ? 'border-red-500 dark:border-red-500' : ''}`}
+                        className={`form-input bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white ${errors.email ? 'border-red-500 dark:border-red-500' : ''}`}
                         placeholder="your@email.com"
                       />
                       {errors.email && (
-                        <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.email}</p>
+                        <p className="mt-1 text-sm text-red-400">{errors.email}</p>
                       )}
                     </div>
                   </motion.div>
                   
                   <motion.div variants={itemVariants}>
-                    <label htmlFor="feedbackType" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label htmlFor="feedbackType" className="block text-sm font-medium text-white mb-1">
                       Feedback Type
                     </label>
                     <select
@@ -223,18 +239,20 @@ const FeedbackPage = () => {
                       name="feedbackType"
                       value={formData.feedbackType}
                       onChange={handleChange}
-                      className="form-input"
+                      className="form-input bg-gray-100 dark:bg-gray-700 text-white
+                        border border-gray-300 dark:border-gray-600 focus:border-accent 
+                        dark:focus:border-accent rounded-xl shadow-sm transition-all duration-200"
                     >
-                      <option value="general">General Feedback</option>
-                      <option value="feature">Feature Request</option>
-                      <option value="bug">Bug Report</option>
-                      <option value="suggestion">Suggestion</option>
-                      <option value="other">Other</option>
+                      <option value="general">💭 General Feedback</option>
+                      <option value="feature">✨ Feature Request</option>
+                      <option value="bug">🐛 Bug Report</option>
+                      <option value="suggestion">💡 Suggestion</option>
+                      <option value="other">📝 Other</option>
                     </select>
                   </motion.div>
                   
                   <motion.div variants={itemVariants}>
-                    <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label htmlFor="message" className="block text-sm font-medium text-white mb-1">
                       Your Feedback
                     </label>
                     <textarea
@@ -243,18 +261,30 @@ const FeedbackPage = () => {
                       value={formData.message}
                       onChange={handleChange}
                       rows={6}
-                      className={`form-textarea ${errors.message ? 'border-red-500 dark:border-red-500' : ''}`}
-                      placeholder="Please share your feedback in detail..."
+                      className="form-textarea bg-gray-100 dark:bg-gray-700 text-white
+                        border border-gray-300 dark:border-gray-600 focus:border-accent 
+                        dark:focus:border-accent rounded-xl shadow-sm transition-all duration-200
+                        w-full resize-none"
+                      placeholder="Please share your thoughts, ideas, or concerns..."
                     ></textarea>
                     {errors.message && (
-                      <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.message}</p>
+                      <motion.p 
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mt-1 text-sm text-red-400"
+                      >
+                        {errors.message}
+                      </motion.p>
                     )}
                   </motion.div>
                   
                   {errors.submit && (
                     <motion.div 
                       variants={itemVariants}
-                      className="p-3 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-lg"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="p-4 bg-red-100 dark:bg-red-900/30 text-red-400 
+                        rounded-xl border border-red-200 dark:border-red-800/30"
                     >
                       {errors.submit}
                     </motion.div>
@@ -269,16 +299,21 @@ const FeedbackPage = () => {
                       whileTap={{ scale: 0.95 }}
                       type="submit"
                       disabled={isSubmitting}
-                      className="flex items-center gap-2 px-6 py-3 bg-accent text-white rounded-xl hover:bg-accent-dark transition-colors disabled:opacity-70"
+                      className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-accent to-accent-light
+                        text-white rounded-xl transition-all duration-300 
+                        border border-accent/20 shadow-lg shadow-accent/20
+                        hover:shadow-xl hover:shadow-accent/30 
+                        disabled:opacity-70 disabled:cursor-not-allowed
+                        cursor-pointer"
                     >
                       {isSubmitting ? (
                         <>
                           <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                          Sending Feedback...
+                          Sending...
                         </>
                       ) : (
                         <>
-                          <FiSend />
+                          <FiSend className="animate-pulse" />
                           Submit Feedback
                         </>
                       )}
@@ -298,4 +333,4 @@ const FeedbackPage = () => {
   );
 };
 
-export default FeedbackPage; 
+export default FeedbackPage;
