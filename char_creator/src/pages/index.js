@@ -377,7 +377,7 @@ export default function Home() {
                   variants={itemVariants}
                   whileHover={{ y: -8, transition: { duration: 0.3 } }}
                   onClick={() => handleViewCharacter(character.id)}
-                  className="character-card cursor-pointer hover-glow"
+                  className="relative flex flex-col rounded-2xl overflow-hidden bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 transition-all duration-300 shadow-md cursor-pointer hover-glow"
                 >
                   <div className="aspect-square relative bg-gray-200 dark:bg-gray-700 overflow-hidden">
                     {character.imageUrl ? (
@@ -463,7 +463,7 @@ export default function Home() {
 
         {/* Footer with heart */}
         <footer className="footer">
-          <p>Made with <span className="heart"><FiHeart /></span> for character creators</p>
+          <p>Made with <span className="text-accent hover:scale-125 inline-block transition-transform duration-300 animate-heartbeat"><FiHeart /></span> for character creators</p>
         </footer>
       </div>
 

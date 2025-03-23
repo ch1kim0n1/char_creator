@@ -42,61 +42,199 @@
 
 @layer base {
   html {
-    @apply antialiased;
     font-family: 'Inter', sans-serif;
     scroll-behavior: smooth;
   }
   
   body {
-    @apply bg-gray-200 text-gray-900 dark:bg-gray-900 dark:text-white transition-colors duration-200 min-h-screen flex flex-col;
+    background-color: var(--gray-200);
+    color: var(--gray-900);
+    transition: background-color 0.2s, color 0.2s;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  body.dark {
+    background-color: var(--gray-900);
+    color: var(--white);
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-medium;
+    font-weight: 500;
   }
   
   ::selection {
-    @apply bg-gray-900 dark:bg-white text-gray-900 dark:text-white;
+    background-color: var(--gray-900);
+    color: var(--white);
+  }
+
+  .dark ::selection {
+    background-color: var(--white);
+    color: var(--gray-900);
   }
 }
 
 @layer components {
   /* Character card styles */
   .character-card {
-    @apply relative flex flex-col rounded-2xl overflow-hidden bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 transition-all duration-300 shadow-md;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-radius: 1rem;
+    overflow: hidden;
+    background-color: var(--white);
+    border: 1px solid var(--gray-100);
+    transition: all 0.3s;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  .character-card.dark {
+    background-color: var(--gray-800);
+    border-color: var(--gray-700);
   }
   
   .character-card:hover {
-    @apply border-gray-400 dark:border-gray-600 shadow-lg;
+    border-color: var(--gray-400);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     transform: translateY(-4px);
+  }
+
+  .character-card.dark:hover {
+    border-color: var(--gray-600);
   }
   
   /* Button styles */
   .btn {
-    @apply inline-flex items-center justify-center px-4 py-2 rounded-xl font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    border-radius: 0.75rem;
+    font-weight: 500;
+    transition: all 0.3s;
+    outline: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn:focus {
+    box-shadow: 0 0 0 2px rgba(100, 65, 165, 0.5);
+  }
+
+  .btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
   }
   
   .btn-primary {
-    @apply bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-500/50 shadow-md shadow-blue-500/10 hover:shadow-lg;
+    background-color: var(--blue-500);
+    color: var(--white);
+  }
+
+  .btn-primary:hover {
+    background-color: var(--blue-600);
+  }
+
+  .btn-primary:focus {
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+  }
+
+  .btn-primary:disabled {
+    background-color: var(--blue-500);
   }
   
   .btn-accent {
-    @apply bg-gradient-to-r from-accent to-accent-light text-white hover:from-accent-dark hover:to-accent focus:ring-accent/50 shadow-md shadow-accent/20 hover:shadow-lg hover:scale-[1.02];
+    background: linear-gradient(to right, var(--accent), var(--accent-light));
+    color: var(--white);
+    box-shadow: 0 2px 4px rgba(100, 65, 165, 0.2);
+  }
+
+  .btn-accent:hover {
+    background: linear-gradient(to right, var(--accent-dark), var(--accent));
+  }
+
+  .btn-accent:focus {
+    box-shadow: 0 0 0 2px rgba(100, 65, 165, 0.5);
+  }
+
+  .btn-accent:disabled {
+    background: linear-gradient(to right, var(--accent), var(--accent-light));
   }
   
   .btn-outline {
-    @apply border border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700 focus:ring-gray-300 dark:focus:ring-gray-600 shadow-sm hover:shadow-md;
+    border: 1px solid var(--gray-300);
+    background-color: var(--white);
+    color: var(--gray-900);
+  }
+
+  .btn-outline:hover {
+    background-color: var(--gray-200);
+  }
+
+  .btn-outline:focus {
+    box-shadow: 0 0 0 2px rgba(209, 213, 219, 0.5);
+  }
+
+  .btn-outline:disabled {
+    background-color: var(--white);
   }
   
   .btn-danger {
-    @apply bg-status-error text-white hover:bg-red-700 focus:ring-status-error/50 shadow-md shadow-red-500/10 hover:shadow-lg;
+    background-color: var(--error);
+    color: var(--white);
+  }
+
+  .btn-danger:hover {
+    background-color: var(--red-700);
+  }
+
+  .btn-danger:focus {
+    box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.5);
+  }
+
+  .btn-danger:disabled {
+    background-color: var(--error);
   }
   
   /* Form input styles */
   .form-input, .form-textarea {
-    @apply block w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white;
-    @apply focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent;
-    @apply disabled:bg-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed;
+    display: block;
+    width: 100%;
+    padding: 0.625rem 1rem;
+    border: 1px solid var(--gray-300);
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    background-color: var(--white);
+    color: var(--gray-900);
+    outline: none;
+    transition: all 0.3s;
+  }
+
+  .form-input:focus, .form-textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(100, 65, 165, 0.5);
+  }
+
+  .form-input:disabled, .form-textarea:disabled {
+    background-color: var(--gray-200);
+    color: var(--gray-500);
+    cursor: not-allowed;
+  }
+
+  .form-input.dark, .form-textarea.dark {
+    background-color: var(--gray-700);
+    color: var(--white);
+    border-color: var(--gray-600);
+  }
+
+  .form-input.dark:focus, .form-textarea.dark:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(100, 65, 165, 0.5);
+  }
+
+  .form-input.dark:disabled, .form-textarea.dark:disabled {
+    background-color: var(--gray-700);
+    color: var(--gray-500);
   }
   
   /* Custom scrollbar */
@@ -106,35 +244,85 @@
   }
   
   ::-webkit-scrollbar-track {
-    @apply bg-gray-200 dark:bg-gray-800;
+    background-color: var(--gray-200);
+  }
+
+  .dark ::-webkit-scrollbar-track {
+    background-color: var(--gray-800);
   }
   
   ::-webkit-scrollbar-thumb {
-    @apply bg-gray-300 dark:bg-gray-600 rounded-full;
+    background-color: var(--gray-300);
+    border-radius: 9999px;
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    background-color: var(--gray-600);
   }
   
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-400 dark:bg-gray-500;
+    background-color: var(--gray-400);
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--gray-500);
   }
 
   /* Disclaimer styles */
   .disclaimer-overlay {
-    @apply fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[1000] transition-opacity duration-300;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    transition: opacity 0.3s;
   }
 
   .disclaimer-card {
-    @apply bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 transition-all duration-300;
+    background-color: var(--white);
+    border-radius: 1rem;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    max-width: 28rem;
+    width: 100%;
+    padding: 1.5rem;
+    transition: all 0.3s;
     transform: translateY(0);
+  }
+
+  .disclaimer-card.dark {
+    background-color: var(--gray-800);
   }
 
   /* Footer styles */
   .footer {
-    @apply w-full py-4 text-center text-gray-600 dark:text-gray-400 text-sm border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800 mt-auto;
+    width: 100%;
+    padding: 1rem 0;
+    text-align: center;
+    color: var(--gray-600);
+    font-size: 0.875rem;
+    border-top: 1px solid var(--gray-200);
+    background-color: var(--white);
+    margin-top: auto;
+  }
+
+  .footer.dark {
+    color: var(--gray-400);
+    border-color: var(--gray-800);
+    background-color: var(--gray-800);
   }
   
   .footer .heart {
-    @apply text-accent hover:scale-125 inline-block transition-transform duration-300;
+    color: var(--accent);
+    display: inline-block;
+    transition: transform 0.3s;
     animation: heartbeat 1.5s ease-in-out infinite;
+  }
+
+  .footer .heart:hover {
+    transform: scale(1.25);
   }
 
   @keyframes heartbeat {
@@ -153,7 +341,8 @@
   
   /* Input focus ring */
   .focus-ring {
-    @apply focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(100, 65, 165, 0.5);
   }
   
   /* Status colors */
@@ -232,8 +421,9 @@
   
   /* Hover effects */
   .hover-lift {
-    @apply transition-transform duration-300;
+    transition: transform 0.3s;
   }
+
   .hover-lift:hover {
     transform: translateY(-4px);
   }
@@ -244,11 +434,11 @@
   
   /* Gradient backgrounds */
   .bg-gradient-accent {
-    @apply bg-gradient-to-r from-accent to-accent-light;
+    background: linear-gradient(to right, var(--accent), var(--accent-light));
   }
   
   .bg-gradient-primary {
-    @apply bg-gradient-to-r from-primary to-primary-light;
+    background: linear-gradient(to right, var(--primary), var(--primary-light));
   }
   
   /* Text accent color */
@@ -283,14 +473,31 @@
 
 /* Dark mode toggle styles */
 .dark-mode-toggle {
-  @apply relative w-12 h-6 rounded-full bg-gray-300 dark:bg-gray-700 transition-colors duration-300 cursor-pointer;
+  position: relative;
+  width: 3rem;
+  height: 1.5rem;
+  border-radius: 9999px;
+  background-color: var(--gray-300);
+  transition: background-color 0.3s;
+  cursor: pointer;
 }
 
 .dark-mode-toggle::after {
   content: '';
-  @apply absolute left-1 top-1 w-4 h-4 rounded-full bg-white transition-transform duration-300;
+  position: absolute;
+  left: 0.25rem;
+  top: 0.25rem;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 9999px;
+  background-color: var(--white);
+  transition: transform 0.3s;
+}
+
+.dark .dark-mode-toggle {
+  background-color: var(--gray-700);
 }
 
 .dark .dark-mode-toggle::after {
-  transform: translateX(24px);
+  transform: translateX(1.5rem);
 }
