@@ -1,6 +1,16 @@
-# fiction_char_creator
+# Fiction Character Creator
 
-tool that helps creating characters
+A web-based tool for writers, role-players, and storytellers to create, manage, and export fictional characters. This application helps streamline the character creation process by providing a user-friendly interface and organized storage system for character profiles.
+
+## Key Features
+
+- Create and manage multiple character profiles
+- User-friendly dashboard interface
+- Image upload support for character visuals
+- Export characters in Character AI compatible format
+- Local storage for privacy and easy access
+- Customizable character attributes
+- Edit and update existing characters
 
 ## How it works
 

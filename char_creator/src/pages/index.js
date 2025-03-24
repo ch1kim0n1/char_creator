@@ -26,6 +26,7 @@ import {
   exportCharacterAsText, 
   downloadCharacterFile 
 } from '../utils/characterStorage';
+import IntroAnimation from '../components/IntroAnimation';
 
 export default function Home() {
   const router = useRouter();
@@ -37,7 +38,12 @@ export default function Home() {
   const [emptyState, setEmptyState] = useState(false);
   const [showDisclaimer, setShowDisclaimer] = useState(true);
   const [disclaimerAgreed, setDisclaimerAgreed] = useState(false);
+  const [showIntro, setShowIntro] = useState(false);
   
+  const handleReplayIntro = () => {
+    setShowIntro(true);
+  };
+
   useEffect(() => {
     // For testing, remove this line in production
     localStorage.removeItem('disclaimerAcknowledged');
@@ -72,6 +78,14 @@ export default function Home() {
     };
 
     loadCharacters();
+  }, []);
+
+  useEffect(() => {
+    const hasSeenIntro = sessionStorage.getItem('hasSeenIntro');
+    if (!hasSeenIntro) {
+      setShowIntro(true);
+      sessionStorage.setItem('hasSeenIntro', 'true');
+    }
   }, []);
 
   const handleCreateCharacter = () => {
@@ -212,6 +226,12 @@ export default function Home() {
 
   return (
     <>
+      <AnimatePresence>
+        {showIntro && (
+          <IntroAnimation onComplete={() => setShowIntro(false)} />
+        )}
+      </AnimatePresence>
+      
       <Head>
         <title>char_creator</title>
         <meta name="description" content="Create and manage your fictional characters for Character.AI" />
@@ -243,6 +263,19 @@ export default function Home() {
               </div>
               
               <div className="flex items-center gap-4">
+                <motion.button
+                  variants={buttonVariants}
+                  whileHover="hover"
+                  whileTap="tap"
+                  onClick={handleReplayIntro}
+                  className="p-2 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 
+                    hover:text-accent dark:hover:text-accent border border-gray-200 dark:border-gray-600 
+                    transition-all duration-300 hover:shadow-md hover:scale-105 cursor-pointer"
+                  aria-label="Replay Intro"
+                >
+                  <MdOutlineAutoAwesome className="w-5 h-5" />
+                </motion.button>
+                
                 <Link 
                   href="/about" 
                   className="p-2 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 
