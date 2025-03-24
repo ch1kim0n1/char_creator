@@ -20,6 +20,8 @@ import ReactCrop from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 import ErrorPopup from './ErrorPopup';
 import useCharacters from '../hooks/useCharacters';
+//DIRECTLY CONNECTED WITH THIS CLASS BELLOW
+import FormField from './FormField';
 
 const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
   const router = useRouter();
@@ -67,7 +69,6 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
   const [showCropModal, setShowCropModal] = useState(false);
   const imageRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [cropOperation, setCropOperation] = useState(null);
   const [isUserSubmitted, setIsUserSubmitted] = useState(false);
 
   // Field descriptors to show tooltips
@@ -86,8 +87,6 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
   };
 
   const handleChange = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     
@@ -207,14 +206,6 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
   const prevStep = () => {
     window.scrollTo(0, 0);
     setCurrentStep(prev => prev - 1);
-  };
-
-  const handleCropDragStart = () => {
-    setCropOperation('dragging');
-  };
-
-  const handleCropDragEnd = () => {
-    setCropOperation(null);
   };
 
   const handleSubmit = async (e) => {
@@ -355,89 +346,6 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
     }
   };
 
-  // Create a custom FormField component for consistency
-  const FormField = ({ label, name, type = 'text', placeholder, description, required = false, as = 'input', options = [] }) => {
-    const InputComponent = as;
-    const id = `field-${name}`;
-    
-    const handleInputChange = (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      handleChange(e);
-    };
-    
-    return (
-      <div className="mb-5 relative">
-        <div className="flex items-center justify-between mb-2">
-          <label htmlFor={id} className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            {label} {required && <span className="text-status-error">*</span>}
-          </label>
-          {description && (
-            <div className="group relative">
-              <FiInfo className="text-gray-400 hover:text-primary cursor-help" />
-              <div className="absolute right-0 -top-1 transform translate-y-full w-64 bg-gray-900 dark:bg-gray-800 p-2 rounded-lg shadow-lg text-xs text-white invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-opacity z-10 border border-gray-700">
-                {description}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {as === 'select' ? (
-          <select
-            id={id}
-            name={name}
-            value={formData[name]}
-            onChange={handleInputChange}
-            className={`w-full px-4 py-2.5 border rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
-              errors[name] ? 'border-status-error' : 'border-gray-300 dark:border-gray-600'
-            }`}
-          >
-            <option value="">{placeholder || 'Select an option'}</option>
-            {options.map(option => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        ) : as === 'textarea' ? (
-          <textarea
-            id={id}
-            name={name}
-            value={formData[name]}
-            onChange={handleInputChange}
-            placeholder={placeholder}
-            rows={4}
-            className={`w-full px-4 py-2.5 border rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
-              errors[name] ? 'border-status-error' : 'border-gray-300 dark:border-gray-600'
-            }`}
-          />
-        ) : (
-          <input
-            type={type}
-            id={id}
-            name={name}
-            value={formData[name]}
-            onChange={handleInputChange}
-            placeholder={placeholder}
-            className={`w-full px-4 py-2.5 border rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
-              errors[name] ? 'border-status-error' : 'border-gray-300 dark:border-gray-600'
-            }`}
-          />
-        )}
-        
-        {errors[name] && (
-          <motion.p 
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-1 text-sm text-status-error"
-          >
-            {errors[name]}
-          </motion.p>
-        )}
-      </div>
-    );
-  };
-
   // Render different steps of the form
   const renderStep = () => {
     switch(currentStep) {
@@ -460,6 +368,9 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
                   name="name"
                   placeholder="Enter character name"
                   required
+                  value={formData.name}
+                  onChange={handleChange}
+                  error={errors.name}
                 />
               </div>
               
@@ -473,12 +384,18 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
                   { value: 'non-binary', label: 'Non-binary' },
                   { value: 'other', label: 'Other' }
                 ]}
+                value={formData.gender}
+                onChange={handleChange}
+                error={errors.gender}
               />
               
               <FormField
                 label="Age"
                 name="age"
                 placeholder="Character age"
+                value={formData.age}
+                onChange={handleChange}
+                error={errors.age}
               />
               
               <FormField
@@ -486,12 +403,18 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
                 name="height"
                 placeholder="Character height (cm)"
                 description={fieldDescriptions.height}
+                value={formData.height}
+                onChange={handleChange}
+                error={errors.height}
               />
               
               <FormField
                 label="Language"
                 name="language"
                 placeholder="Character's language(s)"
+                value={formData.language}
+                onChange={handleChange}
+                error={errors.language}
               />
               
               <FormField
@@ -499,12 +422,18 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
                 name="species"
                 placeholder="Human, Elf, Android, etc."
                 description={fieldDescriptions.species}
+                value={formData.species}
+                onChange={handleChange}
+                error={errors.species}
               />
               
               <FormField
                 label="Status"
                 name="status"
                 placeholder="Alive, Active, Royal, etc."
+                value={formData.status}
+                onChange={handleChange}
+                error={errors.status}
               />
             </div>
             
@@ -513,6 +442,9 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
               name="description"
               as="textarea"
               placeholder="Brief description of your character"
+              value={formData.description}
+              onChange={handleChange}
+              error={errors.description}
             />
             
             <div className="mt-8">
@@ -582,6 +514,9 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
                   label="Occupation/Role"
                   name="occupation"
                   placeholder="Character's job or role"
+                  value={formData.occupation}
+                  onChange={handleChange}
+                  error={errors.occupation}
                 />
               </div>
               
@@ -592,6 +527,9 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
                   as="textarea"
                   placeholder="What is your character's personality like?"
                   description={fieldDescriptions.personality}
+                  value={formData.personality}
+                  onChange={handleChange}
+                  error={errors.personality}
                 />
               </div>
               
@@ -601,6 +539,9 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
                   name="skills"
                   as="textarea"
                   placeholder="What special skills or abilities does your character have?"
+                  value={formData.skills}
+                  onChange={handleChange}
+                  error={errors.skills}
                 />
               </div>
               
@@ -610,6 +551,9 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
                   name="appearance"
                   as="textarea"
                   placeholder="Describe your character's appearance"
+                  value={formData.appearance}
+                  onChange={handleChange}
+                  error={errors.appearance}
                 />
               </div>
               
@@ -618,6 +562,9 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
                 name="figure"
                 placeholder="Character's physical build"
                 description={fieldDescriptions.figure}
+                value={formData.figure}
+                onChange={handleChange}
+                error={errors.figure}
               />
               
               <FormField
@@ -625,6 +572,9 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
                 name="attributes"
                 placeholder="Key character attributes"
                 description={fieldDescriptions.attributes}
+                value={formData.attributes}
+                onChange={handleChange}
+                error={errors.attributes}
               />
               
               <FormField
@@ -632,6 +582,9 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
                 name="habits"
                 placeholder="Character's usual habits"
                 description={fieldDescriptions.habits}
+                value={formData.habits}
+                onChange={handleChange}
+                error={errors.habits}
               />
 
               <div className="md:col-span-2">
@@ -641,6 +594,9 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
                     name="likes"
                     placeholder="Things your character enjoys"
                     description={fieldDescriptions.likes}
+                    value={formData.likes}
+                    onChange={handleChange}
+                    error={errors.likes}
                   />
                   
                   <FormField
@@ -648,6 +604,9 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
                     name="dislikes"
                     placeholder="Things your character dislikes"
                     description={fieldDescriptions.dislikes}
+                    value={formData.dislikes}
+                    onChange={handleChange}
+                    error={errors.dislikes}
                   />
                 </div>
               </div>
@@ -673,6 +632,9 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
                 name="interests"
                 as="textarea"
                 placeholder="What does your character enjoy doing?"
+                value={formData.interests}
+                onChange={handleChange}
+                error={errors.interests}
               />
               
               <FormField
@@ -681,6 +643,9 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
                 as="textarea"
                 placeholder="Share your character's backstory"
                 description={fieldDescriptions.background}
+                value={formData.background}
+                onChange={handleChange}
+                error={errors.background}
               />
               
               <FormField
@@ -689,6 +654,9 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
                 as="textarea"
                 placeholder="Setting or context for conversations with this character"
                 description={fieldDescriptions.scenario}
+                value={formData.scenario}
+                onChange={handleChange}
+                error={errors.scenario}
               />
               
               <FormField
@@ -697,6 +665,9 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
                 as="textarea"
                 placeholder="How does your character greet someone for the first time?"
                 description={fieldDescriptions.greeting}
+                value={formData.greeting}
+                onChange={handleChange}
+                error={errors.greeting}
               />
               
               <div className="bg-primary/5 dark:bg-primary/10 p-6 rounded-2xl mt-8 border border-primary/10">
@@ -734,8 +705,6 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
             crop={crop}
             onChange={handleCropChange}
             onComplete={setCompletedCrop}
-            onDragStart={handleCropDragStart}
-            onDragEnd={handleCropDragEnd}
             aspect={1}
             className="flex justify-center"
             ruleOfThirds={true}
@@ -747,7 +716,7 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
               alt="Crop me"
               className="max-w-full max-h-[60vh] object-contain select-none"
               draggable={false}
-              style={{ cursor: cropOperation === 'dragging' ? 'grabbing' : 'grab' }}
+              style={{ cursor: 'grab' }}
             />
           </ReactCrop>
         </div>
