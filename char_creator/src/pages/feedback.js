@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { FiArrowLeft, FiSend, FiThumbsUp, FiHeart } from 'react-icons/fi';
+import Footer from '../components/Footer';
 
 const FeedbackPage = () => {
   const router = useRouter();
@@ -340,9 +341,7 @@ const FeedbackPage = () => {
           </motion.div>
         </div>
         
-        <footer className="footer">
-          <p>Made with <span className="heart"><FiHeart /></span> for character creators</p>
-        </footer>
+        <Footer />
       </div>
     </>
   );
