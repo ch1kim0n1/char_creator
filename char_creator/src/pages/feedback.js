@@ -62,20 +62,35 @@ const FeedbackPage = () => {
     
     setIsSubmitting(true);
     
-    // In a real application, you would submit this to a backend
-    // For this example, we'll simulate a submission
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // If submission successful
-      setIsSubmitted(true);
-      setFormData({
-        name: '',
-        email: '',
-        feedbackType: 'general',
-        message: ''
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          access_key: '45ae0f98-37df-4284-aada-6c17f42c747f', // Replace with your Web3Forms access key
+          name: formData.name,
+          email: formData.email,
+          feedback_type: formData.feedbackType,
+          message: formData.message,
+          subject: `New Feedback: ${formData.feedbackType} from ${formData.name}`
+        })
       });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        setIsSubmitted(true);
+        setFormData({
+          name: '',
+          email: '',
+          feedbackType: 'general',
+          message: ''
+        });
+      } else {
+        throw new Error('Failed to submit feedback');
+      }
     } catch (error) {
       console.error('Error submitting feedback:', error);
       setErrors({

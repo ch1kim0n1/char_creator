@@ -162,7 +162,7 @@ const CharacterDashboard = () => {
           variants={container}
           initial="hidden"
           animate="show"
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 justify-items-center"
         >
           {characters.map(character => (
             <motion.div
@@ -170,7 +170,7 @@ const CharacterDashboard = () => {
               key={character.id}
               variants={item}
               whileHover={{ y: -5 }}
-              className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-character hover:shadow-character-hover character-card transition-all duration-300 w-[250px] h-[180px] mx-auto"
+              className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-character hover:shadow-character-hover character-card transition-all duration-300 w-[250px] h-[180px] flex-shrink-0"
             >
               <div 
                 onClick={() => router.push(`/character/${character.id}`)}
