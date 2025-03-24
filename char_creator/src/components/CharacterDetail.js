@@ -56,20 +56,20 @@ const CharacterDetail = ({ characterId }) => {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="mb-6 flex items-center">
+      <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-0">
         <button
           onClick={() => router.push('/')}
           className="flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mr-4"
         >
           <FiArrowLeft className="mr-1" /> Back
         </button>
-        <h1 className="text-3xl font-bold text-gray-800 dark:text-white flex-grow">{character.name}</h1>
-        <div className="flex space-x-2">
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-white sm:flex-grow">{character.name}</h1>
+        <div className="flex w-full sm:w-auto gap-2">
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => router.push(`/edit/${character.id}`)}
-            className="flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded-lg hover:bg-green-200 dark:hover:bg-green-800/30"
+            className="flex-1 sm:flex-initial flex items-center justify-center gap-1 px-3 py-1 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded-lg hover:bg-green-200 dark:hover:bg-green-800/30"
           >
             <FiEdit size={18} /> Edit
           </motion.button>
@@ -77,7 +77,7 @@ const CharacterDetail = ({ characterId }) => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={handleExport}
-            className="flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-800/30"
+            className="flex-1 sm:flex-initial flex items-center justify-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-800/30"
           >
             <FiDownload size={18} /> Export
           </motion.button>
@@ -199,4 +199,4 @@ const CharacterDetail = ({ characterId }) => {
   );
 };
 
-export default CharacterDetail; 
+export default CharacterDetail;

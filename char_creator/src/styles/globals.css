@@ -108,10 +108,8 @@
   .dashboard .character-card {
     width: 250px;
     height: 180px;
-    flex: 0 0 250px;
+    flex: none;
     margin: 0;
-    max-width: 250px;
-    min-width: 250px;
   }
 
   .dashboard .character-card .character-image {
@@ -161,7 +159,7 @@
   /* Grid container for dashboard cards */
   .dashboard .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, 250px);
+    grid-template-columns: repeat(auto-fit, 250px);
     gap: 1rem;
     padding: 1rem;
     justify-content: center;
@@ -289,7 +287,7 @@
 
   .form-input.dark, .form-textarea.dark {
     background-color: var(--gray-700);
-    color: var(--white);
+    color: var (--white);
     border-color: var(--gray-600);
   }
 
