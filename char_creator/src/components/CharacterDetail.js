@@ -55,21 +55,21 @@ const CharacterDetail = ({ characterId }) => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 overflow-x-hidden">
       <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-0">
         <button
           onClick={() => router.push('/')}
-          className="flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mr-4"
+          className="flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
         >
           <FiArrowLeft className="mr-1" /> Back
         </button>
         <h1 className="text-3xl font-bold text-gray-800 dark:text-white sm:flex-grow">{character.name}</h1>
-        <div className="flex w-full sm:w-auto gap-2">
+        <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-2 max-w-full">
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => router.push(`/edit/${character.id}`)}
-            className="flex-1 sm:flex-initial flex items-center justify-center gap-1 px-3 py-1 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded-lg hover:bg-green-200 dark:hover:bg-green-800/30"
+            className="w-full sm:w-auto flex items-center justify-center gap-1 px-3 py-2 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded-lg hover:bg-green-200 dark:hover:bg-green-800/30 min-w-[80px]"
           >
             <FiEdit size={18} /> Edit
           </motion.button>
@@ -77,14 +77,14 @@ const CharacterDetail = ({ characterId }) => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={handleExport}
-            className="flex-1 sm:flex-initial flex items-center justify-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-800/30"
+            className="w-full sm:w-auto flex items-center justify-center gap-1 px-3 py-2 bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-800/30 min-w-[80px]"
           >
             <FiDownload size={18} /> Export
           </motion.button>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden max-w-full">
         <div className="md:flex">
           <div className="md:w-1/3 bg-gray-200 dark:bg-gray-700 flex items-center justify-center p-6">
             <div className="relative w-full h-72 md:h-80">
