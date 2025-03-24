@@ -123,8 +123,8 @@ const FeedbackPage = () => {
   return (
     <>
       <Head>
-        <title>Feedback | C.AI Character Creator</title>
-        <meta name="description" content="Submit your feedback for the C.AI Character Creator" />
+        <title>Feedback | char_creator</title>
+        <meta name="description" content="Submit your feedback for the char_creator" />
       </Head>
 
       <div className="min-h-screen bg-gray-200 dark:bg-gray-900 transition-colors duration-200 flex flex-col">
@@ -180,7 +180,7 @@ const FeedbackPage = () => {
                   </motion.div>
                   <h2 className="text-2xl font-bold text-white mb-3">Thank You for Your Feedback!</h2>
                   <p className="text-white mb-6 max-w-md mx-auto">
-                    Your feedback has been submitted successfully. It helps make the C.AI Character Creator better for everyone.
+                    Your feedback has been submitted successfully. It helps make the char_creator better for everyone.
                   </p>
                   <motion.button
                     whileHover={{ scale: 1.05 }}
@@ -202,7 +202,7 @@ const FeedbackPage = () => {
                 >
                   <motion.div variants={itemVariants}>
                     <p className="text-white mb-6 text-lg">
-                      Help us improve C.AI Character Creator by sharing your experience. 
+                      Help us improve char_creator by sharing your experience. 
                       Your feedback shapes the future of character creation.
                     </p>
                   </motion.div>

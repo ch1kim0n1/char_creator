@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { MdAutoAwesome, MdMenuBook } from 'react-icons/md';
 import { useState, useEffect } from 'react';
 
-const Layout = ({ children, title = 'Fiction Character Creator' }) => {
+const Layout = ({ children, title = 'char_creator' }) => {
   const [isDarkMode, setIsDarkMode] = useState(true);
 
   useEffect(() => {

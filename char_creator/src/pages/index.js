@@ -213,7 +213,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>C.AI Character Creator</title>
+        <title>char_creator</title>
         <meta name="description" content="Create and manage your fictional characters for Character.AI" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -238,7 +238,7 @@ export default function Home() {
                   animate={{ opacity: 1, y: 0 }}
                   className="text-xl font-bold text-gray-900 dark:text-white"
                 >
-                  C.AI Character Creator
+                  char_creator
                 </motion.h1>
               </div>
               
@@ -531,7 +531,7 @@ export default function Home() {
         </div>
               
               <p className="text-gray-700 dark:text-gray-300 mb-6">
-                C.AI Character Creator is a <span className="font-semibold">fan-made tool</span> and is not 
+                char_creator is a <span className="font-semibold">fan-made tool</span> and is not 
                 affiliated with, endorsed by, or connected to Character.AI in any way. This is an 
                 independent project created to help the community.
               </p>

@@ -3,6 +3,8 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Head from 'next/head';
 import { FiArrowLeft, FiGithub, FiLinkedin, FiMail, FiTwitter, FiHeart, FiUser } from 'react-icons/fi';
+import Image from 'next/image';
+import pfp from '../../public/pfp.jpg';
 
 const AboutPage = () => {
   const router = useRouter();
@@ -30,8 +32,8 @@ const AboutPage = () => {
   return (
     <>
       <Head>
-        <title>About | C.AI Character Creator</title>
-        <meta name="description" content="Information about the C.AI Character Creator and its developer" />
+        <title>About | char_creator</title>
+        <meta name="description" content="Information about the char_creator and its developer" />
       </Head>
 
       <div className="min-h-screen bg-gray-200 dark:bg-gray-900 transition-colors duration-200 flex flex-col">
@@ -64,7 +66,7 @@ const AboutPage = () => {
           >
             <div className="h-32 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 relative">
               <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                <h1 className="text-3xl font-bold text-white drop-shadow-lg">About C.AI Character Creator</h1>
+                <h1 className="text-3xl font-bold text-white drop-shadow-lg">About char_creator</h1>
               </div>
             </div>
             
@@ -74,7 +76,7 @@ const AboutPage = () => {
                 className="prose dark:prose-invert max-w-none mb-8"
               >
                 <p className="text-white">
-                  C.AI Character Creator is an advanced tool designed to help you create, manage, and export character profiles for 
+                  char_creator is an advanced tool designed to help you create, manage, and export character profiles for 
                   use with Character.AI and other AI storytelling platforms. Our intuitive interface enables you to build 
                   rich, detailed character personas with dynamic traits, compelling backgrounds, and unique personalities.
                 </p>
@@ -86,19 +88,15 @@ const AboutPage = () => {
                 <ul className="mt-2 space-y-2 text-white">
                   <li className="flex items-center gap-2">
                     <span className="w-2 h-2 bg-accent rounded-full"></span>
-                    Advanced character creation workflow with AI assistance
+                    Advanced character creation workflow with dynamic traits and customization options
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="w-2 h-2 bg-accent rounded-full"></span>
-                    Secure local storage with backup options
+                    Secure local storage
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="w-2 h-2 bg-accent rounded-full"></span>
-                    One-click export in Character.AI compatible format
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-accent rounded-full"></span>
-                    Intelligent dark/light mode with system preference detection
+                    One-click text and image export in Character.AI compatible format
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="w-2 h-2 bg-accent rounded-full"></span>
@@ -112,7 +110,7 @@ const AboutPage = () => {
                 
                 <div className="mt-6 p-4 bg-accent/10 dark:bg-accent/20 rounded-xl border border-accent/20">
                   <p className="text-white italic">
-                    <strong>Disclaimer:</strong> C.AI Character Creator is a fan-made tool and is not affiliated with, endorsed by, 
+                    <strong>Disclaimer:</strong> char_creator is a fan-made tool and is not affiliated with, endorsed by, 
                     or connected to Character.AI in any way. This is an independent project created to help the community.
                   </p>
                 </div>
@@ -129,17 +127,22 @@ const AboutPage = () => {
                 variants={itemVariants}
                 className="flex flex-col sm:flex-row gap-6 mb-8 items-start"
               >
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-accent to-accent-light 
-                  flex items-center justify-center overflow-hidden shadow-lg">
-                  <FiUser className="w-12 h-12 text-white" />
+                <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg">
+                  <Image
+                    src={pfp}
+                    alt="Vladislav K."
+                    width={96}
+                    height={96}
+                    className="object-cover w-full h-full"
+                  />
                 </div>
                 
                 <div>
-                  <h3 className="text-xl font-semibold text-white">Vladislav Kondratyev</h3>
+                  <h3 className="text-xl font-semibold text-white">Vladislav K.</h3>
                   <p className="text-gray-300 mt-2">
-                    Web developer and AI enthusiast passionate about creating tools that help others 
-                    express their creativity. I built C.AI Character Creator to make it easier for people 
-                    to create rich, detailed characters for their AI interactions and storytelling.
+                    Hey there! I'm Vladislav, the developer behind char_creator.
+                    The idea to create this tool came out of nowhere and I just decided to make it happen.
+                    I really hope you like it, becaue I am always all about creating new awesome things!
                   </p>
                 </div>
               </motion.div>
@@ -151,7 +154,7 @@ const AboutPage = () => {
                   <motion.a 
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    href="https://github.com/yourgithub" 
+                    href="https://github.com/ch1kim0n1" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 px-4 py-2 bg-gray-200 dark:bg-gray-700 
@@ -165,7 +168,7 @@ const AboutPage = () => {
                   <motion.a 
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    href="https://linkedin.com/in/yourlinkedin" 
+                    href="https://www.linkedin.com/in/vladislav-kondratyev/" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 
@@ -179,7 +182,7 @@ const AboutPage = () => {
                   <motion.a 
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    href="mailto:your.email@example.com" 
+                    href="mailto:chikimoni61@gmail.com" 
                     className="flex items-center gap-2 px-4 py-2 bg-green-100 dark:bg-green-900/30 
                       border border-green-200 dark:border-green-800/30
                       hover:bg-green-200 dark:hover:bg-green-800/30 rounded-xl
@@ -187,20 +190,6 @@ const AboutPage = () => {
                       dark:hover:shadow-white/10 text-green-800 dark:text-green-300 cursor-pointer"
                   >
                     <FiMail /> Email
-                  </motion.a>
-                  <motion.a 
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    href="https://twitter.com/yourtwitter" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 
-                      border border-blue-200 dark:border-blue-800/30
-                      hover:bg-blue-200 dark:hover:bg-blue-800/30 rounded-xl
-                      transition-all duration-300 hover:shadow-lg hover:shadow-white/20 
-                      dark:hover:shadow-white/10 text-blue-600 dark:text-blue-300 cursor-pointer"
-                  >
-                    <FiTwitter /> Twitter
                   </motion.a>
                 </div>
               </motion.div>

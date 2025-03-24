@@ -41,7 +41,7 @@ export default function EditCharacter() {
   }
 
   return (
-    <Layout title="Edit Character | Fiction Character Creator">
+    <Layout title="Edit Character | char_creator">
       {character && (
         <CharacterForm 
           initialData={character} 
@@ -51,4 +51,4 @@ export default function EditCharacter() {
       )}
     </Layout>
   );
-} 
+}
