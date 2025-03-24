@@ -1,6 +1,16 @@
-# fiction_char_creator
+# Fiction Character Creator
 
-tool that helps creating characters
+A web-based tool for writers, role-players, and storytellers to create, manage, and export fictional characters. This application helps streamline the character creation process by providing a user-friendly interface and organized storage system for character profiles.
+
+## Key Features
+
+- Create and manage multiple character profiles
+- User-friendly dashboard interface
+- Image upload support for character visuals
+- Export characters in Character AI compatible format
+- Local storage for privacy and easy access
+- Customizable character attributes
+- Edit and update existing characters
 
 ## How it works
 
@@ -24,11 +34,10 @@ tool that helps creating characters
 
 1. in CharacterForm file, i cannot drag it as i try to move it, the website "unclicks" my mouse and it does not drag the image anymore, and it does it every time i click and hold, it dosent hold. Same problem with typing, i cannot continuously type as website "unclicks" my tab when I try to type a word and a sentence into the text box. it affects all text boxes in this file.
 
-17. when choosing to export in character ai format, it gives nonsense information, it should directly follow the format that was provided while text format removes all the brackets and such(new mini feature)
+2. when choosing to export in character ai format, it gives nonsense information, it should directly follow the format that was provided while text format removes all the brackets and such(new mini feature)
 
-22. depeding on the amount of cards, the size of dashboard character's card is being different, sometimes it is correct and is small but when adding 2 or more characters, the character card in the dashboard becomes big and takes up a lot of space on the dashboard, fix it
+3. depeding on the amount of cards, the size of dashboard character's card is being different, sometimes it is correct and is small but when adding 2 or more characters, the character card in the dashboard becomes big and takes up a lot of space on the dashboard, fix it
 
-23. when editing characters, system creates duplicates, as well as false characters that do appear in the dashboard but do not exist in the system. create a better handling logic to keep the character list in check and do not allow accidental 
-
+4. when editing characters, system creates duplicates, as well as false characters that do appear in the dashboard but do not exist in the system. create a better handling logic to keep the character list in check and do not allow accidental
 
 Note: never use @apply when doing css, apply css directly in js files, since we use tailwind OR do css in old fashioned way

@@ -3,8 +3,9 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { MdAutoAwesome, MdMenuBook } from 'react-icons/md';
 import { useState, useEffect } from 'react';
+import Footer from './Footer';
 
-const Layout = ({ children, title = 'Fiction Character Creator' }) => {
+const Layout = ({ children, title = 'char_creator' }) => {
   const [isDarkMode, setIsDarkMode] = useState(true);
 
   useEffect(() => {
@@ -35,7 +36,7 @@ const Layout = ({ children, title = 'Fiction Character Creator' }) => {
             >
               <MdAutoAwesome className="text-primary text-3xl" />
               <h1 className="text-xl md:text-2xl font-semibold text-primary dark:text-primary-light">
-                Fiction <span className="font-bold">Character</span>
+                char_<span className="font-bold">creator</span>
               </h1>
             </motion.div>
           </Link>
@@ -64,16 +65,7 @@ const Layout = ({ children, title = 'Fiction Character Creator' }) => {
           </motion.div>
         </main>
 
-        <motion.footer
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="py-6 text-center text-gray-500 dark:text-gray-400 text-sm border-t border-gray-100 dark:border-gray-800"
-        >
-          <p className="flex items-center justify-center gap-1">
-            Created with <MdAutoAwesome className="text-primary" /> for character creators
-          </p>
-        </motion.footer>
+        <Footer />
       </div>
     </div>
   );

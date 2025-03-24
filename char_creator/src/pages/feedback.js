@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { FiArrowLeft, FiSend, FiThumbsUp, FiHeart } from 'react-icons/fi';
+import Footer from '../components/Footer';
 
 const FeedbackPage = () => {
   const router = useRouter();
@@ -62,20 +63,35 @@ const FeedbackPage = () => {
     
     setIsSubmitting(true);
     
-    // In a real application, you would submit this to a backend
-    // For this example, we'll simulate a submission
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // If submission successful
-      setIsSubmitted(true);
-      setFormData({
-        name: '',
-        email: '',
-        feedbackType: 'general',
-        message: ''
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          access_key: '45ae0f98-37df-4284-aada-6c17f42c747f', // Replace with your Web3Forms access key
+          name: formData.name,
+          email: formData.email,
+          feedback_type: formData.feedbackType,
+          message: formData.message,
+          subject: `New Feedback: ${formData.feedbackType} from ${formData.name}`
+        })
       });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        setIsSubmitted(true);
+        setFormData({
+          name: '',
+          email: '',
+          feedbackType: 'general',
+          message: ''
+        });
+      } else {
+        throw new Error('Failed to submit feedback');
+      }
     } catch (error) {
       console.error('Error submitting feedback:', error);
       setErrors({
@@ -108,8 +124,8 @@ const FeedbackPage = () => {
   return (
     <>
       <Head>
-        <title>Feedback | C.AI Character Creator</title>
-        <meta name="description" content="Submit your feedback for the C.AI Character Creator" />
+        <title>Feedback | char_creator</title>
+        <meta name="description" content="Submit your feedback for the char_creator" />
       </Head>
 
       <div className="min-h-screen bg-gray-200 dark:bg-gray-900 transition-colors duration-200 flex flex-col">
@@ -165,7 +181,7 @@ const FeedbackPage = () => {
                   </motion.div>
                   <h2 className="text-2xl font-bold text-white mb-3">Thank You for Your Feedback!</h2>
                   <p className="text-white mb-6 max-w-md mx-auto">
-                    Your feedback has been submitted successfully. It helps make the C.AI Character Creator better for everyone.
+                    Your feedback has been submitted successfully. It helps make the char_creator better for everyone.
                   </p>
                   <motion.button
                     whileHover={{ scale: 1.05 }}
@@ -187,7 +203,7 @@ const FeedbackPage = () => {
                 >
                   <motion.div variants={itemVariants}>
                     <p className="text-white mb-6 text-lg">
-                      Help us improve C.AI Character Creator by sharing your experience. 
+                      Help us improve char_creator by sharing your experience. 
                       Your feedback shapes the future of character creation.
                     </p>
                   </motion.div>
@@ -325,9 +341,7 @@ const FeedbackPage = () => {
           </motion.div>
         </div>
         
-        <footer className="footer">
-          <p>Made with <span className="heart"><FiHeart /></span> for character creators</p>
-        </footer>
+        <Footer />
       </div>
     </>
   );

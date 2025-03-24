@@ -162,7 +162,7 @@ const CharacterDashboard = () => {
           variants={container}
           initial="hidden"
           animate="show"
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center"
         >
           {characters.map(character => (
             <motion.div
@@ -170,31 +170,31 @@ const CharacterDashboard = () => {
               key={character.id}
               variants={item}
               whileHover={{ y: -5 }}
-              className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-character hover:shadow-character-hover character-card transition-all duration-300 w-[250px] h-[180px] mx-auto"
+              className="w-full max-w-[250px] bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-character hover:shadow-character-hover transition-all duration-300"
             >
               <div 
                 onClick={() => router.push(`/character/${character.id}`)}
-                className="cursor-pointer"
+                className="cursor-pointer flex flex-col h-full"
               >
-                <div className="h-[100px] bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden relative">
+                <div className="aspect-[16/9] bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden relative">
                   {character.imageUrl ? (
                     <img 
                       src={character.imageUrl} 
                       alt={character.name} 
-                      className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                      className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800">
+                    <div className="w-full h-full flex items-center justify-center">
                       <FiUser className="w-12 h-12 text-gray-400" />
                     </div>
                   )}
                 </div>
-                <div className="p-3">
-                  <h3 className="text-sm font-bold text-gray-800 dark:text-white mb-1">{character.name}</h3>
+                <div className="p-3 flex-1 flex flex-col">
+                  <h3 className="text-sm font-bold text-gray-800 dark:text-white truncate">{character.name}</h3>
                   {character.description && (
-                    <p className="text-xs text-gray-600 dark:text-gray-300 line-clamp-2 mb-2">{character.description}</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-300 line-clamp-2 mt-1">{character.description}</p>
                   )}
-                  <div className="flex flex-wrap gap-1">
+                  <div className="flex flex-wrap gap-1 mt-auto pt-2">
                     {character.gender && (
                       <span className="px-2 py-0.5 bg-primary bg-opacity-10 dark:bg-primary dark:bg-opacity-20 text-primary-dark dark:text-primary-light text-xs rounded-full">
                         {character.gender}
@@ -295,4 +295,4 @@ const CharacterDashboard = () => {
   );
 };
 
-export default CharacterDashboard; 
+export default CharacterDashboard;
