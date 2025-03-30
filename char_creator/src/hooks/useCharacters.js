@@ -29,12 +29,24 @@ export default function useCharacters() {
     }
   }, [error]);
 
-  // Load characters on mount
+  // Load characters on mount and validate their existence
   useEffect(() => {
     const loadCharacters = () => {
       try {
         const data = getCharacters();
-        setCharacters(data);
+        // Validate each character's existence and filter out invalid ones
+        const validCharacters = data.filter(char => {
+          if (!char || !char.id) return false;
+          const exists = getCharacterById(char.id);
+          return exists !== null && exists.id === char.id;
+        });
+        
+        // If we found invalid characters, update storage
+        if (validCharacters.length !== data.length) {
+          localStorage.setItem('fiction_characters', JSON.stringify(validCharacters));
+        }
+        
+        setCharacters(validCharacters);
       } catch (error) {
         console.error('Failed to load characters:', error);
         setError('Failed to load characters. Please refresh the page.');
@@ -45,6 +57,26 @@ export default function useCharacters() {
 
     loadCharacters();
   }, []);
+
+  // Cleanup function to remove any invalid characters from storage
+  useEffect(() => {
+    if (!loading) {
+      const cleanupStorage = () => {
+        const storedCharacters = getCharacters();
+        const validCharacters = storedCharacters.filter(char => {
+          return char && char.id && getCharacterById(char.id) !== null;
+        });
+        
+        if (validCharacters.length !== storedCharacters.length) {
+          localStorage.setItem('fiction_characters', JSON.stringify(validCharacters));
+          setCharacters(validCharacters);
+        }
+      };
+      
+      cleanupStorage();
+    }
+  }, [loading]);
+
 
   // Create a new character
   const createCharacter = useCallback(async (characterData, imageFile) => {
@@ -166,4 +198,4 @@ export default function useCharacters() {
     getFormattedCharacter,
     downloadCharacterText
   };
-} 
+}

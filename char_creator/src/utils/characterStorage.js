@@ -86,6 +86,17 @@ export const getCharacterById = (id) => {
   if (!character) {
     // If character not found, clean up any references to it
     const updatedCharacters = characters.filter(char => char.id !== id);
+    if (updatedCharacters.length !== characters.length) {
+      // Only update storage if we actually removed something
+      localStorage.setItem(CHARACTERS_KEY, JSON.stringify(updatedCharacters));
+    }
+    return null;
+  }
+  
+  // Validate character data integrity
+  if (!character.name || !character.id) {
+    // If character data is invalid, remove it
+    const updatedCharacters = characters.filter(char => char.id !== id);
     localStorage.setItem(CHARACTERS_KEY, JSON.stringify(updatedCharacters));
     return null;
   }
