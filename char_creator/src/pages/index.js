@@ -18,7 +18,8 @@ import {
   FiShield,
   FiHeart,
   FiSend,
-  FiDownloadCloud
+  FiDownloadCloud,
+  FiGithub // Add this import
 } from 'react-icons/fi';
 import { MdOutlineAutoAwesome } from 'react-icons/md';
 import { 
@@ -40,6 +41,15 @@ export default function Home() {
   const [showDisclaimer, setShowDisclaimer] = useState(true);
   const [disclaimerAgreed, setDisclaimerAgreed] = useState(false);
   const [showIntro, setShowIntro] = useState(false);
+  const [showHelpPopup, setShowHelpPopup] = useState(false);
+
+  // Add this object for button descriptions
+  const buttonDescriptions = {
+    replay: "Replay the introduction animation",
+    feedback: "Share your feedback or report issues",
+    about: "Learn more about char_creator",
+    github: "Visit developer's GitHub profile"
+  };
   
   const handleReplayIntro = () => {
     setShowIntro(true);
@@ -327,30 +337,82 @@ export default function Home() {
                     hover:text-accent dark:hover:text-accent border border-gray-200 dark:border-gray-600 
                     transition-all duration-300 hover:shadow-md hover:scale-105 cursor-pointer"
                   aria-label="Replay Intro"
+                  onMouseEnter={() => setShowHelpPopup(true)}
+                  onMouseLeave={() => setShowHelpPopup(false)}
                 >
                   <MdOutlineAutoAwesome className="w-5 h-5" />
                 </motion.button>
-                
-                <Link 
-                  href="/about" 
-                  className="p-2 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 
-    hover:text-accent dark:hover:text-accent border border-gray-200 dark:border-gray-600 
-    transition-all duration-300 hover:shadow-md hover:scale-105 cursor-pointer"
-                  aria-label="About"
-                >
-                  <FiInfo className="w-5 h-5" />
-                </Link>
-                
+
                 <Link 
                   href="/feedback" 
                   className="p-2 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 
-    hover:text-accent dark:hover:text-accent border border-gray-200 dark:border-gray-600 
-    transition-all duration-300 hover:shadow-md hover:scale-105"
+                    hover:text-accent dark:hover:text-accent border border-gray-200 dark:border-gray-600 
+                    transition-all duration-300 hover:shadow-md hover:scale-105"
                   aria-label="Feedback"
+                  onMouseEnter={() => setShowHelpPopup(true)}
+                  onMouseLeave={() => setShowHelpPopup(false)}
                 >
                   <FiSend className="w-5 h-5" />
                 </Link>
+
+                <Link 
+                  href="/about" 
+                  className="p-2 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 
+                    hover:text-accent dark:hover:text-accent border border-gray-200 dark:border-gray-600 
+                    transition-all duration-300 hover:shadow-md hover:scale-105 cursor-pointer"
+                  aria-label="About"
+                  onMouseEnter={() => setShowHelpPopup(true)}
+                  onMouseLeave={() => setShowHelpPopup(false)}
+                >
+                  <FiInfo className="w-5 h-5" />
+                </Link>
+
+                <Link 
+                  href="https://github.com/ch1kim0n1" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 
+                    hover:text-accent dark:hover:text-accent border border-gray-200 dark:border-gray-600 
+                    transition-all duration-300 hover:shadow-md hover:scale-105"
+                  aria-label="GitHub"
+                  onMouseEnter={() => setShowHelpPopup(true)}
+                  onMouseLeave={() => setShowHelpPopup(false)}
+                >
+                  <FiGithub className="w-5 h-5" />
+                </Link>
               </div>
+
+              {/* Help Popup */}
+              <AnimatePresence>
+                {showHelpPopup && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className="absolute top-16 right-4 w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-4 z-50"
+                  >
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <MdOutlineAutoAwesome className="w-4 h-4 text-accent" />
+                        <span className="text-sm text-gray-600 dark:text-gray-300">{buttonDescriptions.replay}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <FiSend className="w-4 h-4 text-accent" />
+                        <span className="text-sm text-gray-600 dark:text-gray-300">{buttonDescriptions.feedback}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <FiInfo className="w-4 h-4 text-accent" />
+                        <span className="text-sm text-gray-600 dark:text-gray-300">{buttonDescriptions.about}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <FiGithub className="w-4 h-4 text-accent" />
+                        <span className="text-sm text-gray-600 dark:text-gray-300">{buttonDescriptions.github}</span>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
             </div>
           </div>
         </header>
