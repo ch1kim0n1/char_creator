@@ -16,6 +16,7 @@ import {
 } from 'react-icons/fi';
 import { MdHeight, MdLanguage, MdWork, MdAutoAwesome } from 'react-icons/md';
 import { getCharacterById, deleteCharacter, exportCharacterAsText, downloadCharacterFile } from '../../utils/characterStorage';
+import CharacterAITutorial from '../../components/CharacterAITutorial';
 
 export default function CharacterDetail() {
   const router = useRouter();
@@ -25,6 +26,8 @@ export default function CharacterDetail() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
   const [selectedFormat, setSelectedFormat] = useState('text');
+  const [showTutorial, setShowTutorial] = useState(false);
+  const [pendingAction, setPendingAction] = useState(null);
 
   useEffect(() => {
     if (id) {
@@ -135,6 +138,26 @@ Backstory/Roleplay("${character.background}")}`;
     } catch (error) {
       console.error('Error downloading profile picture:', error);
     }
+  };
+
+  const handleExportClick = () => {
+    setShowTutorial(true);
+    setPendingAction('export');
+  };
+
+  const handleExportPfpClick = () => {
+    setShowTutorial(true);
+    setPendingAction('exportPfp');
+  };
+
+  const handleTutorialContinue = () => {
+    setShowTutorial(false);
+    if (pendingAction === 'export') {
+      setShowExportModal(true);
+    } else if (pendingAction === 'exportPfp') {
+      handleExportPfp();
+    }
+    setPendingAction(null);
   };
 
   // Animation variants
@@ -356,7 +379,7 @@ Backstory/Roleplay("${character.background}")}`;
               variants={buttonVariants}
               whileHover="hover"
               whileTap="tap"
-              onClick={() => setShowExportModal(true)}
+              onClick={handleExportClick}
               className="flex items-center gap-2 px-4 py-2 bg-gray-800 dark:bg-gray-700 text-white 
               rounded-xl border border-white/20 cursor-pointer transition-all duration-300 
               hover:shadow-lg hover:shadow-white/20 dark:hover:shadow-white/10"
@@ -370,7 +393,7 @@ Backstory/Roleplay("${character.background}")}`;
                 variants={buttonVariants}
                 whileHover="hover"
                 whileTap="tap"
-                onClick={handleExportPfp}
+                onClick={handleExportPfpClick}
                 className="flex items-center gap-2 px-4 py-2 bg-gray-800 dark:bg-gray-700 text-white 
                 rounded-xl border border-white/20 cursor-pointer transition-all duration-300 
                 hover:shadow-lg hover:shadow-white/20 dark:hover:shadow-white/10"
@@ -648,6 +671,18 @@ Backstory/Roleplay("${character.background}")}`;
         {/* Add the ExportModal */}
         <AnimatePresence>
           {showExportModal && <ExportModal />}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {showTutorial && (
+            <CharacterAITutorial
+              onClose={() => {
+                setShowTutorial(false);
+                setPendingAction(null);
+              }}
+              onContinue={handleTutorialContinue}
+            />
+          )}
         </AnimatePresence>
       </motion.div>
       <footer className="footer">
