@@ -7,8 +7,9 @@ const CharacterDetail = ({ characterId }) => {
   const router = useRouter();
   const { getCharacter, exportForCharacterAI } = useCharacters();
   
-  const character = getCharacter(characterId);
+  let character = getCharacter(characterId);
   
+  // Remove template handling since we'll be using the create page instead
   if (!character) {
     return (
       <div className="text-center py-12">

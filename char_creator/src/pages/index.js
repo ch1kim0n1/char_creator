@@ -103,6 +103,10 @@ export default function Home() {
     router.push('/create');
   };
 
+  const handleTemplateCharacter = () => {
+    router.push('/template-characters');
+  };
+
   const handleViewCharacter = (id) => {
     router.push(`/character/${id}`);
   };
@@ -466,6 +470,24 @@ export default function Home() {
                 >
                   <FiDownloadCloud className="text-lg" />
                   <span className="hidden sm:inline">Export All</span>
+                </motion.button>
+
+                <motion.button
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.3 }}
+                  variants={buttonVariants}
+                  whileHover="hover"
+                  whileTap="tap"
+                  onClick={handleTemplateCharacter}
+                  className="flex items-center justify-center gap-2 px-5 py-2.5 
+                    bg-gradient-to-r from-accent-light to-accent text-white rounded-xl 
+                    transition-all duration-300 shadow-lg shadow-white/20 
+                    hover:shadow-xl hover:shadow-white/30 cursor-pointer
+                    border border-accent/20 hover:border-white/30"
+                >
+                  <MdOutlineAutoAwesome className="text-lg" />
+                  Template Character
                 </motion.button>
 
                 <motion.button
