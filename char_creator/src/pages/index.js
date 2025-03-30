@@ -17,7 +17,8 @@ import {
   FiInfo,
   FiShield,
   FiHeart,
-  FiSend
+  FiSend,
+  FiDownloadCloud
 } from 'react-icons/fi';
 import { MdOutlineAutoAwesome } from 'react-icons/md';
 import { 
@@ -151,6 +152,60 @@ export default function Home() {
     }
   };
   
+  const handleExportAllData = async () => {
+    try {
+      const JSZip = (await import('jszip')).default;
+      const zip = new JSZip();
+      const imagesFolder = zip.folder('images');
+      const charactersFolder = zip.folder('characters');
+
+      // Process each character separately
+      for (const character of characters) {
+        // Create a clean version of character data without imageUrl
+        const characterData = { ...character };
+        delete characterData.imageUrl;
+        
+        // Save character data as individual JSON file
+        const fileName = `${character.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.json`;
+        charactersFolder.file(fileName, JSON.stringify(characterData, null, 2));
+
+        // Save image if exists
+        if (character.imageUrl) {
+          try {
+            const response = await fetch(character.imageUrl);
+            if (!response.ok) throw new Error('Image fetch failed');
+            const blob = await response.blob();
+            const imgFileName = `${character.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.png`;
+            imagesFolder.file(imgFileName, blob);
+          } catch (error) {
+            // Silently continue if image fetch fails - this is expected for data URLs
+            console.debug(`Skipping image fetch for ${character.name}`);
+            continue;
+          }
+        }
+      }
+
+      // Generate and download the zip file
+      const content = await zip.generateAsync({ type: 'blob' });
+      
+      // Download the file
+      const url = URL.createObjectURL(content);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'char_creator_backup.zip';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      // Only show error for actual failures, not for expected fetch issues
+      if (!(error instanceof TypeError && error.message === 'Failed to fetch')) {
+        console.error('Error exporting data:', error);
+        alert('Failed to export data. Please try again.');
+      }
+    }
+  };
+
   // Filter characters based on search term
   const filteredCharacters = searchTerm
     ? characters.filter(char => 
@@ -331,23 +386,44 @@ export default function Home() {
                 </motion.div>
               )}
               
-              <motion.button
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.3 }}
-                variants={buttonVariants}
-                whileHover="hover"
-                whileTap="tap"
-                onClick={handleCreateCharacter}
-                className="flex items-center justify-center gap-2 px-5 py-2.5 
-                  bg-gradient-to-r from-accent to-accent-light text-white rounded-xl 
-                  transition-all duration-300 shadow-lg shadow-white/20 
-                  hover:shadow-xl hover:shadow-white/30 cursor-pointer
-                  border border-accent/20 hover:border-white/30"
-              >
-                <FiPlus className="text-lg" />
-                New Character
-              </motion.button>
+              <div className="flex gap-2">
+                <motion.button
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.3 }}
+                  variants={buttonVariants}
+                  whileHover="hover"
+                  whileTap="tap"
+                  onClick={handleExportAllData}
+                  className="flex items-center justify-center gap-2 px-4 py-2.5 
+                    bg-gray-600 dark:bg-gray-700 text-white rounded-xl 
+                    transition-all duration-300 shadow-lg shadow-gray-400/20 
+                    hover:shadow-xl hover:shadow-gray-400/30 cursor-pointer
+                    border border-gray-500/20 hover:border-white/30"
+                  title="Download all characters and images as ZIP"
+                >
+                  <FiDownloadCloud className="text-lg" />
+                  <span className="hidden sm:inline">Export All</span>
+                </motion.button>
+
+                <motion.button
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.3 }}
+                  variants={buttonVariants}
+                  whileHover="hover"
+                  whileTap="tap"
+                  onClick={handleCreateCharacter}
+                  className="flex items-center justify-center gap-2 px-5 py-2.5 
+                    bg-gradient-to-r from-accent to-accent-light text-white rounded-xl 
+                    transition-all duration-300 shadow-lg shadow-white/20 
+                    hover:shadow-xl hover:shadow-white/30 cursor-pointer
+                    border border-accent/20 hover:border-white/30"
+                >
+                  <FiPlus className="text-lg" />
+                  New Character
+                </motion.button>
+              </div>
             </div>
           </div>
 
