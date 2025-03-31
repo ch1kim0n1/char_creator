@@ -20,16 +20,20 @@ import {
   FiSend,
   FiDownloadCloud,
   FiGithub,
-  FiUsers
+  FiUsers,
+  FiFolder
 } from 'react-icons/fi';
-import { MdOutlineAutoAwesome } from 'react-icons/md';
+import { MdOutlineAutoAwesome, MdCreate } from 'react-icons/md';
 import { 
   getAllCharacters, 
   deleteCharacter, 
   exportCharacterAsText, 
   downloadCharacterFile 
 } from '../utils/characterStorage';
+import { getAllFolders } from '../utils/folderStorage';
 import IntroAnimation from '../components/IntroAnimation';
+import FolderManager from '../components/FolderManager';
+import Footer from '../components/website_essentials/Footer';
 
 export default function Home() {
   const router = useRouter();
@@ -43,6 +47,8 @@ export default function Home() {
   const [disclaimerAgreed, setDisclaimerAgreed] = useState(false);
   const [showIntro, setShowIntro] = useState(false);
   const [showHelpPopup, setShowHelpPopup] = useState(false);
+  const [isFolderManagerOpen, setIsFolderManagerOpen] = useState(false);
+  const [folders, setFolders] = useState([]);
 
   // Add this object for button descriptions
   const buttonDescriptions = {
@@ -77,20 +83,23 @@ export default function Home() {
       }
     }
 
-    // Fetch characters
-    const loadCharacters = async () => {
+    // Load characters and folders from localStorage on component mount
+    const loadData = async () => {
       try {
         const charactersData = await getAllCharacters();
         setCharacters(charactersData);
-        setEmptyState(charactersData.length === 0);
+
+        // Load folders using the new folderStorage functions
+        const savedFolders = getAllFolders();
+        setFolders(savedFolders);
       } catch (error) {
-        console.error('Error loading characters:', error);
+        console.error('Error loading data:', error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    loadCharacters();
+    loadData();
   }, []);
 
   useEffect(() => {
@@ -124,6 +133,13 @@ export default function Home() {
       await deleteCharacter(id);
       setCharacters(characters.filter(char => char.id !== id));
       setShowDeleteConfirm(null);
+      
+      // Update folders to remove the deleted character
+      const updatedFolders = folders.map(folder => ({
+        ...folder,
+        characters: folder.characters.filter(char => char.id !== id)
+      })).filter(folder => folder.characters.length > 0);
+      setFolders(updatedFolders);
       
       if (characters.length === 1) {
         setEmptyState(true);
@@ -295,6 +311,11 @@ export default function Home() {
     </div>
   );
 
+  // Get characters that are not in any folder
+  const unassignedCharacters = filteredCharacters.filter(char => 
+    !folders.some(folder => folder.characters.some(c => c.id === char.id))
+  );
+
   return (
     <>
       <AnimatePresence>
@@ -439,8 +460,10 @@ export default function Home() {
           {/* Dashboard header with search and actions */}
           <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
             <div className="mb-4 md:mb-0">
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white animate-slide-in-left">                Characters              </h1>
-                            <p className="text-gray-600 dark:text-gray-400 mt-1 animate-slide-in-left" style={{ animationDelay: '100ms' }}>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white animate-slide-in-left">
+                Characters
+              </h1>
+              <p className="text-gray-600 dark:text-gray-400 mt-1 animate-slide-in-left" style={{ animationDelay: '100ms' }}>
                 {characters.length} {characters.length === 1 ? 'character' : 'characters'} in your collection
               </p>
             </div>
@@ -461,7 +484,8 @@ export default function Home() {
                     placeholder="Search characters..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 pr-4 py-2 w-full sm:w-64 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-accent focus:border-transparent"
+                    className="pl-10 pr-4 py-2 w-full sm:w-64 border border-gray-300 dark:border-gray-600 rounded-xl 
+                      bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-accent focus:border-transparent"
                   />
                 </motion.div>
               )}
@@ -474,12 +498,31 @@ export default function Home() {
                   variants={buttonVariants}
                   whileHover="hover"
                   whileTap="tap"
+                  onClick={() => setIsFolderManagerOpen(true)}
+                  className="flex items-center justify-center gap-2 px-4 py-2.5 
+                    bg-gradient-to-r from-primary to-secondary text-white rounded-xl 
+                    transition-all duration-300 shadow-lg shadow-primary/20 
+                    hover:shadow-xl hover:shadow-primary/30 cursor-pointer
+                    border border-primary/20 hover:border-white/30"
+                  title="Organize characters into folders"
+                >
+                  <FiFolder className="text-lg" />
+                  <span className="hidden sm:inline">Organize</span>
+                </motion.button>
+
+                <motion.button
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.3 }}
+                  variants={buttonVariants}
+                  whileHover="hover"
+                  whileTap="tap"
                   onClick={handleExportAllData}
                   className="flex items-center justify-center gap-2 px-4 py-2.5 
-                    bg-gray-600 dark:bg-gray-700 text-white rounded-xl 
-                    transition-all duration-300 shadow-lg shadow-gray-400/20 
-                    hover:shadow-xl hover:shadow-gray-400/30 cursor-pointer
-                    border border-gray-500/20 hover:border-white/30"
+                    bg-gradient-to-r from-primary to-secondary text-white rounded-xl 
+                    transition-all duration-300 shadow-lg shadow-primary/20 
+                    hover:shadow-xl hover:shadow-primary/30 cursor-pointer
+                    border border-primary/20 hover:border-white/30"
                   title="Download all characters and images as ZIP"
                 >
                   <FiDownloadCloud className="text-lg" />
@@ -495,10 +538,10 @@ export default function Home() {
                   whileTap="tap"
                   onClick={handleRelationships}
                   className="flex items-center justify-center gap-2 px-5 py-2.5 
-                    bg-purple-500 text-white rounded-xl 
-                    transition-all duration-300 shadow-lg shadow-purple-400/20 
-                    hover:shadow-xl hover:shadow-purple-400/30 cursor-pointer
-                    border border-purple-500/20 hover:border-white/30"
+                    bg-gradient-to-r from-primary to-secondary text-white rounded-xl 
+                    transition-all duration-300 shadow-lg shadow-primary/20 
+                    hover:shadow-xl hover:shadow-primary/30 cursor-pointer
+                    border border-primary/20 hover:border-white/30"
                   title={buttonDescriptions.relationships}
                 >
                   <FiUsers className="text-lg" />
@@ -539,134 +582,277 @@ export default function Home() {
               </button>
             </div>
           ) : (
-            <motion.div 
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-               // Added smooth transition
-                      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
+            <>
+              {/* Folders Section */}
+              {folders.length > 0 && (
+                <div className="space-y-6 mb-8">
+                  {folders.map(folder => (
+                    <motion.div
+                      key={folder.id}
+                      variants={containerVariants}
+                      initial="hidden"
+                      animate="visible"
+                      className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700"
                     >
-                      {filteredCharacters.map((character) => (
+                      <div className="flex items-center gap-2 mb-4">
+                        <FiFolder className="text-primary" size={24} />
+                        <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{folder.name}</h2>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {folder.characters.map((character) => (
+                          <motion.div
+                            key={character.id}
+                            variants={itemVariants}
+                            whileHover={{ y: -8, transition: { duration: 0.1 } }}
+                            onClick={() => handleViewCharacter(character.id)}
+                            className="group relative flex flex-col rounded-2xl overflow-hidden 
+                              bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm 
+                              border border-gray-100/50 dark:border-gray-700/50 
+                              transition-all duration-300 hover:shadow-2xl hover:shadow-accent/20 
+                              dark:hover:shadow-accent/10 cursor-pointer 
+                              hover:border-accent/50 dark:hover:border-accent/50"
+                          >
+                            <div className="aspect-square relative bg-gradient-to-br from-gray-100 to-gray-200 
+                              dark:from-gray-700 dark:to-gray-800 overflow-hidden">
+                              {character.imageUrl ? (
+                                <div className="relative w-full h-full transform transition-transform duration-700 
+                                  group-hover:scale-110">
+                                  <img 
+                                    src={character.imageUrl} 
+                                    alt={character.name} 
+                                    className="w-full h-full object-cover"
+                                  />
+                                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent 
+                                    opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                </div>
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center 
+                                  bg-gradient-to-br from-accent/5 to-accent/10 
+                                  dark:from-accent/10 dark:to-accent/20">
+                                  <FiUser className="w-20 h-20 text-accent/40" />
+                                </div>
+                              )}
+                            </div>
+                            
+                            <div className="p-6 flex-grow">
+                              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2 
+                                truncate group-hover:text-accent transition-colors duration-300">
+                                {character.name}
+                              </h2>
+                              <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2 
+                                group-hover:text-gray-900 dark:group-hover:text-gray-200 transition-colors duration-300">
+                                {character.description || 'No description provided.'}
+                              </p>
+                              
+                              <div className="flex justify-between items-center mt-auto pt-4 
+                                border-t border-gray-100 dark:border-gray-700/50">
+                                <div className="flex gap-2">
+                                  <motion.button
+                                    variants={buttonVariants}
+                                    whileHover="hover"
+                                    whileTap="tap"
+                                    onClick={(e) => handleEditCharacter(e, character.id)}
+                                    className="cursor-pointer p-2.5 text-accent bg-accent/5 hover:bg-accent/10 
+                                      rounded-xl border border-accent/20 
+                                      transition-all duration-300 hover:shadow-lg hover:shadow-accent/20 
+                                      hover:scale-105 hover:border-accent/50"
+                                    aria-label="Edit"
+                                  >
+                                    <FiEdit2 className="w-4 h-4" />
+                                  </motion.button>
+                                  
+                                  <motion.button
+                                    variants={buttonVariants}
+                                    whileHover="hover"
+                                    whileTap="tap"
+                                    onClick={(e) => confirmDelete(e, character.id)}
+                                    className="cursor-pointer p-2 text-white dark:text-white bg-red-300 dark:bg-red-500 
+                                      hover:bg-red-200 dark:hover:bg-red-900/20 hover:text-white border border-gray-200 dark:border-gray-600 
+                                      rounded-xl transition-all duration-300 hover:shadow-md hover:scale-105"
+                                    aria-label="Delete"
+                                  >
+                                    <FiTrash2 />
+                                  </motion.button>
+                                </div>
+                                
+                                <div className="dropdown relative">
+                                  <motion.button
+                                    variants={buttonVariants}
+                                    whileHover="hover"
+                                    whileTap="tap"
+                                    onClick={(e) => handleExportCharacter(e, character)}
+                                    className="cursor-pointer p-2.5 text-accent bg-accent/5 hover:bg-accent/10 
+                                      rounded-xl border border-accent/20 
+                                      transition-all duration-300 hover:shadow-lg hover:shadow-accent/20 
+                                      hover:scale-105 hover:border-accent/50"
+                                    aria-label="Export"
+                                  >
+                                    <FiDownload />
+                                  </motion.button>
+                                  
+                                  <div className="dropdown-menu opacity-0 invisible absolute right-0 mt-2 py-2 w-48 
+                                    bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-10">
+                                    <button 
+                                      onClick={(e) => handleExportCharacter(e, character, 'text')}
+                                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 
+                                        hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                                    >
+                                      Export as Text
+                                    </button>
+                                    <button 
+                                      onClick={(e) => handleExportCharacter(e, character, 'character')}
+                                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 
+                                        hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                                    >
+                                      Export as Character
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+
+              {/* Unassigned Characters Section */}
+              {unassignedCharacters.length > 0 && (
+                <motion.div
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="visible"
+                  className="space-y-6"
+                >
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Unassigned Characters</h2>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {unassignedCharacters.map((character) => (
                       <motion.div
                         key={character.id}
                         variants={itemVariants}
                         whileHover={{ y: -8, transition: { duration: 0.1 } }}
                         onClick={() => handleViewCharacter(character.id)}
                         className="group relative flex flex-col rounded-2xl overflow-hidden 
-                    bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm 
-                    border border-gray-100/50 dark:border-gray-700/50 
-                    transition-all duration-300 hover:shadow-2xl hover:shadow-accent/20 
-                    dark:hover:shadow-accent/10 cursor-pointer 
-                    hover:border-accent/50 dark:hover:border-accent/50"
+                          bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm 
+                          border border-gray-100/50 dark:border-gray-700/50 
+                          transition-all duration-300 hover:shadow-2xl hover:shadow-accent/20 
+                          dark:hover:shadow-accent/10 cursor-pointer 
+                          hover:border-accent/50 dark:hover:border-accent/50"
                       >
                         <div className="aspect-square relative bg-gradient-to-br from-gray-100 to-gray-200 
-                    dark:from-gray-700 dark:to-gray-800 overflow-hidden">
-                        {character.imageUrl ? (
-                          <div className="relative w-full h-full transform transition-transform duration-700 
-                        group-hover:scale-110">
-                          <img 
-                          src={character.imageUrl} 
-                          alt={character.name} 
-                          className="w-full h-full object-cover"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent 
-                          opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                          </div>
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center 
-                        bg-gradient-to-br from-accent/5 to-accent/10 
-                        dark:from-accent/10 dark:to-accent/20">
-                          <FiUser className="w-20 h-20 text-accent/40" />
-                          </div>
-                        )}
+                          dark:from-gray-700 dark:to-gray-800 overflow-hidden">
+                          {character.imageUrl ? (
+                            <div className="relative w-full h-full transform transition-transform duration-700 
+                              group-hover:scale-110">
+                              <img 
+                                src={character.imageUrl} 
+                                alt={character.name} 
+                                className="w-full h-full object-cover"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent 
+                                opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                            </div>
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center 
+                              bg-gradient-to-br from-accent/5 to-accent/10 
+                              dark:from-accent/10 dark:to-accent/20">
+                              <FiUser className="w-20 h-20 text-accent/40" />
+                            </div>
+                          )}
                         </div>
                         
                         <div className="p-6 flex-grow">
-                        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2 
-                      truncate group-hover:text-accent transition-colors duration-300">
-                          {character.name}
-                        </h2>
-                        <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2 
-                      group-hover:text-gray-900 dark:group-hover:text-gray-200 transition-colors duration-300">
-                          {character.description || 'No description provided.'}
-                        </p>
-                        
-                        <div className="flex justify-between items-center mt-auto pt-4 
-                      border-t border-gray-100 dark:border-gray-700/50">
-                          <div className="flex gap-2">
-                          <motion.button
-                            variants={buttonVariants}
-                            whileHover="hover"
-                            whileTap="tap"
-                            onClick={(e) => handleEditCharacter(e, character.id)}
-                            className="cursor-pointer p-2.5 text-accent bg-accent/5 hover:bg-accent/10 
-                            rounded-xl border border-accent/20 
-                            transition-all duration-300 hover:shadow-lg hover:shadow-accent/20 
-                            hover:scale-105 hover:border-accent/50"
-                            aria-label="Edit"
-                          >
-                            <FiEdit2 className="w-4 h-4" />
-                          </motion.button>
+                          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2 
+                            truncate group-hover:text-accent transition-colors duration-300">
+                            {character.name}
+                          </h2>
+                          <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2 
+                            group-hover:text-gray-900 dark:group-hover:text-gray-200 transition-colors duration-300">
+                            {character.description || 'No description provided.'}
+                          </p>
                           
-                          <motion.button
-                            variants={buttonVariants}
-                            whileHover="hover"
-                            whileTap="tap"
-                            onClick={(e) => confirmDelete(e, character.id)}
-                            className="cursor-pointer p-2 text-white dark:text-white bg-red-300 dark:bg-red-500 
-                            hover:bg-red-200 dark:hover:bg-red-900/20 hover:text-white border border-gray-200 dark:border-gray-600 
-                            rounded-xl transition-all duration-300 hover:shadow-md hover:scale-105"
-                            aria-label="Delete"
-                          >
-                            <FiTrash2 />
-                          </motion.button>
+                          <div className="flex justify-between items-center mt-auto pt-4 
+                            border-t border-gray-100 dark:border-gray-700/50">
+                            <div className="flex gap-2">
+                              <motion.button
+                                variants={buttonVariants}
+                                whileHover="hover"
+                                whileTap="tap"
+                                onClick={(e) => handleEditCharacter(e, character.id)}
+                                className="cursor-pointer p-2.5 text-accent bg-accent/5 hover:bg-accent/10 
+                                  rounded-xl border border-accent/20 
+                                  transition-all duration-300 hover:shadow-lg hover:shadow-accent/20 
+                                  hover:scale-105 hover:border-accent/50"
+                                aria-label="Edit"
+                              >
+                                <FiEdit2 className="w-4 h-4" />
+                              </motion.button>
+                              
+                              <motion.button
+                                variants={buttonVariants}
+                                whileHover="hover"
+                                whileTap="tap"
+                                onClick={(e) => confirmDelete(e, character.id)}
+                                className="cursor-pointer p-2 text-white dark:text-white bg-red-300 dark:bg-red-500 
+                                  hover:bg-red-200 dark:hover:bg-red-900/20 hover:text-white border border-gray-200 dark:border-gray-600 
+                                  rounded-xl transition-all duration-300 hover:shadow-md hover:scale-105"
+                                aria-label="Delete"
+                              >
+                                <FiTrash2 />
+                              </motion.button>
+                            </div>
+                            
+                            <div className="dropdown relative">
+                              <motion.button
+                                variants={buttonVariants}
+                                whileHover="hover"
+                                whileTap="tap"
+                                onClick={(e) => handleExportCharacter(e, character)}
+                                className="cursor-pointer p-2.5 text-accent bg-accent/5 hover:bg-accent/10 
+                                  rounded-xl border border-accent/20 
+                                  transition-all duration-300 hover:shadow-lg hover:shadow-accent/20 
+                                  hover:scale-105 hover:border-accent/50"
+                                aria-label="Export"
+                              >
+                                <FiDownload />
+                              </motion.button>
+                              
+                              <div className="dropdown-menu opacity-0 invisible absolute right-0 mt-2 py-2 w-48 
+                                bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-10">
+                                <button 
+                                  onClick={(e) => handleExportCharacter(e, character, 'text')}
+                                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 
+                                    hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                                >
+                                  Export as Text
+                                </button>
+                                <button 
+                                  onClick={(e) => handleExportCharacter(e, character, 'character')}
+                                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 
+                                    hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                                >
+                                  Export as Character
+                                </button>
+                              </div>
+                            </div>
                           </div>
-                          
-                          <div className="dropdown relative">
-                          <motion.button
-                            variants={buttonVariants}
-                            whileHover="hover"
-                            whileTap="tap"
-                            onClick={(e) => handleExportCharacter(e, character)}
-                            className="cursor-pointer p-2.5 text-accent bg-accent/5 hover:bg-accent/10 
-                            rounded-xl border border-accent/20 
-                            transition-all duration-300 hover:shadow-lg hover:shadow-accent/20 
-                            hover:scale-105 hover:border-accent/50"
-                            aria-label="Export"
-                          >
-                            <FiDownload />
-                          </motion.button>
-                          
-                          <div className="dropdown-menu opacity-0 invisible absolute right-0 mt-2 py-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-10">
-                            <button 
-                            onClick={(e) => handleExportCharacter(e, character, 'text')}
-                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-                            >
-                            Export as Text
-                            </button>
-                            <button 
-                            onClick={(e) => handleExportCharacter(e, character, 'character')}
-                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-                            >
-                            Export as Character
-                            </button>
-                          </div>
-                          </div>
-                        </div>
                         </div>
                       </motion.div>
-                      ))}
-                    </motion.div>
-                    )}
-                  </main>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </>
+          )}
+        </main>
 
-                  {/* Enhanced footer */}
-        <footer className="py-6 px-4 mt-12 border-t border-gray-200/50 dark:border-gray-700/50 
-          bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm">
-          <p className="text-center text-gray-600 dark:text-gray-400">
-            Made with <span className="inline-block animate-pulse text-red-500"><FiHeart /></span> for character creators
-          </p>
-        </footer>
+        <Footer />
       </div>
 
       {/* Delete confirmation modal */}
@@ -737,7 +923,7 @@ export default function Home() {
               <div className="flex items-center gap-3 mb-4">
                 <FiAlertCircle className="text-accent text-2xl flex-shrink-0" />
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">Important Disclaimer</h2>
-        </div>
+              </div>
               
               <p className="text-gray-700 dark:text-gray-300 mb-6">
                 char_creator is a <span className="font-semibold">fan-made tool</span> and is not 
@@ -819,6 +1005,14 @@ export default function Home() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Add FolderManager component at the end of the component */}
+      <FolderManager
+        isOpen={isFolderManagerOpen}
+        onClose={() => setIsFolderManagerOpen(false)}
+        characters={characters}
+        onUpdateFolders={setFolders}
+      />
     </>
   );
 }
