@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 // Local storage keys
 const CHARACTERS_KEY = 'fiction_characters';
+const VERSIONS_KEY = 'fiction_character_versions';
 
 /**
  * Get all characters from local storage
@@ -15,10 +16,45 @@ export const getCharacters = () => {
 };
 
 /**
- * Alias for getCharacters for API consistency
- * @returns {Array} Array of character objects
+ * Get character versions from local storage
+ * @param {string} characterId - Character ID
+ * @returns {Array} Array of version objects
  */
-export const getAllCharacters = getCharacters;
+export const getCharacterVersions = (characterId) => {
+  if (typeof window === 'undefined') return [];
+  
+  const versionsJson = localStorage.getItem(VERSIONS_KEY);
+  const allVersions = versionsJson ? JSON.parse(versionsJson) : {};
+  return allVersions[characterId] || [];
+};
+
+/**
+ * Save character version to local storage
+ * @param {string} characterId - Character ID
+ * @param {Object} versionData - Version data object
+ */
+export const saveCharacterVersion = (characterId, versionData) => {
+  const versions = getCharacterVersions(characterId);
+  versions.push({
+    ...versionData,
+    timestamp: new Date().toISOString()
+  });
+  
+  const allVersions = JSON.parse(localStorage.getItem(VERSIONS_KEY) || '{}');
+  allVersions[characterId] = versions;
+  localStorage.setItem(VERSIONS_KEY, JSON.stringify(allVersions));
+};
+
+/**
+ * Get character version by ID
+ * @param {string} characterId - Character ID
+ * @param {string} versionId - Version ID
+ * @returns {Object|null} Version object or null if not found
+ */
+export const getCharacterVersion = (characterId, versionId) => {
+  const versions = getCharacterVersions(characterId);
+  return versions.find(v => v.id === versionId) || null;
+};
 
 /**
  * Save or update a character in local storage
@@ -35,6 +71,16 @@ export const saveCharacter = (characterData, existingId = null) => {
     if (existingIndex === -1) {
       throw new Error('Character not found');
     }
+
+    // Save current version before updating
+    const currentCharacter = characters[existingIndex];
+    saveCharacterVersion(existingId, {
+      id: uuidv4(),
+      data: { ...currentCharacter },
+      changes: Object.keys(characterData).filter(key => 
+        characterData[key] !== currentCharacter[key]
+      )
+    });
 
     const updatedCharacter = {
       ...characters[existingIndex],
@@ -71,6 +117,12 @@ export const saveCharacter = (characterData, existingId = null) => {
   
   return newCharacter;
 };
+
+/**
+ * Alias for getCharacters for API consistency
+ * @returns {Array} Array of character objects
+ */
+export const getAllCharacters = getCharacters;
 
 /**
  * Get a character by ID

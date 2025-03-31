@@ -7,7 +7,9 @@ import {
   exportCharacterAI,
   exportFormattedCharacter,
   downloadCharacterAsText,
-  saveCharacterImage
+  saveCharacterImage,
+  getCharacterVersions,
+  getCharacterVersion
 } from '../utils/characterStorage';
 
 /**
@@ -185,6 +187,28 @@ export default function useCharacters() {
     }
   }, []);
 
+  // Get character versions
+  const getVersions = useCallback((id) => {
+    try {
+      return getCharacterVersions(id);
+    } catch (error) {
+      console.error('Failed to get character versions:', error);
+      setError('Failed to load character versions. Please try again.');
+      return [];
+    }
+  }, []);
+
+  // Get specific character version
+  const getVersion = useCallback((characterId, versionId) => {
+    try {
+      return getCharacterVersion(characterId, versionId);
+    } catch (error) {
+      console.error('Failed to get character version:', error);
+      setError('Failed to load character version. Please try again.');
+      return null;
+    }
+  }, []);
+
   return {
     characters,
     loading,
@@ -196,6 +220,8 @@ export default function useCharacters() {
     getCharacter,
     exportForCharacterAI,
     getFormattedCharacter,
-    downloadCharacterText
+    downloadCharacterText,
+    getVersions,
+    getVersion
   };
 }

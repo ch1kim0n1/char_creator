@@ -12,11 +12,14 @@ import {
   FiHeart,
   FiThumbsDown,
   FiBookOpen,
-  FiX
+  FiX,
+  FiClock
 } from 'react-icons/fi';
 import { MdHeight, MdLanguage, MdWork, MdAutoAwesome } from 'react-icons/md';
 import { getCharacterById, deleteCharacter, exportCharacterAsText, downloadCharacterFile } from '../../utils/characterStorage';
 import CharacterAITutorial from '../../components/CharacterAITutorial';
+import VersionHistoryModal from '../../components/VersionHistoryModal';
+import useCharacters from '../../hooks/useCharacters';
 
 export default function CharacterDetail() {
   const router = useRouter();
@@ -28,6 +31,9 @@ export default function CharacterDetail() {
   const [selectedFormat, setSelectedFormat] = useState('text');
   const [showTutorial, setShowTutorial] = useState(false);
   const [pendingAction, setPendingAction] = useState(null);
+  const [showVersionHistory, setShowVersionHistory] = useState(false);
+  const [versions, setVersions] = useState([]);
+  const { getVersions, updateCharacter } = useCharacters();
 
   useEffect(() => {
     if (id) {
@@ -35,6 +41,8 @@ export default function CharacterDetail() {
         try {
           const characterData = await getCharacterById(id);
           setCharacter(characterData);
+          const versionHistory = getVersions(id);
+          setVersions(versionHistory);
         } catch (error) {
           console.error('Error fetching character:', error);
         } finally {
@@ -44,7 +52,7 @@ export default function CharacterDetail() {
 
       fetchCharacter();
     }
-  }, [id]);
+  }, [id, getVersions]);
 
   const handleEdit = () => {
     router.push(`/edit/${id}`);
@@ -56,6 +64,15 @@ export default function CharacterDetail() {
       router.push('/');
     } catch (error) {
       console.error('Error deleting character:', error);
+    }
+  };
+
+  const handleRestoreVersion = async (version) => {
+    try {
+      await updateCharacter(id, version.data);
+      router.reload();
+    } catch (error) {
+      console.error('Error restoring version:', error);
     }
   };
 
@@ -379,30 +396,15 @@ Backstory/Roleplay("${character.background}")}`;
               variants={buttonVariants}
               whileHover="hover"
               whileTap="tap"
-              onClick={handleExportClick}
+              onClick={() => setShowVersionHistory(true)}
               className="flex items-center gap-2 px-4 py-2 bg-gray-800 dark:bg-gray-700 text-white 
               rounded-xl border border-white/20 cursor-pointer transition-all duration-300 
               hover:shadow-lg hover:shadow-white/20 dark:hover:shadow-white/10"
             >
-              <FiDownload />
-              Export
+              <FiClock />
+              History
             </motion.button>
 
-            {character?.imageUrl && (
-              <motion.button
-                variants={buttonVariants}
-                whileHover="hover"
-                whileTap="tap"
-                onClick={handleExportPfpClick}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-800 dark:bg-gray-700 text-white 
-                rounded-xl border border-white/20 cursor-pointer transition-all duration-300 
-                hover:shadow-lg hover:shadow-white/20 dark:hover:shadow-white/10"
-              >
-                <FiDownload />
-                Export PFP
-              </motion.button>
-            )}
-            
             <motion.button
               variants={buttonVariants}
               whileHover="hover"
@@ -681,6 +683,17 @@ Backstory/Roleplay("${character.background}")}`;
                 setPendingAction(null);
               }}
               onContinue={handleTutorialContinue}
+            />
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {showVersionHistory && (
+            <VersionHistoryModal
+              isOpen={showVersionHistory}
+              onClose={() => setShowVersionHistory(false)}
+              versions={versions}
+              onRestoreVersion={handleRestoreVersion}
             />
           )}
         </AnimatePresence>
