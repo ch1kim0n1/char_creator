@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Head from 'next/head';
+import Header from '../components/website_essentials/Header';
 import { FiArrowLeft, FiGithub, FiLinkedin, FiMail, FiTwitter, FiHeart, FiUser } from 'react-icons/fi';
 import Image from 'next/image';
 import pfp from '../../public/pfp.jpg';
@@ -37,6 +38,7 @@ const AboutPage = () => {
       </Head>
 
       <div className="min-h-screen bg-gray-200 dark:bg-gray-900 transition-colors duration-200 flex flex-col">
+        <Header />
         <div className="max-w-3xl mx-auto pt-12 pb-12 px-6 flex-grow">
           <motion.div 
             initial={{ opacity: 0, x: -20 }}

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import Head from 'next/head';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import Header from '../components/website_essentials/Header';
 // Remove the ForceGraph2D import
 
 // Add dynamic import with ssr disabled
@@ -268,122 +269,97 @@ export default function Relationships() {
         <meta name="description" content="Map relationships between your characters" />
       </Head>
 
-      <div className="container mx-auto px-4 py-8">
-        {/* Header with back button */}
-        <div className="flex items-center mb-8">
-          <Link href="/">
-            <button className="flex items-center gap-2 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
-              <FiArrowLeft className="w-5 h-5" />
-              Back to Dashboard
-            </button>
-          </Link>
-          <h1 className="text-2xl font-bold ml-4 text-gray-800 dark:text-white">Character Relationships</h1>
-        </div>
-
-        <div className="flex flex-wrap gap-8 mb-8">
-          {/* Management Controls */}
-          <div className="w-full flex justify-between items-center bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4">
-            <button
-              onClick={clearAllRelationships}
-              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-            >
-              <FiTrash2 className="inline mr-2" />
-              Clear All Relationships
-            </button>
-            
-            <div className="flex gap-4">
-              <select
-                value={selectedCharacterForDeletion || ''}
-                onChange={(e) => setSelectedCharacterForDeletion(e.target.value)}
-                className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-              >
-                <option value="">Select Character</option>
-                {characters.map(char => (
-                  <option key={char.id} value={char.id}>{char.name}</option>
-                ))}
-              </select>
-              
-              {selectedCharacterForDeletion && (
-                <>
-                  <button
-                    onClick={() => clearCharacterRelationships(selectedCharacterForDeletion)}
-                    className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
-                  >
-                    <FiUserX className="inline mr-2" />
-                    Clear Character Relationships
-                  </button>
-                  
-                  <select
-                    value={selectedRelationship || ''}
-                    onChange={(e) => setSelectedRelationship(e.target.value)}
-                    className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  >
-                    <option value="">Select Relationship</option>
-                    {Object.keys(relationships[selectedCharacterForDeletion] || {}).map(relId => (
-                      <option key={relId} value={relId}>
-                        {characters.find(c => c.id === relId)?.name || 'Unknown'}
-                      </option>
-                    ))}
-                  </select>
-                  
-                  {selectedRelationship && (
-                    <button
-                      onClick={deleteSelectedRelationship}
-                      className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600"
-                    >
-                      <FiTrash2 className="inline mr-2" />
-                      Delete Selected Relationship
-                    </button>
-                  )}
-                </>
-              )}
-            </div>
+      <div className="min-h-screen bg-gray-200 dark:bg-gray-900 transition-colors duration-200 flex flex-col">
+        <Header />
+        <div className="container mx-auto px-4 py-8">
+          {/* Header with back button */}
+          <div className="flex items-center mb-8">
+            <Link href="/">
+              <button className="flex items-center gap-2 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+                <FiArrowLeft className="w-5 h-5" />
+                Back to Dashboard
+              </button>
+            </Link>
+            <h1 className="text-2xl font-bold ml-4 text-gray-800 dark:text-white">Character Relationships</h1>
           </div>
 
-          {/* Two Column Layout */}
-          <div className="flex w-full gap-8">
-            {/* Character Selection */}
-            <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-              <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">1. Select Characters</h2>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    First Character
-                  </label>
-                  <div className="space-y-2">
-                    {characters.map((char) => (
+          <div className="flex flex-wrap gap-8 mb-8">
+            {/* Management Controls */}
+            <div className="w-full flex justify-between items-center bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4">
+              <button
+                onClick={clearAllRelationships}
+                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+              >
+                <FiTrash2 className="inline mr-2" />
+                Clear All Relationships
+              </button>
+              
+              <div className="flex gap-4">
+                <select
+                  value={selectedCharacterForDeletion || ''}
+                  onChange={(e) => setSelectedCharacterForDeletion(e.target.value)}
+                  className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                >
+                  <option value="">Select Character</option>
+                  {characters.map(char => (
+                    <option key={char.id} value={char.id}>{char.name}</option>
+                  ))}
+                </select>
+                
+                {selectedCharacterForDeletion && (
+                  <>
+                    <button
+                      onClick={() => clearCharacterRelationships(selectedCharacterForDeletion)}
+                      className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
+                    >
+                      <FiUserX className="inline mr-2" />
+                      Clear Character Relationships
+                    </button>
+                    
+                    <select
+                      value={selectedRelationship || ''}
+                      onChange={(e) => setSelectedRelationship(e.target.value)}
+                      className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    >
+                      <option value="">Select Relationship</option>
+                      {Object.keys(relationships[selectedCharacterForDeletion] || {}).map(relId => (
+                        <option key={relId} value={relId}>
+                          {characters.find(c => c.id === relId)?.name || 'Unknown'}
+                        </option>
+                      ))}
+                    </select>
+                    
+                    {selectedRelationship && (
                       <button
-                        key={char.id}
-                        onClick={() => setSelectedCharacter1(char.id)}
-                        className={`w-full text-left px-4 py-2 rounded-lg transition-colors flex items-center gap-3 ${
-                          selectedCharacter1 === char.id
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
-                        }`}
+                        onClick={deleteSelectedRelationship}
+                        className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600"
                       >
-                        <img 
-                          src={char.imageUrl || '/default-avatar.png'} 
-                          alt={char.name}
-                          className="w-8 h-8 rounded-full object-cover"
-                        />
-                        {char.name}
+                        <FiTrash2 className="inline mr-2" />
+                        Delete Selected Relationship
                       </button>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Second Character
-                  </label>
-                  <div className="space-y-2">
-                    {characters
-                      .filter(char => char.id !== selectedCharacter1)
-                      .map((char) => (
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Two Column Layout */}
+            <div className="flex w-full gap-8">
+              {/* Character Selection */}
+              <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">1. Select Characters</h2>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      First Character
+                    </label>
+                    <div className="space-y-2">
+                      {characters.map((char) => (
                         <button
                           key={char.id}
-                          onClick={() => setSelectedCharacter2(char.id)}
+                          onClick={() => setSelectedCharacter1(char.id)}
                           className={`w-full text-left px-4 py-2 rounded-lg transition-colors flex items-center gap-3 ${
-                            selectedCharacter2 === char.id
+                            selectedCharacter1 === char.id
                               ? 'bg-blue-500 text-white'
                               : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
                           }`}
@@ -396,205 +372,233 @@ export default function Relationships() {
                           {char.name}
                         </button>
                       ))}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Second Character
+                    </label>
+                    <div className="space-y-2">
+                      {characters
+                        .filter(char => char.id !== selectedCharacter1)
+                        .map((char) => (
+                          <button
+                            key={char.id}
+                            onClick={() => setSelectedCharacter2(char.id)}
+                            className={`w-full text-left px-4 py-2 rounded-lg transition-colors flex items-center gap-3 ${
+                              selectedCharacter2 === char.id
+                                ? 'bg-blue-500 text-white'
+                                : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
+                            }`}
+                          >
+                            <img 
+                              src={char.imageUrl || '/default-avatar.png'} 
+                              alt={char.name}
+                              className="w-8 h-8 rounded-full object-cover"
+                            />
+                            {char.name}
+                          </button>
+                        ))}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div className="flex items-center justify-center">
-              <div className="w-16 h-16 text-gray-400 dark:text-gray-500">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-full h-full">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
+              <div className="flex items-center justify-center">
+                <div className="w-16 h-16 text-gray-400 dark:text-gray-500">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-full h-full">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </div>
               </div>
-            </div>
 
-            {/* Relationship Form */}
-            <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-              <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">2. Add Relationship</h2>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Relationship Type
-                  </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {RELATIONSHIP_TYPES.map((type) => {
-                      const Icon = type.icon;
-                      return (
-                        <button
-                          key={type.id}
-                          onClick={() => setRelationshipType(type.id)}
-                          className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-                            relationshipType === type.id
-                              ? 'bg-blue-500 text-white'
-                              : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
-                          }`}
-                        >
-                          <Icon className="w-5 h-5" />
-                          {type.label}
-                        </button>
-                      );
-                    })}
+              {/* Relationship Form */}
+              <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">2. Add Relationship</h2>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Relationship Type
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {RELATIONSHIP_TYPES.map((type) => {
+                        const Icon = type.icon;
+                        return (
+                          <button
+                            key={type.id}
+                            onClick={() => setRelationshipType(type.id)}
+                            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+                              relationshipType === type.id
+                                ? 'bg-blue-500 text-white'
+                                : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
+                            }`}
+                          >
+                            <Icon className="w-5 h-5" />
+                            {type.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {relationshipType === 'custom' && (
+                      <input
+                        type="text"
+                        value={customType}
+                        onChange={(e) => setCustomType(e.target.value)}
+                        className="mt-2 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        placeholder="Enter custom relationship type"
+                      />
+                    )}
                   </div>
-                  {relationshipType === 'custom' && (
-                    <input
-                      type="text"
-                      value={customType}
-                      onChange={(e) => setCustomType(e.target.value)}
-                      className="mt-2 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      placeholder="Enter custom relationship type"
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Description
+                    </label>
+                    <textarea
+                      value={relationshipDescription}
+                      onChange={(e) => setRelationshipDescription(e.target.value)}
+                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      rows="3"
+                      placeholder="Describe the relationship..."
                     />
-                  )}
+                  </div>
+                  <button
+                    onClick={handleAddRelationship}
+                    disabled={!selectedCharacter1 || !selectedCharacter2 || !relationshipType || (relationshipType === 'custom' && !customType)}
+                    className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Add Relationship
+                  </button>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Description
-                  </label>
-                  <textarea
-                    value={relationshipDescription}
-                    onChange={(e) => setRelationshipDescription(e.target.value)}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                    rows="3"
-                    placeholder="Describe the relationship..."
-                  />
-                </div>
-                <button
-                  onClick={handleAddRelationship}
-                  disabled={!selectedCharacter1 || !selectedCharacter2 || !relationshipType || (relationshipType === 'custom' && !customType)}
-                  className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Add Relationship
-                </button>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Relationship Map - Full Width */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-          <div className="flex items-center justify-between gap-4 mb-4">
-            <div className="flex items-center gap-4">
-              <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Relationship Map</h2>
-              <span className="text-sm text-gray-500 dark:text-gray-400 opacity-75">
-                Tip: Use left click and scroll wheel to find your characters!
-              </span>
+          {/* Relationship Map - Full Width */}
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+            <div className="flex items-center justify-between gap-4 mb-4">
+              <div className="flex items-center gap-4">
+                <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Relationship Map</h2>
+                <span className="text-sm text-gray-500 dark:text-gray-400 opacity-75">
+                  Tip: Use left click and scroll wheel to find your characters!
+                </span>
+              </div>
+              <button
+                onClick={downloadMap}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+              >
+                <FiDownload className="w-5 h-5" />
+                Download Map
+              </button>
             </div>
-            <button
-              onClick={downloadMap}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-            >
-              <FiDownload className="w-5 h-5" />
-              Download Map
-            </button>
-          </div>
-          <div ref={mapRef} className="relative w-full h-[600px] border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-            <ForceGraph2D
-              ref={setGraphRef}
-              graphData={graphData}
-              nodeLabel={node => `${node.name}`}
-              nodeRelSize={10} 
-              d3Force={(d3Force) => {
-                // Increase link distance (space between connected nodes)
-                d3Force('link').distance(300);
-                // Increase repulsive force (makes unconnected nodes stay further apart)
-                d3Force('charge').strength(-2000);
-                // Add collision force to prevent node overlap
-                d3Force('collision').radius(10150);
-              }}
-              nodeCanvasObject={(node, ctx, globalScale) => {
-                // Load and draw character avatar
-                const size =10;
-                const img = new Image(size, size);
-                img.src = node.imageUrl;
-                
-                // Draw circular clipping path
-                ctx.save();
-                ctx.beginPath();
-                ctx.arc(node.x, node.y, size/2, 0, 2 * Math.PI, false);
-                ctx.clip();
-                
-                // Draw the image
-                ctx.drawImage(img, node.x - size/2, node.y - size/2, size, size);
-                ctx.restore();
+            <div ref={mapRef} className="relative w-full h-[600px] border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+              <ForceGraph2D
+                ref={setGraphRef}
+                graphData={graphData}
+                nodeLabel={node => `${node.name}`}
+                nodeRelSize={10} 
+                d3Force={(d3Force) => {
+                  // Increase link distance (space between connected nodes)
+                  d3Force('link').distance(300);
+                  // Increase repulsive force (makes unconnected nodes stay further apart)
+                  d3Force('charge').strength(-2000);
+                  // Add collision force to prevent node overlap
+                  d3Force('collision').radius(10150);
+                }}
+                nodeCanvasObject={(node, ctx, globalScale) => {
+                  // Load and draw character avatar
+                  const size =10;
+                  const img = new Image(size, size);
+                  img.src = node.imageUrl;
+                  
+                  // Draw circular clipping path
+                  ctx.save();
+                  ctx.beginPath();
+                  ctx.arc(node.x, node.y, size/2, 0, 2 * Math.PI, false);
+                  ctx.clip();
+                  
+                  // Draw the image
+                  ctx.drawImage(img, node.x - size/2, node.y - size/2, size, size);
+                  ctx.restore();
 
-                // Draw node label below avatar with larger font
-                const fontSize = 20/globalScale; // Doubled from 12 to 24
-                ctx.font = `${fontSize}px Sans-Serif`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillStyle = '#ffffff';
-                ctx.fillText(node.name, node.x, node.y + size/2 + fontSize/2);
-              }}
-              linkLabel={link => {
-                const relType = relationships[link.source.id]?.[link.target.id]?.type;
-                const customType = relationships[link.source.id]?.[link.target.id]?.customType;
-                const type = relType === 'custom' ? customType : RELATIONSHIP_TYPES.find(t => t.id === relType)?.label;
-                return `${type || 'Unknown'}`;
-              }}
-              linkCanvasObject={(link, ctx, scale) => {
-                // Draw link line
-                ctx.beginPath();
-                ctx.strokeStyle = '#3B82F6';
-                ctx.lineWidth = 2;
-                ctx.moveTo(link.source.x, link.source.y);
-                ctx.lineTo(link.target.x, link.target.y);
-                ctx.stroke();
-
-                // Draw relationship type label
-                if (scale > 0.7) {
+                  // Draw node label below avatar with larger font
+                  const fontSize = 20/globalScale; // Doubled from 12 to 24
+                  ctx.font = `${fontSize}px Sans-Serif`;
+                  ctx.textAlign = 'center';
+                  ctx.textBaseline = 'middle';
+                  ctx.fillStyle = '#ffffff';
+                  ctx.fillText(node.name, node.x, node.y + size/2 + fontSize/2);
+                }}
+                linkLabel={link => {
                   const relType = relationships[link.source.id]?.[link.target.id]?.type;
                   const customType = relationships[link.source.id]?.[link.target.id]?.customType;
                   const type = relType === 'custom' ? customType : RELATIONSHIP_TYPES.find(t => t.id === relType)?.label;
-                  
-                  if (type) {
-                    const fontSize = 20/scale; // Doubled from 10 to 20
-                    ctx.font = `${fontSize}px Sans-Serif`;
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-                    ctx.fillStyle = '#ffffff'; // Make text always white
+                  return `${type || 'Unknown'}`;
+                }}
+                linkCanvasObject={(link, ctx, scale) => {
+                  // Draw link line
+                  ctx.beginPath();
+                  ctx.strokeStyle = '#3B82F6';
+                  ctx.lineWidth = 2;
+                  ctx.moveTo(link.source.x, link.source.y);
+                  ctx.lineTo(link.target.x, link.target.y);
+                  ctx.stroke();
+
+                  // Draw relationship type label
+                  if (scale > 0.7) {
+                    const relType = relationships[link.source.id]?.[link.target.id]?.type;
+                    const customType = relationships[link.source.id]?.[link.target.id]?.customType;
+                    const type = relType === 'custom' ? customType : RELATIONSHIP_TYPES.find(t => t.id === relType)?.label;
                     
-                    // Position text in middle of link
-                    const midX = (link.source.x + link.target.x) / 2;
-                    const midY = (link.source.y + link.target.y) / 2;
-                    
-                    // Add background for better readability
-                    const padding = 3; // Increased padding for larger text
-                    const textWidth = ctx.measureText(type).width;
-                    ctx.fillStyle = '#1F2937'; // Dark background for text
-                    ctx.fillRect(
-                      midX - textWidth/2 - padding,
-                      midY - fontSize/2 - padding,
-                      textWidth + padding*2,
-                      fontSize + padding*2
-                    );
-                    
-                    // Draw text in white
-                    ctx.fillStyle = '#ffffff';
-                    ctx.fillText(type, midX, midY);
+                    if (type) {
+                      const fontSize = 20/scale; // Doubled from 10 to 20
+                      ctx.font = `${fontSize}px Sans-Serif`;
+                      ctx.textAlign = 'center';
+                      ctx.textBaseline = 'middle';
+                      ctx.fillStyle = '#ffffff'; // Make text always white
+                      
+                      // Position text in middle of link
+                      const midX = (link.source.x + link.target.x) / 2;
+                      const midY = (link.source.y + link.target.y) / 2;
+                      
+                      // Add background for better readability
+                      const padding = 3; // Increased padding for larger text
+                      const textWidth = ctx.measureText(type).width;
+                      ctx.fillStyle = '#1F2937'; // Dark background for text
+                      ctx.fillRect(
+                        midX - textWidth/2 - padding,
+                        midY - fontSize/2 - padding,
+                        textWidth + padding*2,
+                        fontSize + padding*2
+                      );
+                      
+                      // Draw text in white
+                      ctx.fillStyle = '#ffffff';
+                      ctx.fillText(type, midX, midY);
+                    }
                   }
-                }
-              }}
-              linkDirectionalParticles={2}
-              linkDirectionalParticleSpeed={0.005}
-              linkDirectionalParticleWidth={2}
-              backgroundColor="#1F2937"
-              onNodeClick={(node) => {
-                // Show node details if needed
-                console.log('Node clicked:', node);
-              }}
-              onLinkClick={(link) => {
-                // Show relationship details if needed
-                console.log('Link clicked:', link);
-              }}
-              cooldownTime={3000}
-              d3AlphaDecay={0.02}
-              d3VelocityDecay={0.3}
-              warmupTicks={100}
-              onEngineStop={() => {
-                // Graph has finished initial simulation
-                console.log('Graph layout stabilized');
-              }}
-            />
+                }}
+                linkDirectionalParticles={2}
+                linkDirectionalParticleSpeed={0.005}
+                linkDirectionalParticleWidth={2}
+                backgroundColor="#1F2937"
+                onNodeClick={(node) => {
+                  // Show node details if needed
+                  console.log('Node clicked:', node);
+                }}
+                onLinkClick={(link) => {
+                  // Show relationship details if needed
+                  console.log('Link clicked:', link);
+                }}
+                cooldownTime={3000}
+                d3AlphaDecay={0.02}
+                d3VelocityDecay={0.3}
+                warmupTicks={100}
+                onEngineStop={() => {
+                  // Graph has finished initial simulation
+                  console.log('Graph layout stabilized');
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>

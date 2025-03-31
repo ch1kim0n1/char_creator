@@ -7,18 +7,13 @@ import {
   FiSave, 
   FiArrowLeft, 
   FiCheck, 
-  FiInfo, 
-  FiHeart, 
-  FiThumbsDown, 
-  FiBookOpen,
   FiUserPlus,
   FiStar,
   FiBook,
   FiDownload,
   FiX
 } from 'react-icons/fi';
-import { MdHeight, MdLanguage, MdWork, MdAutoAwesome } from 'react-icons/md';
-import ReactCrop from 'react-image-crop';
+import { MdAutoAwesome } from 'react-icons/md';
 import 'react-image-crop/dist/ReactCrop.css';
 import ErrorPopup from './ErrorPopup';
 import useCharacters from '../hooks/useCharacters';

@@ -27,6 +27,8 @@ import { getCharacterById, deleteCharacter, exportCharacterAsText, downloadChara
 import CharacterAITutorial from '../../components/CharacterAITutorial';
 import VersionHistoryModal from '../../components/VersionHistoryModal';
 import useCharacters from '../../hooks/useCharacters';
+import Head from 'next/head';
+import Header from '../../components/website_essentials/Header';
 
 // Add relationship type icons mapping
 const RELATIONSHIP_ICONS = {
@@ -490,8 +492,9 @@ Relationships("${formattedRelationships}")}`;
 
   return (
     <div className="min-h-screen bg-gray-200 dark:bg-gray-900 transition-colors duration-200">
+      <Header />
       <motion.div 
-        className="max-w-4xl mx-auto p-6 py-12"
+        className="max-w-5xl mx-auto p-6 py-12"
         variants={pageTransition}
         initial="hidden"
         animate="visible"
