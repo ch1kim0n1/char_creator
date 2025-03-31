@@ -13,7 +13,9 @@ import {
   FiBookOpen,
   FiUserPlus,
   FiStar,
-  FiBook
+  FiBook,
+  FiDownload,
+  FiX
 } from 'react-icons/fi';
 import { MdHeight, MdLanguage, MdWork, MdAutoAwesome } from 'react-icons/md';
 import ReactCrop from 'react-image-crop';
@@ -67,6 +69,60 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
   const [showCropModal, setShowCropModal] = useState(false);
   const [originalImage, setOriginalImage] = useState(null);
   const [isUserSubmitted, setIsUserSubmitted] = useState(false);
+  const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [templates, setTemplates] = useState([]);
+  const [isLoadingTemplates, setIsLoadingTemplates] = useState(false);
+
+  useEffect(() => {
+    if (showTemplateModal) {
+      loadTemplates();
+    }
+  }, [showTemplateModal]);
+
+  const loadTemplates = async () => {
+    setIsLoadingTemplates(true);
+    try {
+      const response = await fetch('/api/character-templates');
+      const data = await response.json();
+      setTemplates(data);
+    } catch (error) {
+      console.error('Error loading templates:', error);
+    } finally {
+      setIsLoadingTemplates(false);
+    }
+  };
+
+  const handleTemplateSelect = (template) => {
+    setFormData({
+      name: template.Character || '',
+      gender: template.Gender || '',
+      age: template.Age || '',
+      height: template.Heights || '',
+      language: template.Language || '',
+      status: template.Status || '',
+      occupation: template.Occupation || '',
+      personality: template.Personality || '',
+      skills: template.Skill || '',
+      appearance: template.Appearance || '',
+      figure: template.Figure || '',
+      attributes: template.Attributes || '',
+      species: template.Speciest || '',
+      habits: template.Habit || '',
+      likes: template.Likes || '',
+      dislikes: template.Dislike || '',
+      background: template['Backstory/Roleplay'] || '',
+      description: '',
+      scenario: '',
+      greeting: '',
+      interests: '',
+    });
+
+    if (template.imageUrl) {
+      setImagePreview(template.imageUrl);
+    }
+
+    setShowTemplateModal(false);
+  };
 
   // Field descriptors to show tooltips
   const fieldDescriptions = {
@@ -621,6 +677,61 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
     }
   };
 
+  const TemplateModal = () => (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.9 }}
+        className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto"
+      >
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Import Template</h2>
+          <button
+            onClick={() => setShowTemplateModal(false)}
+            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          >
+            <FiX className="w-6 h-6" />
+          </button>
+        </div>
+
+        {isLoadingTemplates ? (
+          <div className="flex justify-center items-center h-32">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {templates.map((template) => (
+              <motion.button
+                key={template.id}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => handleTemplateSelect(template)}
+                className="bg-white dark:bg-gray-700 rounded-xl p-4 border border-gray-200 dark:border-gray-600 hover:border-primary dark:hover:border-primary transition-all"
+              >
+                <div className="aspect-square mb-4 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
+                  {template.imageUrl ? (
+                    <img
+                      src={template.imageUrl}
+                      alt={template.Character}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <FiUser className="w-12 h-12 text-gray-400" />
+                    </div>
+                  )}
+                </div>
+                <h3 className="font-semibold text-gray-800 dark:text-white mb-2">{template.Character}</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{template.Occupation}</p>
+              </motion.button>
+            ))}
+          </div>
+        )}
+      </motion.div>
+    </div>
+  );
+
   return (
     <div className="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
       {showCropModal && (
@@ -629,6 +740,12 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
           onCropComplete={handleCropComplete}
           onCancel={() => setShowCropModal(false)}
         />
+      )}
+      
+      {showTemplateModal && (
+        <AnimatePresence>
+          <TemplateModal />
+        </AnimatePresence>
       )}
       
       {/* New header section */}
@@ -647,19 +764,36 @@ const CharacterForm = ({ initialData = {}, onSubmit, isEdit = false }) => {
 
       <div className="p-6 sm:p-8">
         <div className="flex items-center justify-between mb-8">
-          <motion.button
-            variants={buttonVariants}
-            whileHover="hover"
-            whileTap="tap"
-            onClick={() => router.push('/')}
-            className="flex items-center gap-2 px-4 py-2 text-white 
-              hover:text-accent dark:hover:text-accent bg-white dark:bg-gray-800 
-              rounded-xl border border-gray-200 dark:border-gray-600
-              transition-all duration-300 hover:shadow-lg hover:shadow-white/20 
-              dark:hover:shadow-white/10 cursor-pointer"
-          >
-            <FiArrowLeft /> Back to Dashboard
-          </motion.button>
+          <div className="flex gap-4">
+            <motion.button
+              variants={buttonVariants}
+              whileHover="hover"
+              whileTap="tap"
+              onClick={() => router.push('/')}
+              className="flex items-center gap-2 px-4 py-2 text-white 
+                hover:text-accent dark:hover:text-accent bg-white dark:bg-gray-800 
+                rounded-xl border border-gray-200 dark:border-gray-600
+                transition-all duration-300 hover:shadow-lg hover:shadow-white/20 
+                dark:hover:shadow-white/10 cursor-pointer"
+            >
+              <FiArrowLeft /> Back to Dashboard
+            </motion.button>
+            {!isEdit && (
+              <motion.button
+                variants={buttonVariants}
+                whileHover="hover"
+                whileTap="tap"
+                onClick={() => setShowTemplateModal(true)}
+                className="flex items-center gap-2 px-4 py-2 text-white 
+                  hover:text-accent dark:hover:text-accent bg-primary/20 
+                  rounded-xl border border-primary/30
+                  transition-all duration-300 hover:shadow-lg hover:shadow-primary/20 
+                  cursor-pointer"
+              >
+                <FiDownload /> Import Template
+              </motion.button>
+            )}
+          </div>
         </div>
         
         {/* Enhanced Step indicator with icons */}
