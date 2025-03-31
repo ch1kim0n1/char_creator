@@ -111,24 +111,28 @@ const CharacterDashboard = () => {
   }
 
   return (
-    <div className="py-4">
+    <div className="py-6 px-4">
       <motion.div 
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="flex justify-between items-center mb-8"
+        className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12 gap-4"
       >
         <div>
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Your Characters</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">Create, manage, and export your fictional characters</p>
+          <h1 className="text-4xl font-bold text-gray-800 dark:text-white bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            Your Characters
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-2 text-lg">
+            Create, manage, and export your fictional characters
+          </p>
         </div>
         <Link href="/create">
           <motion.button
             whileHover={buttonHover}
             whileTap={{ scale: 0.95 }}
-            className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white font-medium py-2.5 px-4 rounded-full shadow-md transition-colors"
+            className="flex items-center gap-2 bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white font-medium py-3 px-6 rounded-xl shadow-lg shadow-primary/20 transition-all"
           >
-            <MdCreate size={20} /> New Character
+            <MdCreate size={22} /> New Character
           </motion.button>
         </Link>
       </motion.div>
@@ -138,22 +142,24 @@ const CharacterDashboard = () => {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="text-center py-16 px-4 bg-white dark:bg-gray-800 rounded-2xl shadow-character overflow-hidden"
+          className="text-center py-20 px-6 bg-white dark:bg-gray-800/50 rounded-3xl shadow-2xl backdrop-blur-sm border border-gray-100 dark:border-gray-700"
         >
-          <div className="bg-gray-200 dark:bg-gray-700 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
-            <FiUser className="w-12 h-12 text-primary/60" />
+          <div className="bg-gradient-to-r from-primary/10 to-secondary/10 w-32 h-32 rounded-full flex items-center justify-center mx-auto mb-8">
+            <FiUser className="w-16 h-16 text-primary" />
           </div>
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-3">No characters yet</h2>
-          <p className="text-gray-600 dark:text-gray-300 mb-8 max-w-md mx-auto">
+          <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            No characters yet
+          </h2>
+          <p className="text-gray-600 dark:text-gray-300 mb-10 max-w-lg mx-auto text-lg">
             Create your first character to see it here. You can add details, images, and export them for your stories or AI chatbots.
           </p>
           <Link href="/create">
             <motion.button
               whileHover={buttonHover}
               whileTap={{ scale: 0.95 }}
-              className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white font-medium py-3 px-6 rounded-full shadow-md transition-colors mx-auto"
+              className="flex items-center gap-2 bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white font-medium py-4 px-8 rounded-xl shadow-lg shadow-primary/20 transition-all mx-auto text-lg"
             >
-              <FiPlus size={18} /> Create First Character
+              <FiPlus size={22} /> Create First Character
             </motion.button>
           </Link>
         </motion.div>
@@ -162,15 +168,15 @@ const CharacterDashboard = () => {
           variants={container}
           initial="hidden"
           animate="show"
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
         >
           {characters.map(character => (
             <motion.div
               layout
               key={character.id}
               variants={item}
-              whileHover={{ y: -5 }}
-              className="w-full max-w-[250px] bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-character hover:shadow-character-hover transition-all duration-300"
+              whileHover={{ y: -8, scale: 2.02 }}
+              className="w-full bg-white dark:bg-gray-800/50 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 backdrop-blur-sm border border-gray-100 dark:border-gray-700"
             >
               <div 
                 onClick={() => router.push(`/character/${character.id}`)}

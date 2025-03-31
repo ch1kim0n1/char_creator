@@ -309,9 +309,9 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div className="min-h-screen bg-gray-200 dark:bg-gray-900 transition-colors duration-200 flex flex-col">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-200 flex flex-col">
         {/* Header with theme toggle */}
-        <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <header className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border-b border-gray-200/50 dark:border-gray-700/50 sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex justify-between items-center">
               <div className="flex items-center">
@@ -439,8 +439,8 @@ export default function Home() {
           {/* Dashboard header with search and actions */}
           <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
             <div className="mb-4 md:mb-0">
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white animate-slide-in-left">Characters</h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-1 animate-slide-in-left" style={{ animationDelay: '100ms' }}>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white animate-slide-in-left">                Characters              </h1>
+                            <p className="text-gray-600 dark:text-gray-400 mt-1 animate-slide-in-left" style={{ animationDelay: '100ms' }}>
                 {characters.length} {characters.length === 1 ? 'character' : 'characters'} in your collection
               </p>
             </div>
@@ -544,52 +544,68 @@ export default function Home() {
               initial="hidden"
               animate="visible"
                // Added smooth transition
-                      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+                      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
                     >
                       {filteredCharacters.map((character) => (
                       <motion.div
                         key={character.id}
                         variants={itemVariants}
-                        whileHover={{ y: -8, transition: { duration: 0.3 } }}
+                        whileHover={{ y: -8, transition: { duration: 0.1 } }}
                         onClick={() => handleViewCharacter(character.id)}
-                        className="relative flex flex-col rounded-2xl overflow-hidden bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 transition-all duration-300 shadow-md cursor-pointer hover-glow"
+                        className="group relative flex flex-col rounded-2xl overflow-hidden 
+                    bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm 
+                    border border-gray-100/50 dark:border-gray-700/50 
+                    transition-all duration-300 hover:shadow-2xl hover:shadow-accent/20 
+                    dark:hover:shadow-accent/10 cursor-pointer 
+                    hover:border-accent/50 dark:hover:border-accent/50"
                       >
-                        <div className="aspect-square relative bg-gray-200 dark:bg-gray-700 overflow-hidden">
+                        <div className="aspect-square relative bg-gradient-to-br from-gray-100 to-gray-200 
+                    dark:from-gray-700 dark:to-gray-800 overflow-hidden">
                         {character.imageUrl ? (
+                          <div className="relative w-full h-full transform transition-transform duration-700 
+                        group-hover:scale-110">
                           <img 
                           src={character.imageUrl} 
                           alt={character.name} 
-                          className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+                          className="w-full h-full object-cover"
                           />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent 
+                          opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                          </div>
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                          <FiUser className="w-20 h-20 text-white" />
+                          <div className="w-full h-full flex items-center justify-center 
+                        bg-gradient-to-br from-accent/5 to-accent/10 
+                        dark:from-accent/10 dark:to-accent/20">
+                          <FiUser className="w-20 h-20 text-accent/40" />
                           </div>
                         )}
                         </div>
                         
-                        <div className="p-4">
-                        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-1 truncate">
+                        <div className="p-6 flex-grow">
+                        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2 
+                      truncate group-hover:text-accent transition-colors duration-300">
                           {character.name}
                         </h2>
-                        <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
+                        <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2 
+                      group-hover:text-gray-900 dark:group-hover:text-gray-200 transition-colors duration-300">
                           {character.description || 'No description provided.'}
                         </p>
                         
-                        <div className="flex justify-between">
-                          <div className="flex gap-1">
+                        <div className="flex justify-between items-center mt-auto pt-4 
+                      border-t border-gray-100 dark:border-gray-700/50">
+                          <div className="flex gap-2">
                           <motion.button
                             variants={buttonVariants}
                             whileHover="hover"
                             whileTap="tap"
                             onClick={(e) => handleEditCharacter(e, character.id)}
-                            className="p-2 text-accent bg-accent/5 hover:bg-white/20 dark:hover:bg-white/5 
-                rounded-xl border border-accent/20 
-                transition-all duration-300 hover:shadow-lg hover:shadow-white/20 dark:hover:shadow-white/10 
-                hover:scale-105 hover:border-white/30 dark:hover:border-white/20"
+                            className="cursor-pointer p-2.5 text-accent bg-accent/5 hover:bg-accent/10 
+                            rounded-xl border border-accent/20 
+                            transition-all duration-300 hover:shadow-lg hover:shadow-accent/20 
+                            hover:scale-105 hover:border-accent/50"
                             aria-label="Edit"
                           >
-                            <FiEdit2 />
+                            <FiEdit2 className="w-4 h-4" />
                           </motion.button>
                           
                           <motion.button
@@ -597,7 +613,7 @@ export default function Home() {
                             whileHover="hover"
                             whileTap="tap"
                             onClick={(e) => confirmDelete(e, character.id)}
-                            className="p-2 text-white dark:text-white bg-red-300 dark:bg-red-500 
+                            className="cursor-pointer p-2 text-white dark:text-white bg-red-300 dark:bg-red-500 
                             hover:bg-red-200 dark:hover:bg-red-900/20 hover:text-white border border-gray-200 dark:border-gray-600 
                             rounded-xl transition-all duration-300 hover:shadow-md hover:scale-105"
                             aria-label="Delete"
@@ -612,10 +628,10 @@ export default function Home() {
                             whileHover="hover"
                             whileTap="tap"
                             onClick={(e) => handleExportCharacter(e, character)}
-                            className="p-2 text-accent bg-accent/5 hover:bg-white/20 dark:hover:bg-white/5 
-                rounded-xl border border-accent/20 
-                transition-all duration-300 hover:shadow-lg hover:shadow-white/20 dark:hover:shadow-white/10 
-                hover:scale-105 hover:border-white/30 dark:hover:border-white/20"
+                            className="cursor-pointer p-2.5 text-accent bg-accent/5 hover:bg-accent/10 
+                            rounded-xl border border-accent/20 
+                            transition-all duration-300 hover:shadow-lg hover:shadow-accent/20 
+                            hover:scale-105 hover:border-accent/50"
                             aria-label="Export"
                           >
                             <FiDownload />
@@ -644,9 +660,12 @@ export default function Home() {
                     )}
                   </main>
 
-                  {/* Footer with heart */}
-        <footer className="footer">
-          <p>Made with <span className="heart"><FiHeart /></span> for character creators</p>
+                  {/* Enhanced footer */}
+        <footer className="py-6 px-4 mt-12 border-t border-gray-200/50 dark:border-gray-700/50 
+          bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm">
+          <p className="text-center text-gray-600 dark:text-gray-400">
+            Made with <span className="inline-block animate-pulse text-red-500"><FiHeart /></span> for character creators
+          </p>
         </footer>
       </div>
 
