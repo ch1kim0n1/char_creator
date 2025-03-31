@@ -248,6 +248,16 @@ export const exportCharacterAI = (id) => {
   const character = getCharacterById(id);
   if (!character) return null;
 
+  // Get all characters to find relationship names
+  const allCharacters = getCharacters();
+  
+  // Format relationships
+  const relationships = character.relationships || {};
+  const formattedRelationships = Object.entries(relationships).map(([relatedId, status]) => {
+    const relatedCharacter = allCharacters.find(char => char.id === relatedId);
+    return relatedCharacter ? `${relatedCharacter.name} - ${status}` : null;
+  }).filter(Boolean);
+
   // Updated to match the provided format
   return {
     name: character.name,
@@ -269,6 +279,7 @@ export const exportCharacterAI = (id) => {
     background: character.background || '',
     scenario: character.scenario || '',
     greeting: character.greeting || '',
+    relationships: formattedRelationships,
   };
 };
 
@@ -339,6 +350,22 @@ export const downloadCharacterAsText = (id) => {
 export const exportCharacterAsText = (character) => {
   if (!character) return '';
   
+  // Get relationships data
+  const relationshipsJson = localStorage.getItem('characterRelationships');
+  const relationships = relationshipsJson ? JSON.parse(relationshipsJson) : {};
+  const characterRelationships = relationships[character.id] || {};
+  
+  // Format relationships
+  const formattedRelationships = Object.entries(characterRelationships)
+    .map(([relatedId, relationship]) => {
+      const relatedChar = getCharacterById(relatedId);
+      if (!relatedChar) return null;
+      const relationType = relationship.type === 'custom' ? relationship.customType : relationship.type;
+      return `${relatedChar.name} - ${relationType}`;
+    })
+    .filter(Boolean)
+    .join('\n');
+
   return `Character: ${character.name || ''}
 Gender: ${character.gender || ''}
 Age: ${character.age || ''}
@@ -358,7 +385,9 @@ Dislikes: ${character.dislikes || ''}
 Background: ${character.background || ''}
 Interests: ${character.interests || ''}
 Scenario: ${character.scenario || ''}
-Greeting: ${character.greeting || ''}`;
+Greeting: ${character.greeting || ''}
+Relationships:
+${formattedRelationships}`;
 };
 
 /**
@@ -369,6 +398,21 @@ Greeting: ${character.greeting || ''}`;
 export const downloadCharacterFile = async (character) => {
   if (!character) return false;
   
+  // Get relationships data
+  const relationshipsJson = localStorage.getItem('characterRelationships');
+  const relationships = relationshipsJson ? JSON.parse(relationshipsJson) : {};
+  const characterRelationships = relationships[character.id] || {};
+  
+  // Format relationships
+  const formattedRelationships = Object.entries(characterRelationships)
+    .map(([relatedId, relationship]) => {
+      const relatedChar = getCharacterById(relatedId);
+      if (!relatedChar) return null;
+      const relationType = relationship.type === 'custom' ? relationship.customType : relationship.type;
+      return `${relatedChar.name} - ${relationType}`;
+    })
+    .filter(Boolean);
+  
   // Format for Character.AI
   const characterData = {
     name: character.name || '',
@@ -377,6 +421,7 @@ export const downloadCharacterFile = async (character) => {
     scenario: character.scenario || '',
     first_message: character.greeting || '',
     avatar_uri: character.imageUrl || '',
+    relationships: formattedRelationships,
     // Add additional Character.AI fields as needed
   };
   
@@ -427,4 +472,55 @@ export const saveCharacterImage = async (id, imageFile) => {
     reader.onerror = reject;
     reader.readAsDataURL(imageFile);
   });
+};
+
+/**
+ * Export character as a zip file containing data and pfp
+ * @param {Object} character - Character object
+ * @param {string} format - Export format ('text' or 'character.ai')
+ * @returns {Promise<boolean>} Success status
+ */
+export const downloadCharacterBundle = async (character, format = 'text') => {
+  if (!character) return false;
+
+  try {
+    // Dynamic import JSZip only when needed
+    const JSZip = (await import('jszip')).default;
+    const zip = new JSZip();
+    const folderName = `${character.name.replace(/\s+/g, '_')}_export`;
+    const folder = zip.folder(folderName);
+
+    // Add character data file
+    const characterData = format === 'text' ? 
+      exportCharacterAsText(character) : 
+      JSON.stringify(await downloadCharacterFile(character), null, 2);
+    
+    folder.file(
+      format === 'text' ? 'character.txt' : 'character.json', 
+      characterData
+    );
+
+    // Add profile picture if exists
+    if (character.imageUrl) {
+      const response = await fetch(character.imageUrl);
+      const blob = await response.blob();
+      folder.file('profile_picture.png', blob);
+    }
+
+    // Generate and download zip
+    const content = await zip.generateAsync({ type: 'blob' });
+    const url = URL.createObjectURL(content);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${folderName}.zip`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    return true;
+  } catch (error) {
+    console.error('Error creating character bundle:', error);
+    return false;
+  }
 };

@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/router';
-import { FiDownload, FiEdit, FiArrowLeft, FiUser } from 'react-icons/fi';
+import { FiDownload, FiEdit, FiArrowLeft, FiUser, FiFileText, FiImage } from 'react-icons/fi';
 import useCharacters from '../hooks/useCharacters';
 
 const CharacterDetail = ({ characterId }) => {
@@ -24,7 +24,7 @@ const CharacterDetail = ({ characterId }) => {
     );
   }
 
-  const handleExport = () => {
+  const handleExportJSON = () => {
     const data = exportForCharacterAI(character.id);
     if (data) {
       // Create a downloadable blob
@@ -44,11 +44,11 @@ const CharacterDetail = ({ characterId }) => {
     }
   };
 
-  const handleImageDownload = () => {
+  const handleExportImage = () => {
     if (character.imageUrl) {
       const a = document.createElement('a');
       a.href = character.imageUrl;
-      a.download = `${character.name}_image.png`;
+      a.download = `${character.name}_profile_picture.png`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -77,11 +77,21 @@ const CharacterDetail = ({ characterId }) => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={handleExport}
+            onClick={handleExportJSON}
             className="w-full sm:w-auto flex items-center justify-center gap-1 px-3 py-2 bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-800/30 min-w-[80px]"
           >
-            <FiDownload size={18} /> Export
+            <FiFileText size={18} /> Export JSON
           </motion.button>
+          {character.imageUrl && (
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleExportImage}
+              className="w-full sm:w-auto flex items-center justify-center gap-1 px-3 py-2 bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 rounded-lg hover:bg-purple-200 dark:hover:bg-purple-800/30 min-w-[80px]"
+            >
+              <FiImage size={18} /> Export Image
+            </motion.button>
+          )}
         </div>
       </div>
 
@@ -99,11 +109,11 @@ const CharacterDetail = ({ characterId }) => {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={handleImageDownload}
+                    onClick={handleExportImage}
                     className="absolute bottom-3 right-3 p-2 bg-black/50 text-white rounded-full hover:bg-black/70"
                     title="Download image"
                   >
-                    <FiDownload size={18} />
+                    <FiImage size={18} />
                   </motion.button>
                 </>
               ) : (
@@ -186,10 +196,10 @@ const CharacterDetail = ({ characterId }) => {
               
               <div className="mt-4">
                 <button 
-                  onClick={handleExport}
+                  onClick={handleExportJSON}
                   className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
                 >
-                  <FiDownload size={16} /> Download Character AI Format
+                  <FiFileText size={16} /> Download Character AI Format
                 </button>
               </div>
             </div>

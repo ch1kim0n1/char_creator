@@ -23,7 +23,7 @@ import {
   FiShare2
 } from 'react-icons/fi';
 import { MdHeight, MdLanguage, MdWork, MdAutoAwesome } from 'react-icons/md';
-import { getCharacterById, deleteCharacter, exportCharacterAsText, downloadCharacterFile } from '../../utils/characterStorage';
+import { getCharacterById, deleteCharacter, exportCharacterAsText, downloadCharacterBundle } from '../../utils/characterStorage';
 import CharacterAITutorial from '../../components/CharacterAITutorial';
 import VersionHistoryModal from '../../components/VersionHistoryModal';
 import useCharacters from '../../hooks/useCharacters';
@@ -53,12 +53,10 @@ export default function CharacterDetail() {
   const [versions, setVersions] = useState([]);
   const [relationships, setRelationships] = useState({});
   const [relatedCharacters, setRelatedCharacters] = useState([]);
-  const [showShareNotification, setShowShareNotification] = useState(false);
-  const [shareNotificationType, setShareNotificationType] = useState('success');
   const { getVersions, updateCharacter } = useCharacters();
-
-  // Add isShared check
-  const isSharedCharacter = character?.isShared;
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [shareLink, setShareLink] = useState('');
+  const [shareError, setShareError] = useState(null);
 
   useEffect(() => {
     if (id) {
@@ -131,6 +129,22 @@ export default function CharacterDetail() {
   const getFormattedPreview = (format) => {
     if (!character) return '';
     
+    // Get relationships data
+    const relationshipsJson = localStorage.getItem('characterRelationships');
+    const relationships = relationshipsJson ? JSON.parse(relationshipsJson) : {};
+    const characterRelationships = relationships[character.id] || {};
+    
+    // Format relationships
+    const formattedRelationships = Object.entries(characterRelationships)
+      .map(([relatedId, relationship]) => {
+        const relatedChar = getCharacterById(relatedId);
+        if (!relatedChar) return null;
+        const relationType = relationship.type === 'custom' ? relationship.customType : relationship.type;
+        return `${relatedChar.name} - ${relationType}`;
+      })
+      .filter(Boolean)
+      .join('\n');
+    
     if (format === 'text') {
       return `Name: ${character.name}
 Gender: ${character.gender}
@@ -148,7 +162,9 @@ Species: ${character.species}
 Habits: ${character.habits}
 Likes: ${character.likes}
 Dislikes: ${character.dislikes}
-Background: ${character.background}`;
+Background: ${character.background}
+Relationships:
+${formattedRelationships}`;
     } else {
       return `{Character("${character.name}")
 Gender("${character.gender}")
@@ -166,75 +182,39 @@ Speciest("${character.species}")
 Habit("${character.habits}") 
 Likes("${character.likes}") 
 Dislike("${character.dislikes}")
-Backstory/Roleplay("${character.background}")}`;
+Backstory/Roleplay("${character.background}")
+Relationships("${formattedRelationships}")}`;
     }
   };
 
   const handleExport = async () => {
     if (!character) return;
     
-    if (selectedFormat === 'text') {
-      const textData = exportCharacterAsText(character);
-      const blob = new Blob([textData], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${character.name.replace(/\s+/g, '_')}.txt`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+    // Only show tutorial for character.ai format
+    if (selectedFormat === 'character.ai') {
+      setShowTutorial(true);
+      setPendingAction('export');
+      setShowExportModal(false);
     } else {
-      await downloadCharacterFile(character);
+      await downloadCharacterBundle(character, selectedFormat);
+      setShowExportModal(false);
     }
-    setShowExportModal(false);
-  };
-
-  const handleExportPfp = async () => {
-    if (!character?.imageUrl) return;
-    
-    try {
-      const response = await fetch(character.imageUrl);
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${character.name.replace(/\s+/g, '_')}_pfp.png`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Error downloading profile picture:', error);
-    }
-  };
-
-  const handleExportClick = () => {
-    setShowTutorial(true);
-    setPendingAction('export');
-  };
-
-  const handleExportPfpClick = () => {
-    setShowTutorial(true);
-    setPendingAction('exportPfp');
   };
 
   const handleTutorialContinue = () => {
     setShowTutorial(false);
     if (pendingAction === 'export') {
-      setShowExportModal(true);
-    } else if (pendingAction === 'exportPfp') {
-      handleExportPfp();
+      downloadCharacterBundle(character, selectedFormat);
     }
     setPendingAction(null);
   };
 
+  const handleExportClick = () => {
+    setShowExportModal(true);
+  };
+
   const handleShare = async () => {
     try {
-      // Show loading state
-      setShareNotificationType('loading');
-      setShowShareNotification(true);
-
       const response = await fetch('/api/share-character', {
         method: 'POST',
         headers: {
@@ -248,29 +228,19 @@ Backstory/Roleplay("${character.background}")}`;
       }
 
       const data = await response.json();
-      const shareUrl = `${window.location.origin}/character/${data.sharedCharacterId}`;
-      
-      // Copy to clipboard
-      await navigator.clipboard.writeText(shareUrl);
-      
-      // Show success notification
-      setShareNotificationType('success');
-      setShowShareNotification(true);
-
-      // Hide notification after 3 seconds
-      setTimeout(() => {
-        setShowShareNotification(false);
-      }, 3000);
+      const baseUrl = window.location.origin;
+      const shareUrl = `${baseUrl}/guest/${data.sharedCharacterId}`;
+      setShareLink(shareUrl);
+      setShowShareModal(true);
     } catch (error) {
       console.error('Error sharing character:', error);
-      setShareNotificationType('error');
-      setShowShareNotification(true);
-
-      // Hide error notification after 3 seconds
-      setTimeout(() => {
-        setShowShareNotification(false);
-      }, 3000);
+      setShareError('Failed to share character. Please try again.');
+      setShowShareModal(true);
     }
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(shareLink);
   };
 
   // Animation variants
@@ -545,62 +515,58 @@ Backstory/Roleplay("${character.background}")}`;
           </motion.button>
           
           <div className="flex gap-2">
-            {!isSharedCharacter && (
-              <>
-                <motion.button
-                  variants={buttonVariants}
-                  whileHover="hover"
-                  whileTap="tap"
-                  onClick={() => setShowVersionHistory(true)}
-                  className="flex items-center gap-2 px-4 py-2 bg-gray-800 dark:bg-gray-700 text-white 
-                  rounded-xl border border-white/20 cursor-pointer transition-all duration-300 
-                  hover:shadow-lg hover:shadow-white/20 dark:hover:shadow-white/10"
-                >
-                  <FiClock />
-                  History
-                </motion.button>
+            <motion.button
+              variants={buttonVariants}
+              whileHover="hover"
+              whileTap="tap"
+              onClick={handleExportClick}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-800 dark:bg-gray-700 text-white 
+              rounded-xl border border-white/20 cursor-pointer transition-all duration-300 
+              hover:shadow-lg hover:shadow-white/20 dark:hover:shadow-white/10"
+            >
+              <FiDownload />
+              Export
+            </motion.button>
 
-                <motion.button
-                  variants={buttonVariants}
-                  whileHover="hover"
-                  whileTap="tap"
-                  onClick={handleShare}
-                  className="flex items-center gap-2 px-4 py-2 bg-gray-800 dark:bg-gray-700 text-white 
-                  rounded-xl border border-white/20 cursor-pointer transition-all duration-300 
-                  hover:shadow-lg hover:shadow-white/20 dark:hover:shadow-white/10"
-                >
-                  <FiShare2 />
-                  Share
-                </motion.button>
+            <motion.button
+              variants={buttonVariants}
+              whileHover="hover"
+              whileTap="tap"
+              onClick={() => setShowVersionHistory(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-800 dark:bg-gray-700 text-white 
+              rounded-xl border border-white/20 cursor-pointer transition-all duration-300 
+              hover:shadow-lg hover:shadow-white/20 dark:hover:shadow-white/10"
+            >
+              <FiClock />
+              History
+            </motion.button>
 
-                <motion.button
-                  variants={buttonVariants}
-                  whileHover="hover"
-                  whileTap="tap"
-                  onClick={handleEdit}
-                  className="flex items-center gap-2 px-4 py-2 bg-gray-800 dark:bg-gray-700 text-white 
-                  rounded-xl border border-white/20 cursor-pointer transition-all duration-300 
-                  hover:shadow-lg hover:shadow-white/20 dark:hover:shadow-white/10"
-                >
-                  <FiEdit2 />
-                  Edit
-                </motion.button>
-                
-                <motion.button
-                  variants={buttonVariants}
-                  whileHover="hover"
-                  whileTap="tap"
-                  onClick={() => setShowDeleteConfirm(true)}
-                  className="flex items-center gap-2 px-4 py-2 bg-gray-800 dark:bg-gray-700 text-white 
-                  rounded-xl border border-white/20 cursor-pointer transition-all duration-300 
-                  hover:shadow-lg hover:shadow-white/20 dark:hover:shadow-white/10 
-                  hover:bg-status-error hover:border-status-error"
-                >
-                  <FiTrash2 />
-                  Delete
-                </motion.button>
-              </>
-            )}
+            <motion.button
+              variants={buttonVariants}
+              whileHover="hover"
+              whileTap="tap"
+              onClick={handleEdit}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-800 dark:bg-gray-700 text-white 
+              rounded-xl border border-white/20 cursor-pointer transition-all duration-300 
+              hover:shadow-lg hover:shadow-white/20 dark:hover:shadow-white/10"
+            >
+              <FiEdit2 />
+              Edit
+            </motion.button>
+            
+            <motion.button
+              variants={buttonVariants}
+              whileHover="hover"
+              whileTap="tap"
+              onClick={() => setShowDeleteConfirm(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-800 dark:bg-gray-700 text-white 
+              rounded-xl border border-white/20 cursor-pointer transition-all duration-300 
+              hover:shadow-lg hover:shadow-white/20 dark:hover:shadow-white/10 
+              hover:bg-status-error hover:border-status-error"
+            >
+              <FiTrash2 />
+              Delete
+            </motion.button>
           </div>
         </motion.div>
 
@@ -789,7 +755,7 @@ Backstory/Roleplay("${character.background}")}`;
         
         {/* Delete confirmation overlay */}
         <AnimatePresence>
-          {showDeleteConfirm && !isSharedCharacter && (
+          {showDeleteConfirm && (
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -858,7 +824,7 @@ Backstory/Roleplay("${character.background}")}`;
         </AnimatePresence>
 
         <AnimatePresence>
-          {showVersionHistory && !isSharedCharacter && (
+          {showVersionHistory && (
             <VersionHistoryModal
               isOpen={showVersionHistory}
               onClose={() => setShowVersionHistory(false)}
@@ -871,31 +837,44 @@ Backstory/Roleplay("${character.background}")}`;
         {/* Add ReferencesSection before the last section */}
         <ReferencesSection />
 
-        {/* Share Notification */}
-        <AnimatePresence>
-          {showShareNotification && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              className={`fixed bottom-4 right-4 px-6 py-3 rounded-xl shadow-lg z-50 ${
-                shareNotificationType === 'success'
-                  ? 'bg-green-500 text-white'
-                  : shareNotificationType === 'error'
-                  ? 'bg-red-500 text-white'
-                  : 'bg-gray-500 text-white'
-              }`}
-            >
-              {shareNotificationType === 'success' ? (
-                <p>Character link is copied successfully!</p>
-              ) : shareNotificationType === 'error' ? (
-                <p>Something went wrong while copying a link, try again later</p>
+        {showShareModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+              <h2 className="text-2xl font-bold mb-4">Share Character</h2>
+              {shareError ? (
+                <p className="text-red-600 mb-4">{shareError}</p>
               ) : (
-                <p>Sharing character...</p>
+                <>
+                  <p className="text-gray-600 mb-4">
+                    Share this link with others to let them view and adopt your character:
+                  </p>
+                  <div className="flex items-center space-x-2 mb-4">
+                    <input
+                      type="text"
+                      value={shareLink}
+                      readOnly
+                      className="flex-1 p-2 border rounded-lg"
+                    />
+                    <button
+                      onClick={copyToClipboard}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </>
               )}
-            </motion.div>
-          )}
-        </AnimatePresence>
+              <div className="flex justify-end">
+                <button
+                  onClick={() => setShowShareModal(false)}
+                  className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </motion.div>
       <footer className="footer">
           <p>Made with <span className="heart"><FiHeart /></span> for character creators</p>
