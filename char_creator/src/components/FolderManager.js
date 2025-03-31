@@ -21,6 +21,7 @@ const FolderManager = ({ isOpen, onClose, characters, onUpdateFolders }) => {
   const [selectedFolder, setSelectedFolder] = useState(null);
   const [selectedCharacters, setSelectedCharacters] = useState([]);
   const [availableCharacters, setAvailableCharacters] = useState([]);
+  const [folderToDelete, setFolderToDelete] = useState(null);
 
   // Load folders when component mounts
   useEffect(() => {
@@ -50,6 +51,7 @@ const FolderManager = ({ isOpen, onClose, characters, onUpdateFolders }) => {
   const handleDeleteFolder = (folderId) => {
     if (deleteFolder(folderId)) {
       setFolders(folders.filter(folder => folder.id !== folderId));
+      setFolderToDelete(null);
     }
   };
 
@@ -266,7 +268,7 @@ const FolderManager = ({ isOpen, onClose, characters, onUpdateFolders }) => {
                           <motion.button
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
-                            onClick={() => handleDeleteFolder(folder.id)}
+                            onClick={() => setFolderToDelete(folder)}
                             className="p-2 text-gray-600 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400 
                               rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                             title="Delete folder"
@@ -354,6 +356,49 @@ const FolderManager = ({ isOpen, onClose, characters, onUpdateFolders }) => {
           </motion.div>
         </motion.div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {folderToDelete && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60] p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-md p-6 border border-gray-200 dark:border-gray-700"
+            >
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Delete Folder</h3>
+              <p className="text-gray-600 dark:text-gray-300 mb-6">
+                Are you sure you want to delete the folder "{folderToDelete.name}"? This action cannot be undone.
+              </p>
+              <div className="flex justify-end gap-4">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setFolderToDelete(null)}
+                  className="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-xl 
+                    hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
+                >
+                  Cancel
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleDeleteFolder(folderToDelete.id)}
+                  className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl transition-colors"
+                >
+                  Delete
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Character Assignment Modal */}
       <AnimatePresence>

@@ -67,15 +67,24 @@ export const createFolder = (name) => {
 };
 
 // Delete a folder
-export const deleteFolder = (folderId) => {
+export const deleteFolder = async (folderId) => {
   try {
     const folders = getAllFolders();
     const updatedFolders = folders.filter(folder => folder.id !== folderId);
-    saveFolders(updatedFolders);
+    
+    // Immediately save the updated folders
+    const saveResult = saveFolders(updatedFolders);
+    if (!saveResult) {
+      throw new Error('Failed to save updated folders');
+    }
+    
+    // Force refresh the localStorage
+    localStorage.setItem(FOLDERS_STORAGE_KEY, JSON.stringify(updatedFolders));
+    
     return true;
   } catch (error) {
     console.error('Error deleting folder:', error);
-    return false;
+    throw error;
   }
 };
 

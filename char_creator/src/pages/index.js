@@ -30,7 +30,7 @@ import {
   exportCharacterAsText, 
   downloadCharacterFile 
 } from '../utils/characterStorage';
-import { getAllFolders } from '../utils/folderStorage';
+import { getAllFolders, deleteFolder } from '../utils/folderStorage';
 import IntroAnimation from '../components/IntroAnimation';
 import FolderManager from '../components/FolderManager';
 import Footer from '../components/website_essentials/Footer';
@@ -49,6 +49,7 @@ export default function Home() {
   const [showHelpPopup, setShowHelpPopup] = useState(false);
   const [isFolderManagerOpen, setIsFolderManagerOpen] = useState(false);
   const [folders, setFolders] = useState([]);
+  const [showDeleteFolderConfirm, setShowDeleteFolderConfirm] = useState(null);
 
   // Add this object for button descriptions
   const buttonDescriptions = {
@@ -193,6 +194,13 @@ export default function Home() {
         const characterData = { ...character };
         delete characterData.imageUrl;
         
+        // Add relationships data if it exists in localStorage
+        const relationshipKey = `relationships_${character.id}`;
+        const relationships = localStorage.getItem(relationshipKey);
+        if (relationships) {
+          characterData.relationships = JSON.parse(relationships);
+        }
+        
         // Save character data as individual JSON file
         const fileName = `${character.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.json`;
         charactersFolder.file(fileName, JSON.stringify(characterData, null, 2));
@@ -236,6 +244,29 @@ export default function Home() {
 
   const handleRelationships = () => {
     router.push('/relationships');
+  };
+
+  const handleDeleteFolder = async (folderId) => {
+    try {
+      await deleteFolder(folderId);
+      
+      // Update the local state
+      const updatedFolders = folders.filter(f => f.id !== folderId);
+      setFolders(updatedFolders);
+      
+      // Close the modal
+      setShowDeleteFolderConfirm(null);
+      
+      // Close the folder manager if it's open
+      setIsFolderManagerOpen(false);
+      
+      // Force a reload of folders from localStorage
+      const reloadedFolders = getAllFolders();
+      setFolders(reloadedFolders);
+    } catch (error) {
+      console.error('Error deleting folder:', error);
+      alert('Failed to delete folder. Please try again.');
+    }
   };
 
   // Filter characters based on search term
@@ -594,9 +625,48 @@ export default function Home() {
                       animate="visible"
                       className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700"
                     >
-                      <div className="flex items-center gap-2 mb-4">
-                        <FiFolder className="text-primary" size={24} />
-                        <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{folder.name}</h2>
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-2">
+                          <FiFolder className="text-primary" size={24} />
+                          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{folder.name}</h2>
+                        </div>
+                        
+                        {/* Quick access buttons */}
+                        <div className="flex items-center gap-2">
+                          <motion.button
+                            variants={buttonVariants}
+                            whileHover="hover"
+                            whileTap="tap"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setIsFolderManagerOpen(true);
+                            }}
+                            className="cursor-pointer p-2 text-accent bg-accent/5 hover:bg-accent/10 
+                              rounded-xl border border-accent/20 
+                              transition-all duration-300 hover:shadow-lg hover:shadow-accent/20 
+                              hover:scale-105"
+                            title="Assign Characters"
+                          >
+                            <FiPlus className="w-4 h-4" />
+                          </motion.button>
+                          
+                          <motion.button
+                            variants={buttonVariants}
+                            whileHover="hover"
+                            whileTap="tap"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setShowDeleteFolderConfirm(folder.id);
+                            }}
+                            className="cursor-pointer p-2 text-white bg-red-300 dark:bg-red-500 
+                              hover:bg-red-200 dark:hover:bg-red-900/20 
+                              rounded-xl border border-red-200 dark:border-red-600 
+                              transition-all duration-300 hover:shadow-md hover:scale-105"
+                            title="Delete Folder"
+                          >
+                            <FiTrash2 className="w-4 h-4" />
+                          </motion.button>
+                        </div>
                       </div>
                       
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -1013,6 +1083,54 @@ export default function Home() {
         characters={characters}
         onUpdateFolders={setFolders}
       />
+
+      {/* Add Folder Delete confirmation modal */}
+      <AnimatePresence>
+        {showDeleteFolderConfirm && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+          >
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-md w-full shadow-xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Delete Folder</h2>
+              <p className="text-gray-700 dark:text-gray-300 mb-6">
+                Are you sure you want to delete this folder? The characters will be unassigned but not deleted.
+              </p>
+              
+              <div className="flex justify-end gap-3">
+                <motion.button
+                  variants={buttonVariants}
+                  whileHover="hover"
+                  whileTap="tap"
+                  onClick={() => setShowDeleteFolderConfirm(null)}
+                  className="px-4 py-2 text-gray-700 dark:text-gray-300"
+                >
+                  Cancel
+                </motion.button>
+                
+                <motion.button
+                  variants={buttonVariants}
+                  whileHover="hover"
+                  whileTap="tap"
+                  onClick={() => handleDeleteFolder(showDeleteFolderConfirm)}
+                  className="px-4 py-2 bg-status-error text-white rounded-xl hover:bg-red-700 transition-colors"
+                >
+                  <FiTrash2 className="inline-block mr-2" />
+                  Delete
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
