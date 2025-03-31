@@ -13,13 +13,30 @@ import {
   FiThumbsDown,
   FiBookOpen,
   FiX,
-  FiClock
+  FiClock,
+  FiUsers,
+  FiTarget,
+  FiStar,
+  FiAward,
+  FiShield,
+  FiEdit
 } from 'react-icons/fi';
 import { MdHeight, MdLanguage, MdWork, MdAutoAwesome } from 'react-icons/md';
 import { getCharacterById, deleteCharacter, exportCharacterAsText, downloadCharacterFile } from '../../utils/characterStorage';
 import CharacterAITutorial from '../../components/CharacterAITutorial';
 import VersionHistoryModal from '../../components/VersionHistoryModal';
 import useCharacters from '../../hooks/useCharacters';
+
+// Add relationship type icons mapping
+const RELATIONSHIP_ICONS = {
+  friend: FiUsers,
+  family: FiHeart,
+  enemy: FiTarget,
+  mentor: FiStar,
+  student: FiAward,
+  ally: FiShield,
+  custom: FiEdit
+};
 
 export default function CharacterDetail() {
   const router = useRouter();
@@ -33,6 +50,8 @@ export default function CharacterDetail() {
   const [pendingAction, setPendingAction] = useState(null);
   const [showVersionHistory, setShowVersionHistory] = useState(false);
   const [versions, setVersions] = useState([]);
+  const [relationships, setRelationships] = useState({});
+  const [relatedCharacters, setRelatedCharacters] = useState([]);
   const { getVersions, updateCharacter } = useCharacters();
 
   useEffect(() => {
@@ -43,6 +62,33 @@ export default function CharacterDetail() {
           setCharacter(characterData);
           const versionHistory = getVersions(id);
           setVersions(versionHistory);
+
+          // Load relationships
+          const savedRelationships = localStorage.getItem('characterRelationships');
+          if (savedRelationships) {
+            const relationshipsData = JSON.parse(savedRelationships);
+            setRelationships(relationshipsData);
+
+            // Get related characters
+            const related = [];
+            if (relationshipsData[id]) {
+              // Use Promise.all to handle async operations
+              const relatedPromises = Object.entries(relationshipsData[id]).map(async ([relatedId, relationship]) => {
+                const relatedChar = await getCharacterById(relatedId);
+                if (relatedChar) {
+                  return {
+                    ...relatedChar,
+                    relationship: relationship.type === 'custom' ? relationship.customType : relationship.type,
+                    description: relationship.description
+                  };
+                }
+                return null;
+              });
+
+              const resolvedRelated = await Promise.all(relatedPromises);
+              setRelatedCharacters(resolvedRelated.filter(Boolean));
+            }
+          }
         } catch (error) {
           console.error('Error fetching character:', error);
         } finally {
@@ -335,6 +381,63 @@ Backstory/Roleplay("${character.background}")}`;
       </motion.div>
     </motion.div>
   );
+
+  // Add ReferencesSection component
+  const ReferencesSection = () => {
+    if (!relatedCharacters.length) return null;
+
+    const getRelationshipIcon = (type) => {
+      const Icon = RELATIONSHIP_ICONS[type] || FiEdit;
+      return <Icon className="w-5 h-5" />;
+    };
+
+    return (
+      <motion.div variants={itemVariants} className="mb-6">
+        <div className="flex items-center gap-2 mb-4">
+          <FiUsers className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-white">References</h3>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {relatedCharacters.map((relatedChar) => (
+            <motion.div
+              key={relatedChar.id}
+              whileHover={{ scale: 1.02 }}
+              className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden cursor-pointer"
+              onClick={() => router.push(`/character/${relatedChar.id}`)}
+            >
+              <div className="aspect-square relative bg-gray-200 dark:bg-gray-700">
+                {relatedChar.imageUrl ? (
+                  <img
+                    src={relatedChar.imageUrl}
+                    alt={relatedChar.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <FiUser className="w-20 h-20 text-gray-400" />
+                  </div>
+                )}
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
+                  <div className="flex items-center gap-2 text-white">
+                    {getRelationshipIcon(relatedChar.relationship)}
+                    <span className="font-medium">{relatedChar.relationship}</span>
+                  </div>
+                </div>
+              </div>
+              <div className="p-4">
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-1">{relatedChar.name}</h4>
+                {relatedChar.description && (
+                  <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                    {relatedChar.description}
+                  </p>
+                )}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+    );
+  };
 
   if (isLoading) {
     return (
@@ -697,6 +800,9 @@ Backstory/Roleplay("${character.background}")}`;
             />
           )}
         </AnimatePresence>
+
+        {/* Add ReferencesSection before the last section */}
+        <ReferencesSection />
       </motion.div>
       <footer className="footer">
           <p>Made with <span className="heart"><FiHeart /></span> for character creators</p>

@@ -19,7 +19,8 @@ import {
   FiHeart,
   FiSend,
   FiDownloadCloud,
-  FiGithub // Add this import
+  FiGithub,
+  FiUsers
 } from 'react-icons/fi';
 import { MdOutlineAutoAwesome } from 'react-icons/md';
 import { 
@@ -48,7 +49,8 @@ export default function Home() {
     replay: "Replay the introduction animation",
     feedback: "Share your feedback or report issues",
     about: "Learn more about char_creator",
-    github: "Visit developer's GitHub profile"
+    github: "Visit developer's GitHub profile",
+    relationships: "Map relationships between your characters"
   };
   
   const handleReplayIntro = () => {
@@ -216,6 +218,10 @@ export default function Home() {
     }
   };
 
+  const handleRelationships = () => {
+    router.push('/relationships');
+  };
+
   // Filter characters based on search term
   const filteredCharacters = searchTerm
     ? characters.filter(char => 
@@ -326,8 +332,20 @@ export default function Home() {
                   char_creator
                 </motion.h1>
               </div>
-              
               <div className="flex items-center gap-4">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleCreateCharacter}
+                  className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl 
+                    hover:bg-primary-dark transition-all duration-300 
+                    border border-primary/20 shadow-lg shadow-white/20 
+                    hover:shadow-xl hover:shadow-white/30 cursor-pointer border border-accent/20 hover:border-white/30"
+                >
+                  <FiPlus className="w-5 h-5" />
+                  New Character
+                </motion.button>
+
                 <motion.button
                   variants={buttonVariants}
                   whileHover="hover"
@@ -475,15 +493,16 @@ export default function Home() {
                   variants={buttonVariants}
                   whileHover="hover"
                   whileTap="tap"
-                  onClick={handleCreateCharacter}
+                  onClick={handleRelationships}
                   className="flex items-center justify-center gap-2 px-5 py-2.5 
-                    bg-gradient-to-r from-accent to-accent-light text-white rounded-xl 
-                    transition-all duration-300 shadow-lg shadow-white/20 
-                    hover:shadow-xl hover:shadow-white/30 cursor-pointer
-                    border border-accent/20 hover:border-white/30"
+                    bg-purple-500 text-white rounded-xl 
+                    transition-all duration-300 shadow-lg shadow-purple-400/20 
+                    hover:shadow-xl hover:shadow-purple-400/30 cursor-pointer
+                    border border-purple-500/20 hover:border-white/30"
+                  title={buttonDescriptions.relationships}
                 >
-                  <FiPlus className="text-lg" />
-                  New Character
+                  <FiUsers className="text-lg" />
+                  <span className="hidden sm:inline">Relationships</span>
                 </motion.button>
               </div>
             </div>
