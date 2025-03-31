@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, React } from 'react';
 import { useRouter } from 'next/router';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -18,6 +18,7 @@ import {
   FiTarget,
   FiStar,
   FiAward,
+  FiFileText,
   FiShield,
   FiEdit,
   FiShare2
@@ -283,25 +284,36 @@ Relationships("${formattedRelationships}")}`;
     if (!content) return null;
     
     return (
-      <motion.div variants={itemVariants} className="mb-6">
-        <div className="flex items-center gap-2 mb-2">
-          {icon}
+      <motion.div 
+        variants={itemVariants} 
+        className="mb-8 bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 
+        hover:shadow-lg hover:border-primary/20 transition-all duration-300"
+      >
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white">
+            {icon}
+          </div>
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white">{title}</h3>
         </div>
-        <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line pl-7">{content}</p>
+        <div className="pl-[3.25rem]">
+          <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line leading-relaxed">{content}</p>
+        </div>
       </motion.div>
     );
   };
 
-  // Create an info chip component for basic details
+  // Update the InfoChip component styling
   const InfoChip = ({ label, value, icon }) => {
     if (!value) return null;
     
     return (
-      <div className="flex items-center gap-2 bg-gray-200 dark:bg-gray-700 px-3 py-2 rounded-xl">
-        {icon}
+      <div className="flex items-center gap-3 bg-gray-100 dark:bg-gray-700/50 px-4 py-3 rounded-xl 
+      border border-gray-200 dark:border-gray-600 hover:border-primary/20 transition-all duration-300">
+        <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white">
+          {icon}
+        </div>
         <div>
-          <p className="text-xs text-gray-500 dark:text-gray-400">{label}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">{label}</p>
           <p className="font-medium text-gray-800 dark:text-white">{value}</p>
         </div>
       </div>
@@ -314,61 +326,88 @@ Relationships("${formattedRelationships}")}`;
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50"
       onClick={() => setShowExportModal(false)}
     >
       <motion.div 
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-4xl w-full shadow-xl"
+        initial={{ scale: 0.95, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.95, opacity: 0, y: 20 }}
+        transition={{ type: "spring", duration: 0.5 }}
+        className="bg-white dark:bg-gray-800 rounded-3xl p-8 max-w-4xl w-full shadow-2xl 
+        border border-gray-200 dark:border-gray-700"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Export Character</h2>
-          <button
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Export Character</h2>
+            <p className="text-gray-600 dark:text-gray-400">Choose your preferred format and download</p>
+          </div>
+          <motion.button
+            whileHover={{ scale: 1.1, rotate: 90 }}
+            whileTap={{ scale: 0.9 }}
             onClick={() => setShowExportModal(false)}
-            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200
+            w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-100 
+            dark:hover:bg-gray-700 transition-colors"
           >
             <FiX className="w-6 h-6" />
-          </button>
+          </motion.button>
         </div>
 
-        <div className="mb-6">
+        <div className="mb-8">
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Select Export Format</h3>
           <div className="grid grid-cols-2 gap-4">
-            <button
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => setSelectedFormat('text')}
-              className={`p-4 rounded-xl border-2 transition-all ${
+              className={`p-6 rounded-2xl border-2 transition-all ${
                 selectedFormat === 'text'
-                  ? 'border-primary bg-primary/5 dark:bg-primary/10'
+                  ? 'border-primary bg-primary/5 dark:bg-primary/10 shadow-lg shadow-primary/10'
                   : 'border-gray-200 dark:border-gray-700 hover:border-primary/50'
               }`}
             >
-              <h4 className="font-medium text-gray-900 dark:text-white mb-2">General Text Format</h4>
+              <div className="flex items-center gap-3 mb-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center
+                  ${selectedFormat === 'text' ? 'bg-primary text-white' : 'bg-gray-100 dark:bg-gray-700'}`}>
+                  <FiFileText className="w-5 h-5" />
+                </div>
+                <h4 className="font-medium text-gray-900 dark:text-white">General Text Format</h4>
+              </div>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Clean, readable format without brackets
+                Clean, readable format perfect for general use and editing
               </p>
-            </button>
-            <button
+            </motion.button>
+
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => setSelectedFormat('character.ai')}
-              className={`p-4 rounded-xl border-2 transition-all ${
+              className={`p-6 rounded-2xl border-2 transition-all ${
                 selectedFormat === 'character.ai'
-                  ? 'border-primary bg-primary/5 dark:bg-primary/10'
+                  ? 'border-primary bg-primary/5 dark:bg-primary/10 shadow-lg shadow-primary/10'
                   : 'border-gray-200 dark:border-gray-700 hover:border-primary/50'
               }`}
             >
-              <h4 className="font-medium text-gray-900 dark:text-white mb-2">Character.AI Format</h4>
+              <div className="flex items-center gap-3 mb-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center
+                  ${selectedFormat === 'character.ai' ? 'bg-primary text-white' : 'bg-gray-100 dark:bg-gray-700'}`}>
+                  <MdAutoAwesome className="w-5 h-5" />
+                </div>
+                <h4 className="font-medium text-gray-900 dark:text-white">Character.AI Format</h4>
+              </div>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Official format with brackets for Character.AI
+                Official format optimized for Character.AI platform
               </p>
-            </button>
+            </motion.button>
           </div>
         </div>
 
-        <div className="mb-6">
+        <div className="mb-8">
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Preview</h3>
-          <div className="bg-gray-100 dark:bg-gray-900 rounded-xl p-4">
+          <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-6 max-h-[300px] overflow-y-auto
+          border border-gray-200 dark:border-gray-700">
             <pre className="text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap font-mono">
               {getFormattedPreview(selectedFormat)}
             </pre>
@@ -377,27 +416,24 @@ Relationships("${formattedRelationships}")}`;
 
         <div className="flex justify-end gap-3">
           <motion.button
-            variants={buttonVariants}
-            whileHover="hover"
-            whileTap="tap"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => setShowExportModal(false)}
-            className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white 
-            rounded-xl border border-gray-300 dark:border-gray-600 cursor-pointer 
-            transition-all duration-300 hover:bg-gray-300 dark:hover:bg-gray-600"
+            className="cursor-pointer px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white 
+            rounded-xl border border-gray-200 dark:border-gray-600 font-medium
+            hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
           >
             Cancel
           </motion.button>
           <motion.button
-            variants={buttonVariants}
-            whileHover="hover"
-            whileTap="tap"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={handleExport}
-            className="px-4 py-2 bg-primary text-white rounded-xl border border-primary/20 
-            cursor-pointer transition-all duration-300 hover:bg-primary/90 
-            flex items-center gap-2"
+            className="cursor-pointer px-6 py-3 bg-primary text-white rounded-xl font-medium
+            hover:bg-primary/90 transition-colors flex items-center gap-2"
           >
-            <FiDownload />
-            Export
+            <FiDownload className="w-5 h-5" />
+            Export Character
           </motion.button>
         </div>
       </motion.div>
@@ -494,7 +530,7 @@ Relationships("${formattedRelationships}")}`;
     <div className="min-h-screen bg-gray-200 dark:bg-gray-900 transition-colors duration-200">
       <Header />
       <motion.div 
-        className="max-w-5xl mx-auto p-6 py-12"
+        className="max-w-6xl mx-auto p-6 py-12"
         variants={pageTransition}
         initial="hidden"
         animate="visible"
@@ -579,179 +615,225 @@ Relationships("${formattedRelationships}")}`;
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-character border border-gray-100 dark:border-gray-700 overflow-hidden">
               <div className="aspect-[1/1] relative bg-gray-200 dark:bg-gray-700">
                 {character.imageUrl ? (
-                  <img 
-                    src={character.imageUrl} 
-                    alt={character.name} 
-                    className="w-full h-full object-cover"
-                  />
+                  <>
+                    <img 
+                      src={character.imageUrl} 
+                      alt={character.name} 
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent">
+                      <div className="absolute bottom-0 left-0 right-0 p-6">
+                        <h1 className="text-2xl font-bold text-white mb-2">{character.name}</h1>
+                        {character.description && (
+                          <p className="text-gray-200 text-sm line-clamp-2">{character.description}</p>
+                        )}
+                      </div>
+                    </div>
+                  </>
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
                     <FiUser className="w-24 h-24 text-gray-400" />
                   </div>
                 )}
               </div>
-              <div className="p-6">
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{character.name}</h1>
-                <p className="text-gray-600 dark:text-gray-400 mb-6">{character.description}</p>
-                
-                <div className="grid grid-cols-2 gap-3">
-                  <InfoChip 
-                    label="Age" 
-                    value={character.age} 
-                    icon={<FiInfo className="text-primary" />} 
-                  />
-                  <InfoChip 
-                    label="Gender" 
-                    value={character.gender} 
-                    icon={<FiUser className="text-primary" />} 
-                  />
-                  <InfoChip 
-                    label="Height" 
-                    value={character.height} 
-                    icon={<MdHeight className="text-primary" />} 
-                  />
-                  <InfoChip 
-                    label="Language" 
-                    value={character.language} 
-                    icon={<MdLanguage className="text-primary" />} 
-                  />
-                  <InfoChip 
-                    label="Occupation" 
-                    value={character.occupation} 
-                    icon={<MdWork className="text-primary" />} 
-                  />
-                  <InfoChip 
-                    label="Status" 
-                    value={character.status} 
-                    icon={<FiInfo className="text-primary" />} 
-                  />
-                  <InfoChip 
-                    label="Species" 
-                    value={character.species} 
-                    icon={<FiInfo className="text-primary" />} 
-                  />
-                </div>
+              {/* Update the character info container layout */}
+              <div className="p-6 space-y-3">
+                <InfoChip 
+                  label="Age" 
+                  value={character.age} 
+                  icon={<FiInfo className="w-5 h-5" />} 
+                />
+                <InfoChip 
+                  label="Gender" 
+                  value={character.gender} 
+                  icon={<FiUser className="w-5 h-5" />} 
+                />
+                <InfoChip 
+                  label="Height" 
+                  value={character.height} 
+                  icon={<MdHeight className="w-5 h-5" />} 
+                />
+                <InfoChip 
+                  label="Language" 
+                  value={character.language} 
+                  icon={<MdLanguage className="w-5 h-5" />} 
+                />
+                <InfoChip 
+                  label="Occupation" 
+                  value={character.occupation} 
+                  icon={<MdWork className="w-5 h-5" />} 
+                />
+                <InfoChip 
+                  label="Status" 
+                  value={character.status} 
+                  icon={<FiInfo className="w-5 h-5" />} 
+                />
+                <InfoChip 
+                  label="Species" 
+                  value={character.species} 
+                  icon={<FiInfo className="w-5 h-5" />} 
+                />
               </div>
             </div>
           </motion.div>
           
           {/* Right Column - Character Details */}
-          <motion.div variants={itemVariants} className="md:col-span-2">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-character border border-gray-100 dark:border-gray-700 p-6">
-              <motion.div variants={itemVariants} className="border-b border-gray-200 dark:border-gray-700 pb-6 mb-6">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                  <MdAutoAwesome className="text-primary" />
+          <motion.div variants={itemVariants} className="md:col-span-2 space-y-6">
+            {/* Main Details Section */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-character overflow-hidden">
+              <div className="border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 p-6">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white">
+                    <MdAutoAwesome className="text-xl" />
+                  </div>
                   Character Details
                 </h2>
-                
-                <DetailSection 
-                  title="Personality" 
-                  content={character.personality}
-                  icon={<FiUser className="text-primary" />}
-                />
-                
-                <DetailSection 
-                  title="Appearance" 
-                  content={character.appearance}
-                  icon={<FiUser className="text-primary" />}
-                />
+              </div>
 
-                {character.figure && (
-                  <div className="mb-5">
-                    <h3 className="font-medium text-gray-800 dark:text-white mb-1">Physical Attributes</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
-                      {character.figure && (
-                        <div className="bg-gray-200 dark:bg-gray-700/50 px-3 py-2 rounded-lg">
-                          <span className="text-sm text-gray-500 dark:text-gray-400">Figure/Build</span>
-                          <p className="text-gray-800 dark:text-white">{character.figure}</p>
-                        </div>
-                      )}
-                      {character.attributes && (
-                        <div className="bg-gray-200 dark:bg-gray-700/50 px-3 py-2 rounded-lg">
-                          <span className="text-sm text-gray-500 dark:text-gray-400">Notable Attributes</span>
-                          <p className="text-gray-800 dark:text-white">{character.attributes}</p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-                
-                <DetailSection 
-                  title="Skills & Abilities" 
-                  content={character.skills}
-                  icon={<FiBookOpen className="text-primary" />}
-                />
+              <div className="p-6">
+                <div className="space-y-6">
+                  <DetailSection 
+                    title="Personality" 
+                    content={character.personality}
+                    icon={<FiUser className="w-5 h-5" />}
+                  />
 
-                {(character.likes || character.dislikes) && (
-                  <div className="mb-5">
-                    <h3 className="font-medium text-gray-800 dark:text-white mb-1">Preferences</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
-                      {character.likes && (
-                        <div className="bg-gray-200 dark:bg-gray-700/50 px-3 py-2 rounded-lg">
-                          <span className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                            <FiHeart className="text-success" /> Likes
-                          </span>
-                          <p className="text-gray-800 dark:text-white">{character.likes}</p>
+                  <DetailSection 
+                    title="Appearance" 
+                    content={character.appearance}
+                    icon={<FiUser className="w-5 h-5" />}
+                  />
+
+                  {(character.figure || character.attributes) && (
+                    <motion.div variants={itemVariants} 
+                      className="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-6 border border-gray-100 
+                      dark:border-gray-700 hover:shadow-lg hover:border-primary/20 transition-all duration-300"
+                    >
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white">
+                          <FiUser className="w-5 h-5" />
                         </div>
-                      )}
-                      {character.dislikes && (
-                        <div className="bg-gray-200 dark:bg-gray-700/50 px-3 py-2 rounded-lg">
-                          <span className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                            <FiThumbsDown className="text-status-error" /> Dislikes
-                          </span>
-                          <p className="text-gray-800 dark:text-white">{character.dislikes}</p>
+                        <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Physical Attributes</h3>
+                      </div>
+                      <div className="pl-[3.25rem] grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {character.figure && (
+                          <div className="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
+                            <span className="text-sm font-medium text-primary mb-1 block">Figure/Build</span>
+                            <p className="text-gray-800 dark:text-white">{character.figure}</p>
+                          </div>
+                        )}
+                        {character.attributes && (
+                          <div className="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
+                            <span className="text-sm font-medium text-primary mb-1 block">Notable Attributes</span>
+                            <p className="text-gray-800 dark:text-white">{character.attributes}</p>
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+
+                  <DetailSection 
+                    title="Skills & Abilities" 
+                    content={character.skills}
+                    icon={<FiBookOpen className="w-5 h-5" />}
+                  />
+
+                  {(character.likes || character.dislikes) && (
+                    <motion.div variants={itemVariants} 
+                      className="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-6 border border-gray-100 
+                      dark:border-gray-700 hover:shadow-lg hover:border-primary/20 transition-all duration-300"
+                    >
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white">
+                          <FiHeart className="w-5 h-5" />
                         </div>
-                      )}
-                    </div>
+                        <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Preferences</h3>
+                      </div>
+                      <div className="pl-[3.25rem] grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {character.likes && (
+                          <div className="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
+                            <span className="text-sm font-medium text-success flex items-center gap-2 mb-1">
+                              <FiHeart className="w-4 h-4" /> Likes
+                            </span>
+                            <p className="text-gray-800 dark:text-white">{character.likes}</p>
+                          </div>
+                        )}
+                        {character.dislikes && (
+                          <div className="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
+                            <span className="text-sm font-medium text-status-error flex items-center gap-2 mb-1">
+                              <FiThumbsDown className="w-4 h-4" /> Dislikes
+                            </span>
+                            <p className="text-gray-800 dark:text-white">{character.dislikes}</p>
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+
+                  <DetailSection 
+                    title="Habits" 
+                    content={character.habits}
+                    icon={<FiInfo className="w-5 h-5" />}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Background & Story Section */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-character overflow-hidden">
+              <div className="border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 p-6">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white">
+                    <FiBookOpen className="text-xl" />
                   </div>
-                )}
-                
-                <DetailSection 
-                  title="Habits" 
-                  content={character.habits}
-                  icon={<FiInfo className="text-primary" />}
-                />
-              </motion.div>
-              
-              <motion.div variants={itemVariants}>
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                  <FiBookOpen className="text-primary" />
                   Background & Story
                 </h2>
-                
+              </div>
+
+              <div className="p-6 space-y-6">
                 <DetailSection 
                   title="Background Story" 
                   content={character.background}
-                  icon={<FiBookOpen className="text-primary" />}
+                  icon={<FiBookOpen className="w-5 h-5" />}
                 />
                 
                 <DetailSection 
                   title="Interests & Hobbies" 
                   content={character.interests}
-                  icon={<FiHeart className="text-primary" />}
+                  icon={<FiHeart className="w-5 h-5" />}
                 />
-              </motion.div>
-              
-              <motion.div variants={itemVariants} className="mt-8 border-t border-gray-200 dark:border-gray-700 pt-6">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                  <FiMessageSquare className="text-primary" />
+              </div>
+            </div>
+
+            {/* AI Settings Section */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-character overflow-hidden">
+              <div className="border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 p-6">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white">
+                    <FiMessageSquare className="text-xl" />
+                  </div>
                   AI Settings
                 </h2>
-                
-                <div className="p-5 bg-primary/5 dark:bg-primary/10 rounded-xl border border-primary/10">
+              </div>
+
+              <div className="p-6">
+                <motion.div 
+                  variants={itemVariants}
+                  className="bg-primary/5 dark:bg-primary/10 rounded-2xl border border-primary/10 p-6 space-y-6"
+                >
                   <DetailSection 
                     title="Scenario" 
                     content={character.scenario}
-                    icon={<FiMessageSquare className="text-primary" />}
+                    icon={<FiMessageSquare className="w-5 h-5" />}
                   />
                   
                   <DetailSection 
                     title="First Message / Greeting" 
                     content={character.greeting}
-                    icon={<FiMessageSquare className="text-primary" />}
+                    icon={<FiMessageSquare className="w-5 h-5" />}
                   />
-                </div>
-              </motion.div>
+                </motion.div>
+              </div>
             </div>
           </motion.div>
         </div>
