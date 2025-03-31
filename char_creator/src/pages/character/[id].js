@@ -19,7 +19,8 @@ import {
   FiStar,
   FiAward,
   FiShield,
-  FiEdit
+  FiEdit,
+  FiShare2
 } from 'react-icons/fi';
 import { MdHeight, MdLanguage, MdWork, MdAutoAwesome } from 'react-icons/md';
 import { getCharacterById, deleteCharacter, exportCharacterAsText, downloadCharacterFile } from '../../utils/characterStorage';
@@ -52,7 +53,12 @@ export default function CharacterDetail() {
   const [versions, setVersions] = useState([]);
   const [relationships, setRelationships] = useState({});
   const [relatedCharacters, setRelatedCharacters] = useState([]);
+  const [showShareNotification, setShowShareNotification] = useState(false);
+  const [shareNotificationType, setShareNotificationType] = useState('success');
   const { getVersions, updateCharacter } = useCharacters();
+
+  // Add isShared check
+  const isSharedCharacter = character?.isShared;
 
   useEffect(() => {
     if (id) {
@@ -221,6 +227,50 @@ Backstory/Roleplay("${character.background}")}`;
       handleExportPfp();
     }
     setPendingAction(null);
+  };
+
+  const handleShare = async () => {
+    try {
+      // Show loading state
+      setShareNotificationType('loading');
+      setShowShareNotification(true);
+
+      const response = await fetch('/api/share-character', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ characterId: id }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to share character');
+      }
+
+      const data = await response.json();
+      const shareUrl = `${window.location.origin}/character/${data.sharedCharacterId}`;
+      
+      // Copy to clipboard
+      await navigator.clipboard.writeText(shareUrl);
+      
+      // Show success notification
+      setShareNotificationType('success');
+      setShowShareNotification(true);
+
+      // Hide notification after 3 seconds
+      setTimeout(() => {
+        setShowShareNotification(false);
+      }, 3000);
+    } catch (error) {
+      console.error('Error sharing character:', error);
+      setShareNotificationType('error');
+      setShowShareNotification(true);
+
+      // Hide error notification after 3 seconds
+      setTimeout(() => {
+        setShowShareNotification(false);
+      }, 3000);
+    }
   };
 
   // Animation variants
@@ -495,45 +545,62 @@ Backstory/Roleplay("${character.background}")}`;
           </motion.button>
           
           <div className="flex gap-2">
-            <motion.button
-              variants={buttonVariants}
-              whileHover="hover"
-              whileTap="tap"
-              onClick={() => setShowVersionHistory(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-800 dark:bg-gray-700 text-white 
-              rounded-xl border border-white/20 cursor-pointer transition-all duration-300 
-              hover:shadow-lg hover:shadow-white/20 dark:hover:shadow-white/10"
-            >
-              <FiClock />
-              History
-            </motion.button>
+            {!isSharedCharacter && (
+              <>
+                <motion.button
+                  variants={buttonVariants}
+                  whileHover="hover"
+                  whileTap="tap"
+                  onClick={() => setShowVersionHistory(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-800 dark:bg-gray-700 text-white 
+                  rounded-xl border border-white/20 cursor-pointer transition-all duration-300 
+                  hover:shadow-lg hover:shadow-white/20 dark:hover:shadow-white/10"
+                >
+                  <FiClock />
+                  History
+                </motion.button>
 
-            <motion.button
-              variants={buttonVariants}
-              whileHover="hover"
-              whileTap="tap"
-              onClick={handleEdit}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-800 dark:bg-gray-700 text-white 
-              rounded-xl border border-white/20 cursor-pointer transition-all duration-300 
-              hover:shadow-lg hover:shadow-white/20 dark:hover:shadow-white/10"
-            >
-              <FiEdit2 />
-              Edit
-            </motion.button>
-            
-            <motion.button
-              variants={buttonVariants}
-              whileHover="hover"
-              whileTap="tap"
-              onClick={() => setShowDeleteConfirm(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-800 dark:bg-gray-700 text-white 
-              rounded-xl border border-white/20 cursor-pointer transition-all duration-300 
-              hover:shadow-lg hover:shadow-white/20 dark:hover:shadow-white/10 
-              hover:bg-status-error hover:border-status-error"
-            >
-              <FiTrash2 />
-              Delete
-            </motion.button>
+                <motion.button
+                  variants={buttonVariants}
+                  whileHover="hover"
+                  whileTap="tap"
+                  onClick={handleShare}
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-800 dark:bg-gray-700 text-white 
+                  rounded-xl border border-white/20 cursor-pointer transition-all duration-300 
+                  hover:shadow-lg hover:shadow-white/20 dark:hover:shadow-white/10"
+                >
+                  <FiShare2 />
+                  Share
+                </motion.button>
+
+                <motion.button
+                  variants={buttonVariants}
+                  whileHover="hover"
+                  whileTap="tap"
+                  onClick={handleEdit}
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-800 dark:bg-gray-700 text-white 
+                  rounded-xl border border-white/20 cursor-pointer transition-all duration-300 
+                  hover:shadow-lg hover:shadow-white/20 dark:hover:shadow-white/10"
+                >
+                  <FiEdit2 />
+                  Edit
+                </motion.button>
+                
+                <motion.button
+                  variants={buttonVariants}
+                  whileHover="hover"
+                  whileTap="tap"
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-800 dark:bg-gray-700 text-white 
+                  rounded-xl border border-white/20 cursor-pointer transition-all duration-300 
+                  hover:shadow-lg hover:shadow-white/20 dark:hover:shadow-white/10 
+                  hover:bg-status-error hover:border-status-error"
+                >
+                  <FiTrash2 />
+                  Delete
+                </motion.button>
+              </>
+            )}
           </div>
         </motion.div>
 
@@ -722,7 +789,7 @@ Backstory/Roleplay("${character.background}")}`;
         
         {/* Delete confirmation overlay */}
         <AnimatePresence>
-          {showDeleteConfirm && (
+          {showDeleteConfirm && !isSharedCharacter && (
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -791,7 +858,7 @@ Backstory/Roleplay("${character.background}")}`;
         </AnimatePresence>
 
         <AnimatePresence>
-          {showVersionHistory && (
+          {showVersionHistory && !isSharedCharacter && (
             <VersionHistoryModal
               isOpen={showVersionHistory}
               onClose={() => setShowVersionHistory(false)}
@@ -803,6 +870,32 @@ Backstory/Roleplay("${character.background}")}`;
 
         {/* Add ReferencesSection before the last section */}
         <ReferencesSection />
+
+        {/* Share Notification */}
+        <AnimatePresence>
+          {showShareNotification && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              className={`fixed bottom-4 right-4 px-6 py-3 rounded-xl shadow-lg z-50 ${
+                shareNotificationType === 'success'
+                  ? 'bg-green-500 text-white'
+                  : shareNotificationType === 'error'
+                  ? 'bg-red-500 text-white'
+                  : 'bg-gray-500 text-white'
+              }`}
+            >
+              {shareNotificationType === 'success' ? (
+                <p>Character link is copied successfully!</p>
+              ) : shareNotificationType === 'error' ? (
+                <p>Something went wrong while copying a link, try again later</p>
+              ) : (
+                <p>Sharing character...</p>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
       <footer className="footer">
           <p>Made with <span className="heart"><FiHeart /></span> for character creators</p>

@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 // Local storage keys
 const CHARACTERS_KEY = 'fiction_characters';
 const VERSIONS_KEY = 'fiction_character_versions';
+const SHARED_CHARACTERS_KEY = 'fiction_shared_characters';
 
 /**
  * Get all characters from local storage
@@ -125,35 +126,97 @@ export const saveCharacter = (characterData, existingId = null) => {
 export const getAllCharacters = getCharacters;
 
 /**
- * Get a character by ID
+ * Get all shared characters from local storage
+ * @returns {Array} Array of shared character objects
+ */
+export const getSharedCharacters = () => {
+  if (typeof window === 'undefined') return [];
+  
+  const sharedCharactersJson = localStorage.getItem(SHARED_CHARACTERS_KEY);
+  return sharedCharactersJson ? JSON.parse(sharedCharactersJson) : [];
+};
+
+/**
+ * Save a shared character to local storage
+ * @param {Object} characterData - Character data object
+ * @returns {Object} Saved shared character with ID
+ */
+export const saveSharedCharacter = (characterData) => {
+  if (typeof window === 'undefined') {
+    throw new Error('Cannot save shared character on server side');
+  }
+
+  const sharedCharacters = getSharedCharacters();
+  
+  // Create a new shared character with a unique ID
+  const newSharedCharacter = {
+    id: uuidv4(),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    isShared: true,
+    ...characterData
+  };
+  
+  // Add to shared characters array
+  const updatedSharedCharacters = [...sharedCharacters, newSharedCharacter];
+  
+  // Save to localStorage
+  try {
+    localStorage.setItem(SHARED_CHARACTERS_KEY, JSON.stringify(updatedSharedCharacters));
+  } catch (error) {
+    console.error('Error saving shared character:', error);
+    throw new Error('Failed to save shared character');
+  }
+  
+  return newSharedCharacter;
+};
+
+/**
+ * Get a shared character by ID
+ * @param {string} id - Shared character ID
+ * @returns {Object|null} Shared character object or null if not found
+ */
+export const getSharedCharacterById = (id) => {
+  if (!id) return null;
+  
+  try {
+    const sharedCharacters = getSharedCharacters();
+    const character = sharedCharacters.find(char => char.id === id);
+    
+    if (!character) {
+      return null;
+    }
+    
+    return character;
+  } catch (error) {
+    console.error('Error getting shared character:', error);
+    return null;
+  }
+};
+
+/**
+ * Get a character by ID (including shared characters)
  * @param {string} id - Character ID
  * @returns {Object|null} Character object or null if not found
  */
 export const getCharacterById = (id) => {
   if (!id) return null;
   
-  const characters = getCharacters();
-  const character = characters.find(char => char.id === id);
-  
-  if (!character) {
-    // If character not found, clean up any references to it
-    const updatedCharacters = characters.filter(char => char.id !== id);
-    if (updatedCharacters.length !== characters.length) {
-      // Only update storage if we actually removed something
-      localStorage.setItem(CHARACTERS_KEY, JSON.stringify(updatedCharacters));
+  try {
+    // First check regular characters
+    const characters = getCharacters();
+    const character = characters.find(char => char.id === id);
+    
+    if (character) {
+      return character;
     }
+    
+    // If not found in regular characters, check shared characters
+    return getSharedCharacterById(id);
+  } catch (error) {
+    console.error('Error getting character:', error);
     return null;
   }
-  
-  // Validate character data integrity
-  if (!character.name || !character.id) {
-    // If character data is invalid, remove it
-    const updatedCharacters = characters.filter(char => char.id !== id);
-    localStorage.setItem(CHARACTERS_KEY, JSON.stringify(updatedCharacters));
-    return null;
-  }
-  
-  return character;
 };
 
 /**
