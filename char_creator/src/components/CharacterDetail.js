@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { FiDownload, FiEdit, FiArrowLeft, FiUser, FiFileText, FiImage } from 'react-icons/fi';
 import useCharacters from '../hooks/useCharacters';
+import Footer from '../components/website_essentials/Footer';
 
 const CharacterDetail = ({ characterId }) => {
   const router = useRouter();
@@ -206,6 +207,7 @@ const CharacterDetail = ({ characterId }) => {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   );
 };

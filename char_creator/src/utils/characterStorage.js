@@ -524,3 +524,263 @@ export const downloadCharacterBundle = async (character, format = 'text') => {
     return false;
   }
 };
+
+/**
+ * Get character statistics including demographics and text analysis
+ * @returns {Object} Statistics data
+ */
+export const getCharacterStatistics = () => {
+  const characters = getCharacters();
+  
+  // Basic demographics
+  const genderStats = characters.reduce((acc, char) => {
+    const gender = char.gender || 'unspecified';
+    acc[gender] = (acc[gender] || 0) + 1;
+    return acc;
+  }, {});
+
+  const heightStats = characters
+    .filter(char => char.height)
+    .map(char => parseInt(char.height))
+    .filter(height => !isNaN(height));
+
+  const avgHeight = heightStats.length ? 
+    Math.round(heightStats.reduce((a, b) => a + b) / heightStats.length) : 0;
+
+  // Attribute analysis
+  const personalityWords = characters
+    .filter(char => char.personality)
+    .flatMap(char => char.personality.toLowerCase().split(/\W+/))
+    .filter(word => word.length > 3);
+
+  const skillsList = characters
+    .filter(char => char.skills)
+    .flatMap(char => char.skills.toLowerCase().split(/,|\n/))
+    .map(skill => skill.trim())
+    .filter(skill => skill.length > 0);
+
+  // Calculate completeness scores
+  const fields = ['name', 'gender', 'age', 'height', 'personality', 'background', 'skills'];
+  const completenessScores = characters.map(char => {
+    const filledFields = fields.filter(field => char[field] && char[field].toString().trim().length > 0);
+    return (filledFields.length / fields.length) * 100;
+  });
+
+  const avgCompleteness = completenessScores.length ?
+    Math.round(completenessScores.reduce((a, b) => a + b) / completenessScores.length) : 0;
+
+  // Species distribution
+  const speciesDistribution = characters.reduce((acc, char) => {
+    const species = char.species || 'Unspecified';
+    acc[species] = (acc[species] || 0) + 1;
+    return acc;
+  }, {});
+
+  // Age distribution
+  const ageDistribution = characters.reduce((acc, char) => {
+    if (!char.age) return acc;
+    const age = parseInt(char.age);
+    if (isNaN(age)) return acc;
+    
+    const ageGroup = 
+      age < 18 ? '0-17' :
+      age < 30 ? '18-29' :
+      age < 50 ? '30-49' :
+      age < 70 ? '50-69' :
+      '70+';
+    
+    acc[ageGroup] = (acc[ageGroup] || 0) + 1;
+    return acc;
+  }, {});
+
+  // Creation timeline
+  const creationTimeline = characters
+    .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+    .reduce((acc, char) => {
+      const date = new Date(char.createdAt).toLocaleDateString();
+      const existingDate = acc.find(d => d.date === date);
+      if (existingDate) {
+        existingDate.count++;
+      } else {
+        acc.push({ date, count: 1 });
+      }
+      return acc;
+    }, []);
+
+  // Calculate completeness for each character
+  const charactersWithCompleteness = characters.map(char => {
+    const filledFields = fields.filter(field => char[field] && char[field].toString().trim().length > 0);
+    const completeness = Math.round((filledFields.length / fields.length) * 100);
+    return { ...char, completeness };
+  });
+
+  // Get top creators (most complete characters)
+  const topCreators = charactersWithCompleteness
+    .sort((a, b) => b.completeness - a.completeness)
+    .slice(0, 6);
+
+  // Common traits analysis
+  const traitWords = characters
+    .flatMap(char => [
+      ...(char.personality?.toLowerCase().split(/\W+/) || []),
+      ...(char.traits?.toLowerCase().split(/\W+/) || [])
+    ])
+    .filter(word => word.length > 3);
+
+  const mostCommonTraits = getWordFrequency(traitWords)
+    .slice(0, 20)
+    .map(({ word, count }) => ({
+      word,
+      count,
+      size: Math.max(1, Math.min(3, count / 2))
+    }));
+
+  // Enhanced creation and edit timeline
+  const timelineData = characters.reduce((acc, char) => {
+    const createDate = new Date(char.createdAt).toLocaleDateString();
+    const updateDate = new Date(char.updatedAt).toLocaleDateString();
+    
+    // Track creations
+    acc.creations[createDate] = (acc.creations[createDate] || 0) + 1;
+    
+    // Track edits (only if update is different from creation)
+    if (char.updatedAt !== char.createdAt) {
+      acc.edits[updateDate] = (acc.edits[updateDate] || 0) + 1;
+    }
+    
+    return acc;
+  }, { creations: {}, edits: {} });
+
+  // Additional statistics
+  const additionalStats = {
+    // Language distribution
+    languageStats: characters.reduce((acc, char) => {
+      const lang = char.language || 'Unspecified';
+      acc[lang] = (acc[lang] || 0) + 1;
+      return acc;
+    }, {}),
+    
+    // Occupation categories
+    occupationStats: characters.reduce((acc, char) => {
+      const occupation = char.occupation || 'Unspecified';
+      acc[occupation] = (acc[occupation] || 0) + 1;
+      return acc;
+    }, {}),
+    
+    // Status analysis
+    statusStats: characters.reduce((acc, char) => {
+      const status = char.status || 'Unspecified';
+      acc[status] = (acc[status] || 0) + 1;
+      return acc;
+    }, {}),
+    
+    // Background length analysis
+    backgroundStats: characters.reduce((acc, char) => {
+      if (!char.background) return acc;
+      const wordCount = char.background.split(/\s+/).length;
+      acc.push(wordCount);
+      return acc;
+    }, []),
+    
+    // Likes/Dislikes analysis
+    preferencesStats: characters.reduce((acc, char) => {
+      if (char.likes) acc.likes += char.likes.split(',').length;
+      if (char.dislikes) acc.dislikes += char.dislikes.split(',').length;
+      return acc;
+    }, { likes: 0, dislikes: 0 }),
+
+    // Image usage statistics
+    imageStats: {
+      withImage: characters.filter(char => char.imageUrl).length,
+      withoutImage: characters.filter(char => !char.imageUrl).length
+    }
+  };
+
+  // Convert timeline data to sorted arrays
+  const allDates = [...new Set([
+    ...Object.keys(timelineData.creations),
+    ...Object.keys(timelineData.edits)
+  ])].sort();
+  
+  const creationTimelineEnhanced = allDates.map(date => ({
+    date,
+    creations: timelineData.creations[date] || 0,
+    edits: timelineData.edits[date] || 0
+  }));
+
+  return {
+    totalCharacters: characters.length,
+    genderDistribution: genderStats,
+    heightStatistics: {
+      average: avgHeight,
+      min: Math.min(...heightStats),
+      max: Math.max(...heightStats),
+    },
+    mostCommonPersonalityWords: getWordFrequency(personalityWords).slice(0, 10),
+    mostCommonSkills: getWordFrequency(skillsList).slice(0, 10),
+    completeness: {
+      average: avgCompleteness,
+      scores: completenessScores
+    },
+    speciesDistribution,
+    ageDistribution,
+    creationTimeline,
+    topCreators,
+    mostCommonTraits,
+    creationTimelineEnhanced,
+    additionalStats
+  };
+};
+
+// Helper function to get word frequency
+function getWordFrequency(words) {
+  const frequency = words.reduce((acc, word) => {
+    acc[word] = (acc[word] || 0) + 1;
+    return acc;
+  }, {});
+  
+  return Object.entries(frequency)
+    .sort(([,a], [,b]) => b - a)
+    .map(([word, count]) => ({ word, count }));
+}
+
+export const syncCharacterWithStorage = async (characterId) => {
+  try {
+    const characters = JSON.parse(localStorage.getItem(CHARACTERS_KEY) || '[]');
+    const character = characters.find(char => char.id === characterId);
+    if (!character) {
+      console.error('Character not found in storage:', characterId);
+      return null;
+    }
+    return character;
+  } catch (error) {
+    console.error('Error syncing character:', error);
+    return null;
+  }
+};
+
+// Update the updateCharacterRatings function
+export async function updateCharacterRatings(characterId, ratings) {
+  try {
+    const characters = getCharacters();
+    const characterIndex = characters.findIndex(char => char.id === characterId);
+    
+    if (characterIndex === -1) {
+      throw new Error('Character not found');
+    }
+
+    // Update the character's ratings
+    characters[characterIndex] = {
+      ...characters[characterIndex],
+      ratings: { ...(characters[characterIndex].ratings || {}), ...ratings }
+    };
+
+    // Save the updated characters back to storage
+    localStorage.setItem(CHARACTERS_KEY, JSON.stringify(characters));
+    
+    return characters[characterIndex];
+  } catch (error) {
+    console.error('Error updating character ratings:', error);
+    throw error;
+  }
+}

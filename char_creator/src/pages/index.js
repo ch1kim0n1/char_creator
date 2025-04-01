@@ -21,7 +21,8 @@ import {
   FiDownloadCloud,
   FiGithub,
   FiUsers,
-  FiFolder
+  FiFolder,
+  FiBarChart2
 } from 'react-icons/fi';
 import { MdOutlineAutoAwesome, MdCreate } from 'react-icons/md';
 import { 
@@ -54,10 +55,11 @@ export default function Home() {
   // Add this object for button descriptions
   const buttonDescriptions = {
     replay: "Replay the introduction animation",
-    feedback: "Share your feedback or report issues",
-    about: "Learn more about char_creator",
-    github: "Visit developer's GitHub profile",
-    relationships: "Map relationships between your characters"
+    feedback: "Feedback Page",
+    about: "About Page",
+    github: "Author's GitHub profile",
+    relationships: "Map relationships between your characters",
+    stats: "Characters' Statistics"
   };
   
   const handleReplayIntro = () => {
@@ -450,6 +452,18 @@ export default function Home() {
                 >
                   <FiGithub className="w-5 h-5" />
                 </Link>
+
+                <Link 
+                  href="/statistics" 
+                  className="p-2 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 
+                    hover:text-accent dark:hover:text-accent border border-gray-200 dark:border-gray-600 
+                    transition-all duration-300 hover:shadow-md hover:scale-105"
+                  aria-label="Statistics"
+                  onMouseEnter={() => setShowHelpPopup(true)}
+                  onMouseLeave={() => setShowHelpPopup(false)}
+                >
+                  <FiBarChart2 className="w-5 h-5" />
+                </Link>
               </div>
 
               {/* Help Popup */}
@@ -477,6 +491,10 @@ export default function Home() {
                       <div className="flex items-center gap-2">
                         <FiGithub className="w-4 h-4 text-accent" />
                         <span className="text-sm text-gray-600 dark:text-gray-300">{buttonDescriptions.github}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <FiBarChart2 className="w-4 h-4 text-accent" />
+                        <span className="text-sm text-gray-600 dark:text-gray-300">{buttonDescriptions.stats}</span>
                       </div>
                     </div>
                   </motion.div>

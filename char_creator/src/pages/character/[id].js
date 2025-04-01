@@ -25,6 +25,7 @@ import {
 } from 'react-icons/fi';
 import { MdHeight, MdLanguage, MdWork, MdAutoAwesome } from 'react-icons/md';
 import { getCharacterById, deleteCharacter, exportCharacterAsText, downloadCharacterBundle } from '../../utils/characterStorage';
+import { rateCharacter, hasUserRatedCharacter, getCharacterRatingStatus } from '../../utils/characterRatings';
 import CharacterAITutorial from '../../components/CharacterAITutorial';
 import VersionHistoryModal from '../../components/VersionHistoryModal';
 import useCharacters from '../../hooks/useCharacters';
@@ -60,6 +61,8 @@ export default function CharacterDetail() {
   const [showShareModal, setShowShareModal] = useState(false);
   const [shareLink, setShareLink] = useState('');
   const [shareError, setShareError] = useState(null);
+  const [ratings, setRatings] = useState({ likes: 0, dislikes: 0 });
+  const [userRating, setUserRating] = useState(null);
 
   useEffect(() => {
     if (id) {
@@ -67,6 +70,18 @@ export default function CharacterDetail() {
         try {
           const characterData = await getCharacterById(id);
           setCharacter(characterData);
+          
+          // Initialize ratings
+          if (characterData.ratings) {
+            setRatings(characterData.ratings);
+          }
+          
+          // Check if user has already rated
+          const ratingStatus = getCharacterRatingStatus(id);
+          if (ratingStatus) {
+            setUserRating(ratingStatus);
+          }
+
           const versionHistory = getVersions(id);
           setVersions(versionHistory);
 
@@ -126,6 +141,32 @@ export default function CharacterDetail() {
       router.reload();
     } catch (error) {
       console.error('Error restoring version:', error);
+    }
+  };
+
+  const handleRating = async (type) => {
+    try {
+      if (!id) {
+        console.error('Cannot rate: Character ID is undefined');
+        return;
+      }
+      
+      console.log(`Submitting rating for character ${id}: ${type}`);
+      
+      const result = await rateCharacter(id, type);
+      
+      // Update the UI with the new ratings
+      setRatings(result.ratings);
+      setUserRating(type);
+      
+      // Also update the character state
+      setCharacter(prev => ({
+        ...prev,
+        ratings: result.ratings
+      }));
+    } catch (error) {
+      console.error('Failed to rate character:', error);
+      // You could add a user-visible error message here
     }
   };
 
@@ -528,6 +569,10 @@ Relationships("${formattedRelationships}")}`;
 
   return (
     <div className="min-h-screen bg-gray-200 dark:bg-gray-900 transition-colors duration-200">
+      <Head>
+        <title>{character?.name || 'Character Details'} - Character Creator</title>
+        <meta name="description" content={`View details for ${character?.name || 'character'}`} />
+      </Head>
       <Header />
       <motion.div 
         className="max-w-6xl mx-auto p-6 py-12"
@@ -682,12 +727,46 @@ Relationships("${formattedRelationships}")}`;
             {/* Main Details Section */}
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-character overflow-hidden">
               <div className="border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 p-6">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white">
-                    <MdAutoAwesome className="text-xl" />
+                <div className="flex justify-between items-center">
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white">
+                      <MdAutoAwesome className="text-xl" />
+                    </div>
+                    Character Details
+                  </h2>
+                  <div className="flex items-center gap-3">
+                    <motion.button
+                      variants={buttonVariants}
+                      whileHover="hover"
+                      whileTap="tap"
+                      onClick={() => handleRating('like')}
+                      disabled={userRating === 'like'}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all duration-300 ${
+                        userRating === 'like'
+                          ? 'bg-red-100 text-red-600 border-red-200'
+                          : 'bg-gray-100 text-gray-600 border-gray-200 hover:bg-red-100 hover:text-red-600 hover:border-red-200'
+                      }`}
+                    >
+                      <FiHeart className="w-5 h-5" />
+                      <span>{ratings.likes}</span>
+                    </motion.button>
+                    <motion.button
+                      variants={buttonVariants}
+                      whileHover="hover"
+                      whileTap="tap"
+                      onClick={() => handleRating('dislike')}
+                      disabled={userRating === 'dislike'}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all duration-300 ${
+                        userRating === 'dislike'
+                          ? 'bg-blue-100 text-blue-600 border-blue-200'
+                          : 'bg-gray-100 text-gray-600 border-gray-200 hover:bg-blue-100 hover:text-blue-600 hover:border-blue-200'
+                      }`}
+                    >
+                      <FiThumbsDown className="w-5 h-5" />
+                      <span>{ratings.dislikes}</span>
+                    </motion.button>
                   </div>
-                  Character Details
-                </h2>
+                </div>
               </div>
 
               <div className="p-6">

@@ -6,6 +6,7 @@ import Header from '../components/website_essentials/Header';
 import { FiArrowLeft, FiGithub, FiLinkedin, FiMail, FiTwitter, FiHeart, FiUser } from 'react-icons/fi';
 import Image from 'next/image';
 import pfp from '../../public/pfp.jpg';
+import Footer from '../components/website_essentials/Footer';
 
 const AboutPage = () => {
   const router = useRouter();
@@ -199,9 +200,7 @@ const AboutPage = () => {
           </motion.div>
         </div>
         
-        <footer className="footer">
-          <p>Made with <span className="heart"><FiHeart /></span> for character creators</p>
-        </footer>
+        <Footer />
       </div>
     </>
   );

@@ -1,8 +1,8 @@
 import { useEffect, useState, useRef } from 'react';
-import { motion } from 'framer-motion';
 import Head from 'next/head';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import Footer from '../components/website_essentials/Footer';
 import Header from '../components/website_essentials/Header';
 // Remove the ForceGraph2D import
 
@@ -29,7 +29,6 @@ import {
   FiEdit
 } from 'react-icons/fi';
 import { getAllCharacters } from '../utils/characterStorage';
-import html2canvas from 'html2canvas';
 
 // Predefined relationship types with icons
 const RELATIONSHIP_TYPES = [
@@ -602,6 +601,7 @@ export default function Relationships() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }
