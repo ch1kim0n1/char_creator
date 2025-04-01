@@ -5,6 +5,8 @@ import Head from 'next/head';
 import { FiArrowLeft, FiSend, FiThumbsUp, FiHeart } from 'react-icons/fi';
 import Footer from '../components/website_essentials/Footer';
 import Header from '../components/website_essentials/Header';
+import DevLog from '../components/DevLog';
+import devLogData from '../data/devlog.json';
 
 const FeedbackPage = () => {
   const router = useRouter();
@@ -341,6 +343,9 @@ const FeedbackPage = () => {
               )}
             </div>
           </motion.div>
+          
+          {/* Add DevLog component after the feedback form */}
+          <DevLog />
         </div>
         
         <Footer />

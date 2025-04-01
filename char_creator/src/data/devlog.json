@@ -1,0 +1,265 @@
+{
+    "devlog": [
+      {
+        "date": "2025-04-01",
+        "changes": [
+          {
+            "title": "change start animation",
+            "type": "improvement",
+            "description": "Updates the website’s initial animation. (Labels: design feature, MUST function)"
+          },
+          {
+            "title": "statistics page (of characters and info about them given)",
+            "type": "new feature",
+            "description": "Adds a page showing statistical info about created characters. (Labels: MUST function)"
+          },
+          {
+            "title": "Character rating system",
+            "type": "improvement",
+            "description": "Allows adding a rating system to characters. (Labels: backlog idea)"
+          }
+        ]
+      },
+      {
+        "date": "2025-03-31",
+        "changes": [
+          {
+            "title": "small changes",
+            "type": "improvement",
+            "description": "Minor unspecified improvements."
+          },
+          {
+            "title": "folder - add folder deletion confirmation popup",
+            "type": "new feature",
+            "description": "Prompts a confirmation before deleting a folder. (Labels: function feature, MUST function)"
+          },
+          {
+            "title": "folder - add quick access buttons",
+            "type": "new feature",
+            "description": "Adds easily accessible buttons for folder actions. (Labels: function feature, MUST function)"
+          },
+          {
+            "title": "folder system for characters in dashboard",
+            "type": "new feature",
+            "description": "Implements folder organization for characters. (Labels: function feature, WANT feature)"
+          },
+          {
+            "title": "character card re-design",
+            "type": "new feature",
+            "description": "Redesigns how character cards are displayed. (Labels: function feature, MUST function)"
+          },
+          {
+            "title": "new details page layout",
+            "type": "improvement",
+            "description": "Introduces a new layout for the details page."
+          },
+          {
+            "title": "new header + footer",
+            "type": "new feature",
+            "description": "Adds a brand-new header and footer design. (Labels: function feature, MUST function)"
+          },
+          {
+            "title": "NEW PAGE: Character relationships mapping",
+            "type": "new feature",
+            "description": "Adds a page to visually map character relationships. (Labels: function feature, MUST function)"
+          },
+          {
+            "title": "in dashboard character card instead of download button add small caption -> 'click me for more details'",
+            "type": "new feature",
+            "description": "Replaces the download button with a caption prompting more details. (Labels: function feature, MUST function)"
+          },
+          {
+            "title": "when exporting data - add relationships to the exported data too",
+            "type": "new feature",
+            "description": "Ensures character relationships are included in exports. (Labels: function feature, MUST function)"
+          },
+          {
+            "title": "Share characters via unique links",
+            "type": "new feature",
+            "description": "Allows sharing of characters through unique URLs. (Labels: function feature, Personal feature, WANT feature)"
+          }
+        ]
+      },
+      {
+        "date": "2025-03-30",
+        "changes": [
+          {
+            "title": "add (optional to fill out) character version history",
+            "type": "new feature",
+            "description": "Lets users keep track of different versions of a character. (Labels: function feature, WANT feature)"
+          },
+          {
+            "title": "template data is not fetching into characterForm from template picker",
+            "type": "bug",
+            "description": "Fixes an error preventing template data from populating the form. (Labels: BUG, function feature)"
+          },
+          {
+            "title": "cache fixed",
+            "type": "fix",
+            "description": "Resolves a caching issue in the system."
+          },
+          {
+            "title": "template start",
+            "type": "improvement",
+            "description": "Initial work on the template-based creation flow."
+          },
+          {
+            "title": "templates",
+            "type": "improvement",
+            "description": "Implements or refines template handling for characters."
+          }
+        ]
+      },
+      {
+        "date": "2025-03-29",
+        "changes": [
+          {
+            "title": "popup window that explains what each button at the top does",
+            "type": "new feature",
+            "description": "Adds a help popup explaining top-bar icons. (Labels: function feature, MUST function)"
+          },
+          {
+            "title": "new window UI",
+            "type": "improvement",
+            "description": "Introduces a new user interface for windowed sections."
+          },
+          {
+            "title": "instruction page how to import character into character AI",
+            "type": "new feature",
+            "description": "Guides users through importing characters into a separate AI platform. (Labels: design feature, function feature, MUST function)"
+          },
+          {
+            "title": "global export feature",
+            "type": "new feature",
+            "description": "Provides a global option to export all characters. (Labels: function feature, MUST function)"
+          }
+        ]
+      },
+      {
+        "date": "2025-03-25",
+        "changes": [
+          {
+            "title": "Update README.md",
+            "type": "improvement",
+            "description": "Improves documentation in the project's README."
+          }
+        ]
+      },
+      {
+        "date": "2025-03-24",
+        "changes": [
+          {
+            "title": "Fundamental issues fixed",
+            "type": "fix",
+            "description": "Resolves several core problems within the codebase."
+          },
+          {
+            "title": "minor adds",
+            "type": "improvement",
+            "description": "Adds small features or enhancements."
+          },
+          {
+            "title": "minor changes",
+            "type": "improvement",
+            "description": "Applies minor tweaks and refinements."
+          }
+        ]
+      },
+      {
+        "date": "2025-03-23",
+        "changes": [
+          {
+            "title": "18. export formats",
+            "type": "improvement",
+            "description": "Fixes or expands export format options."
+          },
+          {
+            "title": "Merge pull request (pre-website-animation)",
+            "type": "improvement",
+            "description": "Incorporates changes adding a pre-website loading animation."
+          },
+          {
+            "title": "footer",
+            "type": "improvement",
+            "description": "Implements or refines the site-wide footer."
+          },
+          {
+            "title": "pre web animation",
+            "type": "improvement",
+            "description": "Adds an animation sequence before the main site is shown."
+          },
+          {
+            "title": "new logo + name + about me",
+            "type": "improvement",
+            "description": "Updates branding (logo and name) plus the about section."
+          },
+          {
+            "title": "emailing/feedback system",
+            "type": "new feature",
+            "description": "Enables an email-based feedback mechanism."
+          },
+          {
+            "title": "Merge pull request (issue-fixes-2)",
+            "type": "fix",
+            "description": "Combines multiple fixes addressing open issues."
+          },
+          {
+            "title": "export formats",
+            "type": "improvement",
+            "description": "Adds or updates character export capabilities."
+          },
+          {
+            "title": "Update README.md",
+            "type": "improvement",
+            "description": "Enhances or clarifies project documentation."
+          },
+          {
+            "title": "issue 3 & 8 & 18 & 19 & 20 & 22 & 23",
+            "type": "misc",
+            "description": "Multiple older issues resolved together."
+          },
+          {
+            "title": "Merge pull request (remove-disclaimer-animation)",
+            "type": "fix",
+            "description": "Removes an unwanted disclaimer animation and updates notifications."
+          },
+          {
+            "title": "issue 7, 17, 4 & 11 & 13, 2 & 15",
+            "type": "fix",
+            "description": "Various bugfixes and changes related to UI, search, feedback pages, etc."
+          },
+          {
+            "title": "1. fixed",
+            "type": "fix",
+            "description": "Resolves the first main tracked issue."
+          },
+          {
+            "title": "Remove disclaimer animation and display notification immediately",
+            "type": "improvement",
+            "description": "Further adjusts disclaimers and site notifications."
+          },
+          {
+            "title": "Update README.md",
+            "type": "improvement",
+            "description": "Adds new clarifications or details to README."
+          },
+          {
+            "title": "Merge pull request (fix-apply-rule)",
+            "type": "fix",
+            "description": "Corrects issues with the @apply rule in CSS."
+          },
+          {
+            "title": "comments",
+            "type": "improvement",
+            "description": "Refines or adds code comments."
+          },
+          {
+            "title": "Fix @apply rule issue in CSS file",
+            "type": "fix",
+            "description": "Resolves a CSS problem regarding the @apply syntax."
+          }
+        ]
+      }
+    ]
+  }
+  
