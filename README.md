@@ -27,5 +27,5 @@ A web-based tool for writers, role-players, and storytellers to create, manage, 
 2. tailwind css
 3. website animation + transition + scrolling + hovering animation libraries
 4. json
-5. dynamic objects
+5. dynamic objects to manipulate character info
 6. locally stored files for chatacters (different folder)
