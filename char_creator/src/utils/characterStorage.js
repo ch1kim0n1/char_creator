@@ -760,7 +760,7 @@ export const syncCharacterWithStorage = async (characterId) => {
 };
 
 // Update the updateCharacterRatings function
-export async function updateCharacterRatings(characterId, ratings) {
+export const updateCharacterRatings = (characterId, ratings) => {
   try {
     const characters = getCharacters();
     const characterIndex = characters.findIndex(char => char.id === characterId);
@@ -783,4 +783,4 @@ export async function updateCharacterRatings(characterId, ratings) {
     console.error('Error updating character ratings:', error);
     throw error;
   }
-}
+};

@@ -31,10 +31,13 @@ const DevLog = () => {
     );
   }
 
-  // Sort the devlog entries by date
-  const sortedEntries = [...devlogData.devlog].sort((a, b) => 
-    new Date(b.date) - new Date(a.date)
-  );
+  // Sort the devlog entries by date in descending order
+  const sortedEntries = [...devlogData.devlog].sort((a, b) => {
+    // Parse dates in YYYY-MM-DD format
+    const dateA = new Date(a.date);
+    const dateB = new Date(b.date);
+    return dateB - dateA;
+  });
 
   return (
     <motion.div
@@ -51,7 +54,8 @@ const DevLog = () => {
                 {new Date(entry.date).toLocaleDateString('en-US', {
                   year: 'numeric',
                   month: 'long',
-                  day: 'numeric'
+                  day: 'numeric',
+                  timeZone: 'UTC' // Ensure dates are parsed in UTC
                 })}
               </h3>
             </div>

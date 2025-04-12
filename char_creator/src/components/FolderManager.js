@@ -23,14 +23,16 @@ const FolderManager = ({ isOpen, onClose, characters, onUpdateFolders }) => {
   const [availableCharacters, setAvailableCharacters] = useState([]);
   const [folderToDelete, setFolderToDelete] = useState(null);
 
-  // Load folders when component mounts
+  // Load folders when component mounts or modal opens
   useEffect(() => {
     const loadFolders = () => {
       const savedFolders = getAllFolders();
       setFolders(savedFolders);
     };
-    loadFolders();
-  }, []);
+    if (isOpen) {
+      loadFolders(); // Reload folders when modal opens
+    }
+  }, [isOpen]);
 
   // Update parent component when folders change
   useEffect(() => {
@@ -50,7 +52,9 @@ const FolderManager = ({ isOpen, onClose, characters, onUpdateFolders }) => {
 
   const handleDeleteFolder = (folderId) => {
     if (deleteFolder(folderId)) {
-      setFolders(folders.filter(folder => folder.id !== folderId));
+      const updatedFolders = folders.filter(folder => folder.id !== folderId);
+      setFolders(updatedFolders);
+      onUpdateFolders(updatedFolders); // Update parent component immediately
       setFolderToDelete(null);
     }
   };
