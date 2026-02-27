@@ -3,9 +3,6 @@
 A web-based tool for writers, role-players, and storytellers to create, manage, and export fictional characters. This application helps 
 streamline the character creation process by providing a user-friendly interface and organized storage system for character profiles.
 
-## TODO
-1. integration with barcode reader app
-
 ## Key Features
 
 - Create and manage multiple character profiles
